@@ -1,0 +1,27 @@
+name: Build OpenTaiko
+
+on: 
+  schedule:
+    - cron: '0 0 12 1/1 *'
+  workflow_dispatch:
+  
+jobs:
+  sync:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Merge upstream
+        run: |
+          git config --global user.name ${NAME}
+          git config --global user.email ${EMAIL}
+          git config --global pull.rebase merges
+          git pull --unshallow
+          git remote add upstream ${REPO_FORK}
+          git fetch upstream
+          git checkout master
+          git merge --no-edit upstream/master
+          git push origin master
+        env:
+          NAME: totoa553
+          EMAIL: ${{ env.EMAIL }}
+          REPO_FORK: https://github.com/0auBSQ/OpenTaiko.git
