@@ -18,7 +18,7 @@ jobs:
       repository-projects: write
       security-events: write
       statuses: write
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
       - uses: actions/checkout@v2
       - name: Merge upstream
@@ -45,27 +45,6 @@ jobs:
 
       - name: Restore the application
         run: nuget restore $Env:GITHUB_WORKSPACE\TJAPlayer3.sln
-
-      - name: Install component on windows 2022
-        shell: pwsh
-        run: |
-          Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
-          $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
-          $componentsToAdd = @(
-            "Microsoft.Net.Component.4.6.1.SDK"
-          )
-          [string]$workloadArgs = $componentsToAdd | ForEach-Object {" --add " +  $_}
-          $Arguments = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$InstallPath`"",$workloadArgs, '--quiet', '--norestart', '--nocache')
-          $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
-          if ($process.ExitCode -eq 0)
-          {
-              Write-Host "components have been successfully added"
-          }
-          else
-          {
-              Write-Host "components were not installed"
-              exit 1
-          }
 
       - name: Build the Solution(x64)
         run: MSBuild.exe $Env:GITHUB_WORKSPACE\TJAPlayer3.sln -p:Configuration=Release -p:platform=x64
