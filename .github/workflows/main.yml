@@ -44,10 +44,10 @@ jobs:
         uses: NuGet/setup-nuget@v1
 
       - name: Restore the application
-        run: nuget restore $Env:GITHUB_WORKSPACE\OpenTaiko.sln
+        run: nuget restore $Env:GITHUB_WORKSPACE\TJAPlayer3.sln
 
       - name: Build the Solution(x64)
-        run: MSBuild.exe $Env:GITHUB_WORKSPACE\OpenTaiko.sln -p:Configuration=Release -p:platform=x64
+        run: MSBuild.exe $Env:GITHUB_WORKSPACE\TJAPlayer3.sln -p:Configuration=Release -p:platform=x64
         timeout-minutes: 5
 
       - name: Create Archive(x64)
@@ -56,7 +56,7 @@ jobs:
           tar -a -cvf OpenTaiko.zip -C Test *
 
       - name: Build the Solution(x86)
-        run: MSBuild.exe $Env:GITHUB_WORKSPACE\OpenTaiko.sln -p:Configuration=Release -p:platform=x86
+        run: MSBuild.exe $Env:GITHUB_WORKSPACE\TJAPlayer3.sln -p:Configuration=Release -p:platform=x86
         timeout-minutes: 5
 
       - name: Create Archive(x86)
