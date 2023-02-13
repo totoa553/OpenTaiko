@@ -81,12 +81,22 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset
-        id: upload-release-asset 
+      - name: Upload Release Asset(x64)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./*.zip
+          asset_path: ./OpenTaiko.zip
+          asset_name: OpenTaiko.zip
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset(x86)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./OpenTaiko-x86.zip
+          asset_name: OpenTaiko-x86.zip
           asset_content_type: application/zip
