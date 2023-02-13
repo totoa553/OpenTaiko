@@ -62,7 +62,7 @@ jobs:
       - name: Create Archive(x86)
         run: |
           cd $Env:GITHUB_WORKSPACE
-          tar -a -cvf OpenTaiko(x86).zip -C Test *
+          tar -a -cvf OpenTaiko-x86.zip -C Test *
 
       - name: Get Current Time
         id: time
