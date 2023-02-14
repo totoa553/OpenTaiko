@@ -33,8 +33,8 @@ jobs:
           git merge --no-edit upstream/main
           git push origin main
         env:
-          NAME: totoa553
-          EMAIL: ${{ env.EMAIL }}
+          NAME: ${GITHUB_ACTOR}
+          EMAIL: ${GITHUB_ACTOR}@users.noreply.github.com"
           REPO_FORK: https://github.com/0auBSQ/OpenTaiko.git
 
       - name: Setup MSBuild.exe
@@ -86,7 +86,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: https://uploads.github.com/repos/totoa553/OpenTaiko/releases/92161509/assets
           asset_path: ./OpenTaiko.zip
           asset_name: OpenTaiko.zip
           asset_content_type: application/zip
@@ -96,7 +96,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: https://uploads.github.com/repos/totoa553/OpenTaiko/releases/92161509/assets
           asset_path: ./OpenTaiko-x86.zip
           asset_name: OpenTaiko-x86.zip
           asset_content_type: application/zip
