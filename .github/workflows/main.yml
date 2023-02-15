@@ -27,15 +27,14 @@ jobs:
           git config --global user.email ${EMAIL}
           git config --global pull.rebase merges
           git pull --unshallow
-          git remote add upstream ${REPO_FORK}
+          git remote add upstream https://github.com/0auBSQ/OpenTaiko.git
           git fetch upstream
           git checkout main
           git merge --no-edit upstream/main
           git push origin main
         env:
           NAME: ${GITHUB_ACTOR}
-          EMAIL: ${GITHUB_ACTOR}@users.noreply.github.com"
-          REPO_FORK: https://github.com/0auBSQ/OpenTaiko.git
+          EMAIL: ${GITHUB_ACTOR}@users.noreply.github.com
 
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1
