@@ -70,21 +70,12 @@ jobs:
           echo "::set-output name=time::$((Get-Date).addHours(9))"
 
       - name: Upload Release Asset(x64)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: svenstaro/upload-release-action@v2
         with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           upload_url: https://uploads.github.com/repos/totoa553/OpenTaiko/releases/92287065/assets{?name,label}
-          asset_path: ./OpenTaiko.zip
-          asset_name: OpenTaiko.zip
-          asset_content_type: application/zip
-
-      - name: Upload Release Asset(x86)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: https://uploads.github.com/repos/totoa553/OpenTaiko/releases/92287065/assets{?name,label}
-          asset_path: ./OpenTaiko-x86.zip
-          asset_name: OpenTaiko-x86.zip
-          asset_content_type: application/zip
+          file: ./*.zip
+          file_glob: true
+          overwrite: true
+          tag: ${{ github.ref }}
+          body: ${{ steps.time.outputs.time }}
