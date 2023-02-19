@@ -50,7 +50,7 @@ namespace TJAPlayer3
         const string GENRE = @"13_Genre\";
         const string GAMEMODE = @"14_GameMode\";
         const string FAILED = @"15_Failed\";
-        const string RUNNER = @"16_Runner\";
+        public const string RUNNER = @"16_Runner\";
         const string TRAINING = @"19_Training\";
         const string DANC = @"17_DanC\";
         const string TOWER = @"20_Tower\";
@@ -203,6 +203,7 @@ namespace TJAPlayer3
             #region 3_選曲画面
             SongSelect_Background = TxC(SONGSELECT + @"Background.png");
             SongSelect_Header = TxC(SONGSELECT + @"Header.png");
+            SongSelect_Footer = TxC(SONGSELECT + @"Footer.png");
             SongSelect_Coin_Slot[0] = TxC(SONGSELECT + @"Coin_Slot.png");
             SongSelect_Coin_Slot[1] = TxC(SONGSELECT + @"Coin_Slot_3P.png");
             SongSelect_Coin_Slot[2] = TxC(SONGSELECT + @"Coin_Slot_4P.png");
@@ -445,10 +446,14 @@ namespace TJAPlayer3
             Taiko_LevelUp = TxC(GAME + TAIKO + @"LevelUp.png");
             Taiko_LevelDown = TxC(GAME + TAIKO + @"LevelDown.png");
             Couse_Symbol = new CTexture[(int)Difficulty.Total + 1]; // +1は真打ちモードの分
+            Couse_Symbol_Back = new CTexture[(int)Difficulty.Total + 1]; // +1は真打ちモードの分
+            Couse_Symbol_Back_Flash = new CTexture[(int)Difficulty.Total + 1]; // +1は真打ちモードの分
             string[] Couse_Symbols = new string[(int)Difficulty.Total + 1] { "Easy", "Normal", "Hard", "Oni", "Edit", "Tower", "Dan", "Shin" };
             for (int i = 0; i < (int)Difficulty.Total + 1; i++)
             {
                 Couse_Symbol[i] = TxC(GAME + COURSESYMBOL + Couse_Symbols[i] + ".png");
+                Couse_Symbol_Back[i] = TxC(GAME + COURSESYMBOL + Couse_Symbols[i] + "_Back.png");
+                Couse_Symbol_Back_Flash[i] = TxC(GAME + COURSESYMBOL + Couse_Symbols[i] + "_Back_Flash.png");
             }
 
             Taiko_Score = new CTexture[6];
@@ -701,7 +706,7 @@ namespace TJAPlayer3
 
             #region Runner
 
-            Runner = TxC(GAME + RUNNER + @"0.png");
+            //Runner = TxC(GAME + RUNNER + @"0.png");
 
             #endregion
 
@@ -1019,6 +1024,7 @@ namespace TJAPlayer3
             Heya_Center_Menu_Box = TxC(HEYA + @"Center_Menu_Box.png");
             Heya_Center_Menu_Box_Slot = TxC(HEYA + @"Center_Menu_Box_Slot.png");
             Heya_Side_Menu = TxC(HEYA + @"Side_Menu.png");
+            Heya_Render_Field = TxC(HEYA + @"Render_Field.png");
             Heya_Box = TxC(HEYA + @"Box.png");
             Heya_Lock = TxC(HEYA + @"Lock.png");
 
@@ -1032,6 +1038,7 @@ namespace TJAPlayer3
             TJAPlayer3.Skin.Characters_Ptn = charaDirs.Length;
 
             Characters_Heya_Preview = new CTexture[TJAPlayer3.Skin.Characters_Ptn];
+            Characters_Heya_Render = new CTexture[TJAPlayer3.Skin.Characters_Ptn];
             Characters = new CCharacter[TJAPlayer3.Skin.Characters_Ptn];
 
             Characters_Normal = new CTexture[TJAPlayer3.Skin.Characters_Ptn][];
@@ -1139,6 +1146,7 @@ namespace TJAPlayer3
             for (int i = 0; i < TJAPlayer3.Skin.Characters_Ptn; i++)
             {
                 Characters_Heya_Preview[i] = TxCGlobal(CHARACTERS + TJAPlayer3.Skin.Characters_DirName[i] + @"\Normal\0.png");
+                Characters_Heya_Render[i] = TxCGlobal(CHARACTERS + TJAPlayer3.Skin.Characters_DirName[i] + @"Render.png");
                 Characters[i] = new CCharacter(charaDirs[i]);
             }
                 
@@ -1867,6 +1875,7 @@ namespace TJAPlayer3
 
         public CTexture SongSelect_Background,
             SongSelect_Header,
+            SongSelect_Footer,
             SongSelect_Auto,
             SongSelect_Level,
             SongSelect_Branch,
@@ -1990,6 +1999,8 @@ namespace TJAPlayer3
             Taiko_Combo_Effect,
             Taiko_Combo_Text;
         public CTexture[] Couse_Symbol, // コースシンボル
+            Couse_Symbol_Back,
+            Couse_Symbol_Back_Flash,
             Taiko_PlayerNumber,
             Taiko_NamePlate; // ネームプレート
         public CTexture[] Taiko_Score,
@@ -2073,7 +2084,7 @@ namespace TJAPlayer3
             Failed_Stage;
         #endregion
         #region ランナー
-        public CTexture Runner;
+        //public CTexture Runner;
         #endregion
         #region DanC
         public CTexture DanC_Background;
@@ -2246,6 +2257,7 @@ namespace TJAPlayer3
             Heya_Center_Menu_Box_Slot,
             Heya_Side_Menu,
             Heya_Box,
+            Heya_Render_Field,
             Heya_Lock;
 
         #endregion
@@ -2279,7 +2291,8 @@ namespace TJAPlayer3
             Characters_Result_Failed_In,
             Characters_Result_Normal;
 
-        public CTexture[] Characters_Heya_Preview;
+        public CTexture[] Characters_Heya_Preview,
+            Characters_Heya_Render;
         public CCharacter[] Characters;
 
         #endregion
