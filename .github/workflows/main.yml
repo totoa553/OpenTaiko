@@ -77,5 +77,5 @@ jobs:
           file: ./*.zip
           file_glob: true
           overwrite: true
-          tag: ${{ github.ref }}
+          tag: release
           body: ${{ steps.time.outputs.time }}
