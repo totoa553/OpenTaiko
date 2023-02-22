@@ -4057,7 +4057,7 @@ namespace TJAPlayer3
                 WarnSplitLength("#JPOSSCROLL", strArray, 3);
                 double db移動時刻 = Convert.ToDouble(strArray[0]);
                 int n移動px = Convert.ToInt32(strArray[1]);
-                int n移動方向 = Convert.ToInt32(strArray[2]);
+                int n移動方向 = (strArray.Length >= 3) ? Convert.ToInt32(strArray[2]) : 0;
 
                 //チップ追加して割り込んでみる。
                 var chip = new CChip();
@@ -6427,13 +6427,24 @@ namespace TJAPlayer3
         private CPrivateFastFont pf歌詞フォント;
         public override void On活性化()
         {
-            if (!string.IsNullOrEmpty(TJAPlayer3.Skin.Game_Lyric_FontName))
+            if (TJAPlayer3.r現在のステージ.eステージID == CStage.Eステージ.曲読み込み)
             {
-                this.pf歌詞フォント = new CPrivateFastFont(new FontFamily(TJAPlayer3.Skin.Game_Lyric_FontName), TJAPlayer3.Skin.Game_Lyric_FontSize);
-            }
-            else
-            {
-                this.pf歌詞フォント = new CPrivateFastFont(new FontFamily("MS UI Gothic"), TJAPlayer3.Skin.Game_Lyric_FontSize);
+                //まさかこれが原因で曲の読み込みが停止するとは思わなかった...
+                //どういうことかというとスキンを読み込むときに...いや厳密には
+                //RefleshSkinを呼び出した後一回Disposeしてnullにして解放(その後にまたインスタンスを作成する)するんだけど
+                //その時にここでTJAPlayer3.Skinを参照して例外が出ていたんだ....
+                //いやいや! なんでTJAPlayer3.Skinをnullにした瞬間に参照されるんだ!と思った方もいるかもしれないですが
+                //実は曲の読み込みはマルチスレッドで実行されているのでnullにした瞬間に参照される可能性も十分にある
+                //それならアプリが終了するんじゃないかと思ったのだけどtryを使ってい曲の読み込みを続行していた...
+                //いやーマルチスレッドって難しいね!
+                if (!string.IsNullOrEmpty(TJAPlayer3.Skin.Game_Lyric_FontName))
+                {
+                    this.pf歌詞フォント = new CPrivateFastFont(new FontFamily(TJAPlayer3.Skin.Game_Lyric_FontName), TJAPlayer3.Skin.Game_Lyric_FontSize);
+                }
+                else
+                {
+                    this.pf歌詞フォント = new CPrivateFastFont(new FontFamily("MS UI Gothic"), TJAPlayer3.Skin.Game_Lyric_FontSize);
+                }
             }
             this.listWAV = new Dictionary<int, CWAV>();
             this.listBPM = new Dictionary<int, CBPM>();
