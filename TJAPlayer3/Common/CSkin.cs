@@ -2876,6 +2876,22 @@ namespace TJAPlayer3
                                     DaniSelect_Value_Gauge[i] = int.Parse(strSplit[i]);
                                 }
                             }
+                            else if (strCommand == "DaniSelect_DanIcon_X")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    DaniSelect_DanIcon_X[i] = int.Parse(strSplit[i]);
+                                }
+                            }
+                            else if (strCommand == "DaniSelect_DanIcon_Y")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    DaniSelect_DanIcon_Y[i] = int.Parse(strSplit[i]);
+                                }
+                            }
                             else if (strCommand == "DaniSelect_Title_X")
                             {
                                 string[] strSplit = strParam.Split(',');
@@ -2996,6 +3012,22 @@ namespace TJAPlayer3
                                     DaniSelect_Exam_Y[i] = int.Parse(strSplit[i]);
                                 }
                             }
+                            else if (strCommand == "DaniSelect_Exam_X_Ex")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    DaniSelect_Exam_X_Ex[i] = int.Parse(strSplit[i]);
+                                }
+                            }
+                            else if (strCommand == "DaniSelect_Exam_Y_Ex")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    DaniSelect_Exam_Y_Ex[i] = int.Parse(strSplit[i]);
+                                }
+                            }
                             else if (strCommand == "DaniSelect_Exam_Interval")
                             {
                                 string[] strSplit = strParam.Split(',');
@@ -3092,6 +3124,27 @@ namespace TJAPlayer3
                                     DaniSelect_Plate_Title_Offset[i] = int.Parse(strSplit[i]);
                                 }
                             }
+                            else if (strCommand == "DaniSelect_DanIconTitle_Size")
+                            {
+                                DaniSelect_DanIconTitle_Size = int.Parse(strParam);
+                            }
+                            else if (strCommand == "DaniSelect_DanIconTitle_Offset")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 2; i++)
+                                {
+                                    DaniSelect_DanIconTitle_Offset[i] = int.Parse(strSplit[i]);
+                                }
+                            }
+                            else if (strCommand == "DaniSelect_DanIcon_Color")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                DaniSelect_DanIcon_Color = new Color[strSplit.Length];
+                                for (int i = 0; i < strSplit.Length; i++)
+                                {
+                                    DaniSelect_DanIcon_Color[i] = ColorTranslator.FromHtml(strSplit[i]);
+                                }
+                            }
                             #endregion
 
                             #region SongLoading
@@ -3159,6 +3212,14 @@ namespace TJAPlayer3
                                     SongLoading_Fade_AI_Anime_LoadBar[i] = int.Parse(strSplit[i]);
                                 }
                             }
+                            else if (strCommand == "SongLoading_DanPlate")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 2; i++)
+                                {
+                                    SongLoading_DanPlate[i] = int.Parse(strSplit[i]);
+                                }
+                            }
                             else if (strCommand == nameof(SongLoading_Title_FontSize))
                             {
                                 if (int.Parse(strParam) > 0)
@@ -3209,6 +3270,18 @@ namespace TJAPlayer3
                             else if (strCommand == nameof(SongLoading_Plate_ScreenBlend))
                             {
                                 SongLoading_Plate_ScreenBlend = C変換.bONorOFF(strParam[0]);
+                            }
+                            else if (strCommand == nameof(DaniSelect_DanPlateTitle_Size))
+                            {
+                                DaniSelect_DanPlateTitle_Size = int.Parse(strParam);
+                            }
+                            else if (strCommand == "DaniSelect_DanPlateTitle_Offset")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 2; i++)
+                                {
+                                    DaniSelect_DanPlateTitle_Offset[i] = int.Parse(strSplit[i]);
+                                }
                             }
                             #endregion
 
@@ -5199,6 +5272,47 @@ namespace TJAPlayer3
                             {
                                 Game_DanC_Dan_Plate = strParam.Split(',').Select(int.Parse).ToArray();
                             }
+                            else if (strCommand == nameof(Game_DanC_DanIcon_Offset))
+                            {
+                                Game_DanC_DanIcon_Offset = strParam.Split(',').Select(int.Parse).ToArray();
+                            }
+                            else if (strCommand == nameof(Game_DanC_DanIcon_Offset_Mini))
+                            {
+                                Game_DanC_DanIcon_Offset_Mini = strParam.Split(',').Select(int.Parse).ToArray();
+                            }
+                            else if (strCommand == nameof(Game_DanC_Title_X))
+                            {
+                                Game_DanC_Title_X = strParam.Split(',').Select(int.Parse).ToArray();
+                            }
+                            else if (strCommand == nameof(Game_DanC_Title_Y))
+                            {
+                                Game_DanC_Title_Y = strParam.Split(',').Select(int.Parse).ToArray();
+                            }
+                            else if (strCommand == nameof(Game_DanC_SubTitle))
+                            {
+                                Game_DanC_SubTitle = strParam.Split(',').Select(int.Parse).ToArray();
+                            }
+
+                            else if (strCommand == nameof(Game_DanC_Title_Size))
+                            {
+                                ParseInt32(value => Game_DanC_Title_Size = value);
+                            }
+                            else if (strCommand == nameof(Game_DanC_SubTitle_Size))
+                            {
+                                ParseInt32(value => Game_DanC_SubTitle_Size = value);
+                            }
+                            else if (strCommand == nameof(Game_DanC_ExamFont_Size))
+                            {
+                                ParseInt32(value => Game_DanC_ExamFont_Size = value);
+                            }
+                            else if (strCommand == nameof(Game_DanC_Title_MaxWidth))
+                            {
+                                ParseInt32(value => Game_DanC_Title_MaxWidth = value);
+                            }
+                            else if (strCommand == nameof(Game_DanC_SubTitle_MaxWidth))
+                            {
+                                ParseInt32(value => Game_DanC_SubTitle_MaxWidth = value);
+                            }
 
                             #endregion
 
@@ -6775,6 +6889,22 @@ namespace TJAPlayer3
                                     DanResult_DanTitles_Y[i] = int.Parse(strSplit[i]);
                                 }
                             }
+                            else if (strCommand == "DanResult_DanIcon_X")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    DanResult_DanIcon_X[i] = int.Parse(strSplit[i]);
+                                }
+                            }
+                            else if (strCommand == "DanResult_DanIcon_Y")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    DanResult_DanIcon_Y[i] = int.Parse(strSplit[i]);
+                                }
+                            }
                             else if (strCommand == "DanResult_Rank")
                             {
                                 string[] strSplit = strParam.Split(',');
@@ -8048,6 +8178,9 @@ namespace TJAPlayer3
         public int[] DaniSelect_Text_Gauge = new int[] { 396, 429 };
         public int[] DaniSelect_Value_Gauge = new int[] { 370, 462 };
 
+        public int[] DaniSelect_DanIcon_X = new int[] { 314, 314, 314 };
+        public int[] DaniSelect_DanIcon_Y = new int[] { 190, 263, 336 };
+
         public int[] DaniSelect_Title_X = new int[] { 401, 401, 401 };
         public int[] DaniSelect_Title_Y = new int[] { 173, 246, 319 };
 
@@ -8074,6 +8207,9 @@ namespace TJAPlayer3
         public int[] DaniSelect_Exam_X = new int[] { 590, 590, 590 };
         public int[] DaniSelect_Exam_Y = new int[] { 455, 543, 631 };
 
+        public int[] DaniSelect_Exam_X_Ex = new int[] { 536, 536, 536 };
+        public int[] DaniSelect_Exam_Y_Ex = new int[] { 455, 543, 631 };
+
         public int[] DaniSelect_Exam_Interval = new int[] { 220, 0 };
 
         public int[] DaniSelect_Exam_Title_X = new int[] { 614, 614, 614 };
@@ -8091,6 +8227,26 @@ namespace TJAPlayer3
         public int[] DaniSelect_Plate_Move = new int[] { 52, 0 };
         public int[] DaniSelect_Plate_Center_Move = new int[] { 0, 15 };
         public int[] DaniSelect_Plate_Title_Offset = new int[] { 2, 36 };
+
+        public int DaniSelect_DanPlateTitle_Size = 60;
+        public int[] DaniSelect_DanPlateTitle_Offset = new int[] { 0, -50 };
+
+        public int DaniSelect_DanIconTitle_Size = 18;
+        public int[] DaniSelect_DanIconTitle_Offset = new int[] { 0, 6 };
+
+        public Color[] DaniSelect_DanIcon_Color = new Color[]
+            {
+                Color.Red,
+                Color.Green,
+                Color.Blue,
+                Color.Magenta,
+                Color.Yellow,
+                Color.Cyan,
+                Color.Brown,
+                Color.Gray,
+                Color.DarkGreen,
+                Color.Black
+            };
         #endregion
         #region SongLoading
         public int SongLoading_Plate_X = 640;
@@ -8109,6 +8265,8 @@ namespace TJAPlayer3
 
         public int[] SongLoading_Fade_AI_Anime_Ring = new int[] { 466, 185 };
         public int[] SongLoading_Fade_AI_Anime_LoadBar = new int[] { 490, 382 };
+
+        public int[] SongLoading_DanPlate = new int[] { 1121, 213 };
 
         public int SongLoading_Title_FontSize = 31;
         public int SongLoading_SubTitle_FontSize = 20;
@@ -8537,6 +8695,21 @@ namespace TJAPlayer3
         public int[] Game_DanC_Number_XY = new int[] { 214, 67 };
         public int[] Game_DanC_Dan_Plate = new int[] { 149, 416 };
 
+        public int[] Game_DanC_DanIcon_Offset = new int[] { 44, 57 };
+        public int[] Game_DanC_DanIcon_Offset_Mini = new int[] { -19, 11 };
+
+        public int[] Game_DanC_Title_X = new int[] { 806, 806 };
+        public int[] Game_DanC_Title_Y = new int[] { 257, 237 };
+        public int[] Game_DanC_SubTitle = new int[] { 806, 277 };
+
+
+        public int Game_DanC_Title_Size = 30;
+        public int Game_DanC_SubTitle_Size = 22;
+        public int Game_DanC_ExamFont_Size = 14;
+
+        public int Game_DanC_Title_MaxWidth = 710;
+        public int Game_DanC_SubTitle_MaxWidth = 710;
+
         public int Game_DanC_Padding = 9;
         public int Game_DanC_Number_Padding = 35;
         public int Game_DanC_Number_Small_Padding = 41;
@@ -8869,6 +9042,9 @@ namespace TJAPlayer3
 
         public int[] DanResult_DanTitles_X = new int[] { 401, 401, 401 };
         public int[] DanResult_DanTitles_Y = new int[] { 139, 322, 505 };
+
+        public int[] DanResult_DanIcon_X = new int[] { 315, 315, 315 };
+        public int[] DanResult_DanIcon_Y = new int[] { 158, 342, 526 };
 
         public int[] DanResult_Rank = new int[] { 130, 380 };
 
