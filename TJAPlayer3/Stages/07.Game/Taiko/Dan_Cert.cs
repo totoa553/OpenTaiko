@@ -724,11 +724,13 @@ namespace TJAPlayer3
                                 // Determine bars width
                                 TJAPlayer3.Tx.DanC_SmallBase.vc拡大縮小倍率.X = isSmallGauge ? 0.34f : 1f;
 
+                                int smallBarGap = (int)(33f * TJAPlayer3.Skin.Resolution[1] / 720f);
+
                                 // 815 : Small base (70 + 745)
                                 int miniBarPositionX = barXOffset + (isSmallGauge ? TJAPlayer3.Skin.Game_DanC_SmallBase_Offset_X[1] : TJAPlayer3.Skin.Game_DanC_SmallBase_Offset_X[0]);
 
                                 // 613 + (j - 1) * 33 : Small base (barYoffset for 3rd exam : 494 + 119 + Local song offset (j - 1) * 33)
-                                int miniBarPositionY = (barYOffset + (isSmallGauge ? TJAPlayer3.Skin.Game_DanC_SmallBase_Offset_Y[1] : TJAPlayer3.Skin.Game_DanC_SmallBase_Offset_Y[0])) + ((j - 1) % 2) * 33 - (TJAPlayer3.Skin.Game_DanC_Size[1] + (TJAPlayer3.Skin.Game_DanC_Padding));
+                                int miniBarPositionY = (barYOffset + (isSmallGauge ? TJAPlayer3.Skin.Game_DanC_SmallBase_Offset_Y[1] : TJAPlayer3.Skin.Game_DanC_SmallBase_Offset_Y[0])) + ((j - 1) % 2) * smallBarGap - (TJAPlayer3.Skin.Game_DanC_Size[1] + (TJAPlayer3.Skin.Game_DanC_Padding));
 
                                 // Display bars
                                 #region [Displayables]
@@ -755,8 +757,15 @@ namespace TJAPlayer3
                                         new Rectangle(0, 0, (int)(TJAPlayer3.stage選曲.r確定された曲.DanSongs[j - 1].Dan_C[i].GetAmountToPercent() * (TJAPlayer3.Tx.DanC_Gauge[drawGaugeTypetwo].szテクスチャサイズ.Width / 100.0)), TJAPlayer3.Tx.DanC_Gauge[drawGaugeTypetwo].szテクスチャサイズ.Height));
                                 }
 
+                                int _tmpMiniPadding = (int)(14f * TJAPlayer3.Skin.Resolution[0] / 1280f);
+
                                 // Usually +23 for gold and +17 for white, to test
-                                DrawMiniNumber(TJAPlayer3.stage選曲.r確定された曲.DanSongs[j - 1].Dan_C[i].GetAmount(), miniBarPositionX + 11, miniBarPositionY + 20, 14, TJAPlayer3.stage選曲.r確定された曲.DanSongs[j - 1].Dan_C[i]);
+                                DrawMiniNumber(
+                                    TJAPlayer3.stage選曲.r確定された曲.DanSongs[j - 1].Dan_C[i].GetAmount(), 
+                                    miniBarPositionX + 11, 
+                                    miniBarPositionY + 20,
+                                    _tmpMiniPadding, 
+                                    TJAPlayer3.stage選曲.r確定された曲.DanSongs[j - 1].Dan_C[i]);
 
                                 CActSelect段位リスト.tDisplayDanIcon(j, miniBarPositionX + TJAPlayer3.Skin.Game_DanC_DanIcon_Offset_Mini[0], miniBarPositionY + TJAPlayer3.Skin.Game_DanC_DanIcon_Offset_Mini[1], miniIconOpacity, 0.5f, false);
 
@@ -993,17 +1002,21 @@ namespace TJAPlayer3
                         false,
                         dan_C[i]);
 
+                    int _offexX = (int)(22f * TJAPlayer3.Skin.Resolution[0] / 1280f);
+                    int _offexY = (int)(48f * TJAPlayer3.Skin.Resolution[1] / 720f);
+                    int _examX = barXOffset + TJAPlayer3.Skin.Game_DanC_Exam_Offset[0] - TJAPlayer3.Tx.DanC_ExamType.szテクスチャサイズ.Width + _offexX;
+                    int _examY = lowerBarYOffset - TJAPlayer3.Skin.Game_DanC_Exam_Offset[1] - _offexY;
 
                     // Exam type flag
                     TJAPlayer3.Tx.DanC_ExamType?.t2D拡大率考慮下基準描画(TJAPlayer3.app.Device,
-                        barXOffset + TJAPlayer3.Skin.Game_DanC_Exam_Offset[0] - TJAPlayer3.Tx.DanC_ExamType.szテクスチャサイズ.Width + 22,
-                        lowerBarYOffset - TJAPlayer3.Skin.Game_DanC_Exam_Offset[1] - 48,
+                        _examX,
+                        _examY,
                         new Rectangle(0, 0, TJAPlayer3.Skin.Game_DanC_ExamType_Size[0], TJAPlayer3.Skin.Game_DanC_ExamType_Size[1]));
 
                     if ((int)dan_C[i].GetExamType() < this.ttkExams.Length)
                         TJAPlayer3.stage選曲.act曲リスト.ResolveTitleTexture(this.ttkExams[(int)dan_C[i].GetExamType()]).t2D拡大率考慮中央基準描画(TJAPlayer3.app.Device,
-                            barXOffset + TJAPlayer3.Skin.Game_DanC_Exam_Offset[0] - TJAPlayer3.Tx.DanC_ExamType.szテクスチャサイズ.Width + 144,
-                            lowerBarYOffset - TJAPlayer3.Skin.Game_DanC_Exam_Offset[1] - 55);
+                            _examX + TJAPlayer3.Skin.Game_DanC_ExamType_Size[0] / 2,
+                            _examY - TJAPlayer3.Skin.Game_DanC_ExamType_Size[1] / 2);
 
 
                     /*
@@ -1033,19 +1046,25 @@ namespace TJAPlayer3
                 {
                     #region [Gauge dan condition]
 
+                    int _scale = (int)(14f * TJAPlayer3.Skin.Resolution[0] / 1280f);
+                    int _nbX = (int)(292f * TJAPlayer3.Skin.Resolution[0] / 1280f);
+                    int _nbY = (int)(64f * TJAPlayer3.Skin.Resolution[0] / 1280f);
+                    int _offexX = (int)(104f * TJAPlayer3.Skin.Resolution[0] / 1280f);
+                    int _offexY = (int)(21f * TJAPlayer3.Skin.Resolution[1] / 720f);
+
                     TJAPlayer3.Tx.DanC_Gauge_Base?.t2D描画(TJAPlayer3.app.Device, 
-                        TJAPlayer3.Skin.Game_DanC_X[0] - ((50 - dan_C[i].GetValue(false) / 2) * 14) + 4, 
+                        TJAPlayer3.Skin.Game_DanC_X[0] - ((50 - dan_C[i].GetValue(false) / 2) * _scale) + 4, 
                         TJAPlayer3.Skin.Game_DanC_Y[0]);
 
                     TJAPlayer3.stage選曲.act曲リスト.ResolveTitleTexture(this.ttkExams[(int)Exam.Type.Gauge]).t2D拡大率考慮中央基準描画(TJAPlayer3.app.Device,
-                            TJAPlayer3.Skin.Game_DanC_X[0] - ((50 - dan_C[i].GetValue(false) / 2) * 14) + 104,
-                            TJAPlayer3.Skin.Game_DanC_Y[0] + 21);
+                            TJAPlayer3.Skin.Game_DanC_X[0] - ((50 - dan_C[i].GetValue(false) / 2) * _scale) + _offexX,
+                            TJAPlayer3.Skin.Game_DanC_Y[0] + _offexY);
 
                     // Display percentage here
                     DrawNumber(
                         dan_C[i].Value[0],
-                        TJAPlayer3.Skin.Game_DanC_X[0] - ((50 - dan_C[i].GetValue(false) / 2) * 14) + 292 - dan_C[i].Value[0].ToString().Length * (int)(TJAPlayer3.Skin.Game_DanC_Number_Small_Padding * TJAPlayer3.Skin.Game_DanC_Exam_Number_Scale),
-                        TJAPlayer3.Skin.Game_DanC_Y[0] - TJAPlayer3.Skin.Game_DanC_Exam_Offset[1] + 64,
+                        TJAPlayer3.Skin.Game_DanC_X[0] - ((50 - dan_C[i].GetValue(false) / 2) * _scale) + _nbX - dan_C[i].Value[0].ToString().Length * (int)(TJAPlayer3.Skin.Game_DanC_Number_Small_Padding * TJAPlayer3.Skin.Game_DanC_Exam_Number_Scale),
+                        TJAPlayer3.Skin.Game_DanC_Y[0] - TJAPlayer3.Skin.Game_DanC_Exam_Offset[1] + _nbY,
                         (int)(TJAPlayer3.Skin.Game_DanC_Number_Small_Padding * TJAPlayer3.Skin.Game_DanC_Exam_Number_Scale),
                         false,
                         dan_C[i]);
