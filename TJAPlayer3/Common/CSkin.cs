@@ -746,9 +746,6 @@ namespace TJAPlayer3
             this.soundステージクリア音 = new Cシステムサウンド(@"Sounds\Stage clear.ogg", false, true, true, ESoundGroup.Voice);
             this.soundフルコンボ音 = new Cシステムサウンド(@"Sounds\Full combo.ogg", false, false, true, ESoundGroup.Voice);
             this.sound曲読込開始音 = new Cシステムサウンド(@"Sounds\Now loading.ogg", false, true, true, ESoundGroup.Unknown);
-            this.bgm起動画面 = new Cシステムサウンド(@"Sounds\Setup BGM.ogg", true, true, false, ESoundGroup.SongPlayback);
-            this.bgmオプション画面 = new Cシステムサウンド(@"Sounds\Option BGM.ogg", true, true, false, ESoundGroup.SongPlayback);
-            this.bgmコンフィグ画面 = new Cシステムサウンド(@"Sounds\Config BGM.ogg", true, true, false, ESoundGroup.SongPlayback);
             //this.bgm選曲画面 = new Cシステムサウンド(@"Sounds\Select BGM.ogg", true, true, false, ESoundGroup.SongPlayback);
             //this.soundSongSelectChara = new Cシステムサウンド(@"Sounds\SongSelect Chara.ogg", false, false, false, ESoundGroup.SongPlayback);
             this.soundSkip = new Cシステムサウンド(@"Sounds\Skip.ogg", false, false, false, ESoundGroup.SoundEffect);
@@ -764,8 +761,11 @@ namespace TJAPlayer3
             this.sound曲決定音 = new Cシステムサウンド(@"Sounds\SongDecide.ogg", false, false, true, ESoundGroup.Voice);
             this.soundSongDecide_AI = new Cシステムサウンド(@"Sounds\SongDecide_AI.ogg", false, false, true, ESoundGroup.Voice);
 
+            this.bgm起動画面 = new Cシステムサウンド(@"Sounds\BGM\Setup.ogg", true, true, false, ESoundGroup.SongPlayback);
             this.bgmタイトルイン = new Cシステムサウンド(@"Sounds\BGM\Title_Start.ogg", false, false, true, ESoundGroup.SongPlayback);
             this.bgmタイトル = new Cシステムサウンド(@"Sounds\BGM\Title.ogg", true, false, true, ESoundGroup.SongPlayback);
+            this.bgmオプション画面 = new Cシステムサウンド(@"Sounds\BGM\Option.ogg", true, true, false, ESoundGroup.SongPlayback);
+            this.bgmコンフィグ画面 = new Cシステムサウンド(@"Sounds\BGM\Config.ogg", true, true, false, ESoundGroup.SongPlayback);
             this.bgm選曲画面イン = new Cシステムサウンド(@"Sounds\BGM\SongSelect_Start.ogg", false, false, true, ESoundGroup.SongPlayback);
             this.bgm選曲画面 = new Cシステムサウンド(@"Sounds\BGM\SongSelect.ogg", true, false, true, ESoundGroup.SongPlayback);
             this.bgmSongSelect_AI_In = new Cシステムサウンド(@"Sounds\BGM\SongSelect_AI_Start.ogg", false, false, true, ESoundGroup.SongPlayback);
@@ -1968,6 +1968,26 @@ namespace TJAPlayer3
                             {
                                 SongSelect_SubTitle_MaxSize = int.Parse(strParam);
                             }
+                            else if (strCommand == "SongSelect_Maker_Show")
+                            {
+                                SongSelect_Maker_Show = C変換.bONorOFF(strParam[0]);
+                            }
+                            else if (strCommand == "SongSelect_Maker")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 2; i++)
+                                {
+                                    SongSelect_Maker[i] = int.Parse(strSplit[i]);
+                                }
+                            }
+                            else if (strCommand == "SongSelect_Maker_Size")
+                            {
+                                SongSelect_Maker_Size = int.Parse(strParam);
+                            }
+                            else if (strCommand == "SongSelect_Maker_MaxSize")
+                            {
+                                SongSelect_Maker_MaxSize = int.Parse(strParam);
+                            }
 
                             else if (strCommand == "SongSelect_Bar_Center_Move")
                             {
@@ -2147,6 +2167,34 @@ namespace TJAPlayer3
                                 for (int i = 0; i < 2; i++)
                                 {
                                     SongSelect_Timer_Interval[i] = int.Parse(strSplit[i]);
+                                }
+                            }
+                            else if (strCommand == "SongSelect_Bpm_Show")
+                            {
+                                SongSelect_Bpm_Show = C変換.bONorOFF(strParam[0]);
+                            }
+                            else if (strCommand == "SongSelect_Bpm_X")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    SongSelect_Bpm_X[i] = int.Parse(strSplit[i]);
+                                }
+                            }
+                            else if (strCommand == "SongSelect_Bpm_Y")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    SongSelect_Bpm_Y[i] = int.Parse(strSplit[i]);
+                                }
+                            }
+                            else if (strCommand == "SongSelect_Bpm_Interval")
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 2; i++)
+                                {
+                                    SongSelect_Bpm_Interval[i] = int.Parse(strSplit[i]);
                                 }
                             }
                             else if (strCommand == "SongSelect_Table_X")
@@ -7977,6 +8025,11 @@ namespace TJAPlayer3
         public int SongSelect_Title_MaxSize = 550;
         public int SongSelect_SubTitle_MaxSize = 510;
 
+        public bool SongSelect_Maker_Show = false;
+        public int[] SongSelect_Maker = new int[] { 1285, 190 };
+        public int SongSelect_Maker_Size = 23;
+        public int SongSelect_Maker_MaxSize = 180;
+
         public int SongSelect_Bar_Center_Move = 62;
         public int SongSelect_Bar_Center_Move_X = 0;
 
@@ -8018,6 +8071,11 @@ namespace TJAPlayer3
 
         public int[] SongSelect_Timer = new int[] { 1148, 57 };
         public int[] SongSelect_Timer_Interval = new int[] { 46, 0 };
+
+        public bool SongSelect_Bpm_Show = false;
+        public int[] SongSelect_Bpm_X = new int[] { 1240, 1240, 1240 };
+        public int[] SongSelect_Bpm_Y = new int[] { 20, 66, 112 };
+        public int[] SongSelect_Bpm_Interval = new int[] { 22, 0 };
 
         public int[] SongSelect_Table_X = new int[] { 0, 1034, 180, 854, 360 };
         public int[] SongSelect_Table_Y = new int[] { 0, 0, -204, -204, 0 };
