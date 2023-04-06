@@ -53,6 +53,11 @@ jobs:
         run: |
           cd $Env:GITHUB_WORKSPACE
           tar -a -cvf OpenTaiko.zip -C Test *
+          
+      - name: Create Archive(x64) nosong
+        run: |
+          cd $Env:GITHUB_WORKSPACE
+          tar -a -cvf OpenTaiko_nosong.zip --exclude='Songs/*' -C Test *
 
       - name: Build the Solution(x86)
         run: MSBuild.exe $Env:GITHUB_WORKSPACE\TJAPlayer3.sln -p:Configuration=Release -p:platform=x86
@@ -62,6 +67,11 @@ jobs:
         run: |
           cd $Env:GITHUB_WORKSPACE
           tar -a -cvf OpenTaiko-x86.zip -C Test *
+          
+      - name: Create Archive(x86) nosong
+        run: |
+          cd $Env:GITHUB_WORKSPACE
+          tar -a -cvf OpenTaiko_nosong-x86.zip --exclude='Songs/*' -C Test *
 
       - name: Get Current Time
         id: time
