@@ -554,8 +554,14 @@ namespace TJAPlayer3
 
                     if (act曲リスト.ttkSelectedSongMaker != null && TJAPlayer3.Skin.SongSelect_Maker_Show)
                     {
-                        act曲リスト.ResolveTitleTexture(act曲リスト.ttkSelectedSongMaker).t2D拡大率考慮描画(TJAPlayer3.app.Device, CTexture.RefPnt.Right, TJAPlayer3.Skin.SongSelect_Maker[0], TJAPlayer3.Skin.SongSelect_Maker[1]);
+                        act曲リスト.ResolveTitleTexture(act曲リスト.ttkSelectedSongMaker).t2D拡大率考慮描画(TJAPlayer3.app.Device, CTexture.RefPnt.Left, TJAPlayer3.Skin.SongSelect_Maker[0], TJAPlayer3.Skin.SongSelect_Maker[1]);
                     }
+                    if (act曲リスト.ttkSelectedSongBPM != null && TJAPlayer3.Skin.SongSelect_BPM_Text_Show)
+                    {
+                        act曲リスト.ResolveTitleTexture(act曲リスト.ttkSelectedSongBPM).t2D拡大率考慮描画(TJAPlayer3.app.Device, CTexture.RefPnt.Left, TJAPlayer3.Skin.SongSelect_BPM_Text[0], TJAPlayer3.Skin.SongSelect_BPM_Text[1]);
+                    }
+                    if (r現在選択中の曲.bExplicit == true)
+                        TJAPlayer3.Tx.SongSelect_Explicit?.t2D描画(TJAPlayer3.app.Device, TJAPlayer3.Skin.SongSelect_Explicit[0], TJAPlayer3.Skin.SongSelect_Explicit[1]);
                 }
 
                 tSongNumberDraw(TJAPlayer3.Skin.SongSelect_SongNumber_X[0], TJAPlayer3.Skin.SongSelect_SongNumber_Y[0], NowSong);
@@ -565,19 +571,6 @@ namespace TJAPlayer3
 
                 #region[ 下部テキスト ]
 
-                /*
-                if (TJAPlayer3.Tx.SongSelect_Auto != null)
-                {
-                    if (TJAPlayer3.ConfigIni.b太鼓パートAutoPlay)
-                    {
-                        TJAPlayer3.Tx.SongSelect_Auto.t2D描画(TJAPlayer3.app.Device, TJAPlayer3.Skin.SongSelect_Auto_X[0], TJAPlayer3.Skin.SongSelect_Auto_Y[0]);
-                    }
-                    if (TJAPlayer3.ConfigIni.nPlayerCount > 1 && TJAPlayer3.ConfigIni.b太鼓パートAutoPlay2P)
-                    {
-                        TJAPlayer3.Tx.SongSelect_Auto.t2D描画(TJAPlayer3.app.Device, TJAPlayer3.Skin.SongSelect_Auto_X[1], TJAPlayer3.Skin.SongSelect_Auto_Y[1]);
-                    }
-                }
-                */
 
                 for (int i = 0; i < TJAPlayer3.ConfigIni.nPlayerCount; i++)
                 {
