@@ -3783,6 +3783,26 @@ namespace TJAPlayer3
                                 if (int.Parse(strParam) > 0)
                                     Game_Lyric_FontSize = int.Parse(strParam);
                             }
+                            else if (strCommand == nameof(Game_Lyric_VTTRubyOffset))
+                            {
+                                Game_Lyric_VTTRubyOffset = int.Parse(strParam);
+                            }
+                            else if (strCommand == nameof(Game_Lyric_VTTForeColor))
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 8; i++)
+                                {
+                                    Game_Lyric_VTTForeColor[i] = ColorTranslator.FromHtml(strSplit[i]);
+                                }
+                            }
+                            else if (strCommand == nameof(Game_Lyric_VTTBackColor))
+                            {
+                                string[] strSplit = strParam.Split(',');
+                                for (int i = 0; i < 8; i++)
+                                {
+                                    Game_Lyric_VTTBackColor[i] = ColorTranslator.FromHtml(strSplit[i]);
+                                }
+                            }
                             else if (strCommand == nameof(Game_Lyric_ReferencePoint))
                             {
                                 Game_Lyric_ReferencePoint = (ReferencePoint)int.Parse(strParam);
@@ -8465,6 +8485,8 @@ namespace TJAPlayer3
         public int[] Game_ScoreRank_4P = new int[] { 87, 88 };
         public int[] Game_ScoreRank_5P = new int[] { 87, 80 };
 
+        public DBSkinPreset.SkinPreset Game_SkinScenes = null;
+
         #region Chara
 
         public int[] Game_Chara_X = new int[] { 0, 0 };
@@ -8556,6 +8578,7 @@ namespace TJAPlayer3
         public int Game_Lyric_Y = 630;
         public string Game_Lyric_FontName = "MS UI Gothic";
         public int Game_Lyric_FontSize = 38;
+        public int Game_Lyric_VTTRubyOffset = 65;
         public ReferencePoint Game_Lyric_ReferencePoint = ReferencePoint.Center;
 
         public Color Game_MusicName_ForeColor = ColorTranslator.FromHtml("#FFFFFF");
@@ -8564,6 +8587,8 @@ namespace TJAPlayer3
         public Color Game_MusicName_BackColor = ColorTranslator.FromHtml("#000000");
         public Color Game_StageText_BackColor = ColorTranslator.FromHtml("#000000");
         public Color Game_Lyric_BackColor = ColorTranslator.FromHtml("#0000FF");
+        public Color[] Game_Lyric_VTTForeColor = new Color[] { Color.White, Color.Lime, Color.Cyan, Color.Red, Color.Yellow, Color.Magenta, Color.Blue, Color.Black };
+        public Color[] Game_Lyric_VTTBackColor = new Color[] { Color.White, Color.Lime, Color.Cyan, Color.Red, Color.Yellow, Color.Magenta, Color.Blue, Color.Black };
 
         #endregion
         #region Score
