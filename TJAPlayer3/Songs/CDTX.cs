@@ -1327,11 +1327,15 @@ namespace TJAPlayer3
         public List<Bitmap> listLyric; //歌詞を格納していくリスト。スペル忘れた(ぉい
         public List<STLYRIC> listLyric2;
 
+        public Dictionary<double, CChip> kusudaMAP = new Dictionary<double, CChip>();
+
         public bool usingLyricsFile; //If lyric file is used (VTT/LRC), ignore #LYRIC tags & do not parse other lyric file tags
 
         private int listBalloon_Normal_数値管理;
         private int listBalloon_Expert_数値管理;
         private int listBalloon_Master_数値管理;
+
+        public string scenePreset;
 
         public bool[] b譜面が存在する = new bool[(int)Difficulty.Total];
 
@@ -1341,7 +1345,6 @@ namespace TJAPlayer3
 
         private readonly string langTITLE = "TITLE" + CLangManager.fetchLang().ToUpper();
         private readonly string langSUBTITLE = "SUBTITLE" + CLangManager.fetchLang().ToUpper();
-        private bool titleIsLocalized = false;
 
         private int nスクロール方向 = 0;
         //2015.09.18 kairera0467
@@ -1734,7 +1737,69 @@ namespace TJAPlayer3
             return new string(new char[] { str[n / 36], str[n % 36] });
         }
 
-        public void tApplyFunMods(int player = 0)
+        public static void tManageKusudama(CDTX[] dtxarr)
+        {
+            if (TJAPlayer3.ConfigIni.nPlayerCount == 1) return; 
+
+			// Replace non-shared kusudamas by balloons
+			#region [Sync check]
+			for (int i = 0; i < TJAPlayer3.ConfigIni.nPlayerCount; i++)
+            {
+                CDTX dtx = dtxarr[i];
+                if (dtx == null) continue;
+                foreach (KeyValuePair<double, CChip> kvp in dtx.kusudaMAP)
+                {
+                    for (int j = 0; j < TJAPlayer3.ConfigIni.nPlayerCount; j++)
+                    {
+                        if (j == i) continue;
+
+                        CDTX dtxp = dtxarr[j];
+                        if (dtxp == null) continue;
+                        if (!dtxp.kusudaMAP.ContainsKey(kvp.Key))
+                        {
+                            kvp.Value.nチャンネル番号 = 0x17;
+                            break;
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            // Stack balloon values to all remining (= existing) kusudamas to player 1
+            #region [Accumulation]
+            CDTX dtx1 = dtxarr[0];
+            if (dtx1 == null) return;
+            foreach (KeyValuePair<double, CChip> kvp in dtx1.kusudaMAP)
+            {
+                if (!NotesManager.IsKusudama(kvp.Value)) continue;
+                for (int j = 1; j < TJAPlayer3.ConfigIni.nPlayerCount; j++)
+                {
+                    CDTX dtxp = dtxarr[j];
+                    if (dtxp == null) continue;
+                    if (dtxp.kusudaMAP.ContainsKey(kvp.Key)
+                        && NotesManager.IsKusudama(dtxp.kusudaMAP[kvp.Key]))
+                    {
+                        kvp.Value.nBalloon += dtxp.kusudaMAP[kvp.Key].nBalloon;
+                    }
+                }
+                // For score normalization
+                
+                for (int j = 1; j < TJAPlayer3.ConfigIni.nPlayerCount; j++)
+                {
+                    CDTX dtxp = dtxarr[j];
+                    if (dtxp == null) continue;
+                    if (dtxp.kusudaMAP.ContainsKey(kvp.Key)
+                        && NotesManager.IsKusudama(dtxp.kusudaMAP[kvp.Key]))
+                    {
+                        dtxp.kusudaMAP[kvp.Key].nBalloon = kvp.Value.nBalloon;
+                    }
+                }
+                
+            }
+            #endregion
+        }
+
+		public void tApplyFunMods(int player = 0)
         {
             Random rnd = new System.Random();
 
@@ -1754,14 +1819,6 @@ namespace TJAPlayer3
                                 chip.nチャンネル番号 = 0x1C;
                             }
 
-                            /*
-                            switch (chip.nチャンネル番号)
-                            {
-                                case 0x10:
-                                    chip.nチャンネル番号 = 0x1C;
-                                    break;
-                            }
-                            */
                         }
                     }
                     break;
@@ -4509,6 +4566,20 @@ namespace TJAPlayer3
                                 chip.nPlayerSide = this.nPlayerSide;
                                 chip.bGOGOTIME = this.bGOGOTIME;
 
+                                if (NotesManager.IsKusudama(chip))
+                                {
+                                    if (IsEndedBranching)
+                                    {
+                                        if (!this.kusudaMAP.ContainsKey(chip.n発声時刻ms))
+                                            kusudaMAP[chip.n発声時刻ms] = chip;
+                                    }
+                                    else
+                                    {
+                                        // Balloon in branches
+                                        chip.nチャンネル番号 = 0x17;
+                                    }
+                                }
+
                                 if (NotesManager.IsGenericBalloon(chip))
                                 {
                                     //this.n現在のコースをswitchで分岐していたため風船の値がうまく割り当てられていない 2020.04.21 akasoko26
@@ -5052,7 +5123,7 @@ namespace TJAPlayer3
             }
 
             //パラメータを分別、そこから割り当てていきます。
-            if (strCommandName.Equals("TITLE") && !titleIsLocalized) // Do not grab default TITLE if localized title is used first.
+            if (strCommandName.Equals("TITLE"))
             {
                 var subTitle = "";
                 for (int i = 0; i < strArray.Length; i++)
@@ -5069,21 +5140,10 @@ namespace TJAPlayer3
                     subTitle += strArray[i];
                 }
                 this.TITLE = subTitle.Substring(7);
-                this.titleIsLocalized = true;
-                this.SUBTITLE = ""; // Wipe default SUBTITLE if picked up before localized subtitle.
             }
-            if (strCommandName.Equals("SUBTITLE") && !titleIsLocalized) // Do not grab default SUBTITLE if localized title is used first. Avoids localization conflicts. (i.e. English title w/ default Japanese subtitle)
+            else if (strCommandName.Equals("SUBTITLE"))
             {
-                if (strCommandParam.StartsWith("--"))
-                {
-                    var subTitle = "";
-                    for (int i = 0; i < strArray.Length; i++)
-                    {
-                        subTitle += strArray[i];
-                    }
-                    this.SUBTITLE = subTitle.Substring(10);
-                }
-                else if (strCommandParam.StartsWith("++"))
+                if (strCommandParam.StartsWith("--") || strCommandParam.StartsWith("++"))
                 {
                     var subTitle = "";
                     for (int i = 0; i < strArray.Length; i++)
@@ -5390,6 +5450,13 @@ namespace TJAPlayer3
                 if (!string.IsNullOrEmpty(strCommandParam))
                 {
                     this.SELECTBG = strCommandParam;
+                }
+            }
+            else if (strCommandName.Equals("SCENEPRESET"))
+            {
+                if (!string.IsNullOrEmpty(strCommandParam))
+                {
+                    this.scenePreset = strCommandParam;
                 }
             }
             else if (strCommandName.Equals("DEMOSTART"))
