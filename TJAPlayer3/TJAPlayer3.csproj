@@ -145,6 +145,7 @@
     <Compile Include="Databases\DBNameplateUnlockables.cs" />
     <Compile Include="Databases\DBPuchichara.cs" />
     <Compile Include="Databases\DBSkinPreset.cs" />
+    <Compile Include="Databases\DBSongUnlockables.cs" />
     <Compile Include="Databases\DBUnlockables.cs" />
     <Compile Include="Databases\Databases.cs" />
     <Compile Include="Databases\DBCharacter.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="Songs\C曲リストノードComparers\C曲リストノードComparerLevelIcon.cs" />
     <Compile Include="Songs\C曲リストノードComparers\C曲リストノードComparerLevel.cs" />
     <Compile Include="Songs\C曲リストノードComparers\C曲リストノードComparerSubtitle.cs" />
+    <Compile Include="Songs\Extended\CSongObject.cs" />
     <Compile Include="Songs\VTTParser.cs" />
     <Compile Include="Stages\01.StartUp\CCharacter.cs" />
     <Compile Include="Stages\01.StartUp\CPuchichara.cs" />

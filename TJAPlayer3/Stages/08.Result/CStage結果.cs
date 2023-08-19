@@ -467,6 +467,7 @@ namespace TJAPlayer3
 				float starRate;
 				float redStarRate;
 
+
 				float[] modMultipliers =
 				{
 					TJAPlayer3.stage選曲.actPlayOption.tGetModMultiplier(CActPlayOption.EBalancingType.COINS, false, 0),
@@ -475,6 +476,15 @@ namespace TJAPlayer3
 					TJAPlayer3.stage選曲.actPlayOption.tGetModMultiplier(CActPlayOption.EBalancingType.COINS, false, 3),
 					TJAPlayer3.stage選曲.actPlayOption.tGetModMultiplier(CActPlayOption.EBalancingType.COINS, false, 4)
 				};
+
+				float getCoinMul(int player)
+				{
+					var chara = TJAPlayer3.Tx.Characters[TJAPlayer3.SaveFileInstances[TJAPlayer3.GetActualPlayer(player)].data.Character];
+					var puchichara = TJAPlayer3.Tx.Puchichara[PuchiChara.tGetPuchiCharaIndexByName(TJAPlayer3.GetActualPlayer(player))];
+
+
+					return chara.GetEffectCoinMultiplier() * puchichara.GetEffectCoinMultiplier();
+				}
 
 				if (TJAPlayer3.stage選曲.n確定された曲の難易度[0] == (int)Difficulty.Tower)
 				{
@@ -505,7 +515,7 @@ namespace TJAPlayer3
 
 					// this.nEarnedMedalsCount[0] = stars;
 					this.nEarnedMedalsCount[0] = 5 + (int)((diffModifier * (starRate + redStarRate)) * (floorRate * lengthBonus)) + clearModifier;
-					this.nEarnedMedalsCount[0] = Math.Max(5, (int)(this.nEarnedMedalsCount[0] * modMultipliers[0]));
+					this.nEarnedMedalsCount[0] = Math.Max(5, (int)(this.nEarnedMedalsCount[0] * modMultipliers[0] * getCoinMul(0)));
 				}
 				else if (TJAPlayer3.stage選曲.n確定された曲の難易度[0] == (int)Difficulty.Dan)
 				{
@@ -560,7 +570,7 @@ namespace TJAPlayer3
 					else
 					{
 						this.nEarnedMedalsCount[0] = 10 + goukakuModifier + clearModifier + (int)(partialScore * dAccuracyRate);
-						this.nEarnedMedalsCount[0] = Math.Max(10, (int)(this.nEarnedMedalsCount[0] * modMultipliers[0]));
+						this.nEarnedMedalsCount[0] = Math.Max(10, (int)(this.nEarnedMedalsCount[0] * modMultipliers[0] * getCoinMul(0)));
 					}
 				}
 				else
@@ -619,7 +629,7 @@ namespace TJAPlayer3
 						else
 						{
 							this.nEarnedMedalsCount[i] = 5 + (int)((diffModifier * (starRate + redStarRate)) * dAccuracyRate) + clearModifier + scoreRankModifier;
-							this.nEarnedMedalsCount[i] = Math.Max(5, (int)(this.nEarnedMedalsCount[i] * modMultipliers[i]));
+							this.nEarnedMedalsCount[i] = Math.Max(5, (int)(this.nEarnedMedalsCount[i] * modMultipliers[i] * getCoinMul(i)));
 						}
 					}
 				}
@@ -2018,7 +2028,7 @@ namespace TJAPlayer3
 				}
                 else
 				{
-					return new bool[] { actParameterPanel.gaugeValues[0] >= 80, actParameterPanel.gaugeValues[1] >= 80, actParameterPanel.gaugeValues[2] >= 80, actParameterPanel.gaugeValues[3] >= 80, actParameterPanel.gaugeValues[4] >= 80 };
+					return new bool[] { TJAPlayer3.stage演奏ドラム画面.bIsAlreadyCleared[0], TJAPlayer3.stage演奏ドラム画面.bIsAlreadyCleared[1], TJAPlayer3.stage演奏ドラム画面.bIsAlreadyCleared[2], TJAPlayer3.stage演奏ドラム画面.bIsAlreadyCleared[3], TJAPlayer3.stage演奏ドラム画面.bIsAlreadyCleared[4] };
 				}
 			}
         }

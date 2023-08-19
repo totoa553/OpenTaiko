@@ -11,8 +11,19 @@ namespace TJAPlayer3
     class CCharacter
     {
         public DBCharacter.CharacterData metadata;
+        public DBCharacter.CharacterEffect effect;
         public DBUnlockables.CUnlockConditions unlock;
         public string _path;
+
+        public float GetEffectCoinMultiplier()
+        {
+            float mult = 1f;
+
+            mult *= HRarity.tRarityToRarityToCoinMultiplier(metadata.Rarity);
+            mult *= effect.GetCoinMultiplier();
+
+            return mult;
+        }
 
         public CCharacter(string path)
         {
@@ -23,6 +34,12 @@ namespace TJAPlayer3
                 metadata = ConfigManager.GetConfig<DBCharacter.CharacterData>($@"{path}\Metadata.json");
             else
                 metadata = new DBCharacter.CharacterData();
+
+            // Character metadata
+            if (File.Exists($@"{path}\Effects.json"))
+                effect = ConfigManager.GetConfig<DBCharacter.CharacterEffect>($@"{path}\Effects.json");
+            else
+                effect = new DBCharacter.CharacterEffect();
 
             // Character unlockables
             if (File.Exists($@"{path}\Unlock.json"))
