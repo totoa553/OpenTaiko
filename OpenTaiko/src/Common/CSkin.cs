@@ -1105,6 +1105,22 @@ namespace TJAPlayer3
                                     Resolution[i] = int.Parse(strSplit[i]);
                                 }
                             }
+                            else if (strCommand == "FontName")
+                            {
+                                strParam = strParam.Replace('/', System.IO.Path.DirectorySeparatorChar);
+                                strParam = strParam.Replace('\\', System.IO.Path.DirectorySeparatorChar);
+                                if (HPrivateFastFont.FontExists(strParam)) FontName = strParam;
+                                strParam = Path(strParam);
+                                if (HPrivateFastFont.FontExists(strParam)) FontName = strParam;
+                            }
+                            else if (strCommand == "BoxFontName")
+                            {
+                                strParam = strParam.Replace('/', System.IO.Path.DirectorySeparatorChar);
+                                strParam = strParam.Replace('\\', System.IO.Path.DirectorySeparatorChar);
+                                if (HPrivateFastFont.FontExists(strParam)) BoxFontName = strParam;
+                                strParam = Path(strParam);
+                                if (HPrivateFastFont.FontExists(Path(strParam))) BoxFontName = strParam;
+                            }
                             #endregion
 
                             #region [Background Scroll]
@@ -6317,6 +6333,14 @@ namespace TJAPlayer3
                                     Result_Number_Interval[i] = int.Parse(strSplit[i]);
                                 }
                             }
+                            else if (strCommand == "Result_Number_Scale_4P")
+                            {
+                                Result_Number_Scale_4P = float.Parse(strParam);
+                            }
+                            else if (strCommand == "Result_Number_Scale_5P")
+                            {
+                                Result_Number_Scale_5P = float.Parse(strParam);
+                            }
                             else if (strCommand == "Result_Soul_Fire_X")
                             {
                                 string[] strSplit = strParam.Split(',');
@@ -6492,6 +6516,14 @@ namespace TJAPlayer3
                                 {
                                     Result_Score_Number_Interval[i] = int.Parse(strSplit[i]);
                                 }
+                            }
+                            else if (strCommand == "Result_Score_Scale_4P")
+                            {
+                                Result_Score_Scale_4P = float.Parse(strParam);
+                            }
+                            else if (strCommand == "Result_Score_Scale_5P")
+                            {
+                                Result_Score_Scale_5P = float.Parse(strParam);
                             }
                             else if (strCommand == "Result_ScoreRankEffect_X")
                             {
@@ -8343,6 +8375,8 @@ namespace TJAPlayer3
         public string Skin_Version = "Unknown";
         public string Skin_Creator = "Unknown";
         public int[] Resolution = new int[] { 1280, 720 };
+        public string FontName = TJAPlayer3.ConfigIni.FontName;
+        public string BoxFontName = TJAPlayer3.ConfigIni.BoxFontName;
         #endregion
 
         #region Config
@@ -9570,6 +9604,10 @@ namespace TJAPlayer3
 
         public int[] Result_Number_Interval = new int[] { 22, 0 };
 
+        public float Result_Number_Scale_4P = 1.0f;
+
+        public float Result_Number_Scale_5P = 1.0f;
+
         public int[] Result_Soul_Fire_X = new int[] { 576, 1211 };
         public int[] Result_Soul_Fire_Y = new int[] { 160, 160 };
 
@@ -9602,6 +9640,9 @@ namespace TJAPlayer3
         public int[] Result_Score_X = new int[] { 295, 930 };
         public int[] Result_Score_Y = new int[] { 212, 212 };
         public int[] Result_Score_Number_Interval = new int[] { 33, 0 };
+
+        public float Result_Score_Scale_4P = 1.0f;
+        public float Result_Score_Scale_5P = 1.0f;
 
         public int[] Result_ScoreRankEffect_X = new int[] { 135, 770 };
         public int[] Result_ScoreRankEffect_Y = new int[] { 339, 339 };

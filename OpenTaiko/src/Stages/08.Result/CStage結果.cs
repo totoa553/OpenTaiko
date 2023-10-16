@@ -869,27 +869,11 @@ namespace TJAPlayer3
 		}
 		public override void CreateManagedResource()
 		{
-			if (!string.IsNullOrEmpty(TJAPlayer3.ConfigIni.FontName))
-			{
-				this.pfTowerText = new CCachedFontRenderer(TJAPlayer3.ConfigIni.FontName, TJAPlayer3.Skin.TowerResult_Font_TowerText);
-				this.pfTowerText48 = new CCachedFontRenderer(TJAPlayer3.ConfigIni.FontName, TJAPlayer3.Skin.TowerResult_Font_TowerText48);
-				this.pfTowerText72 = new CCachedFontRenderer(TJAPlayer3.ConfigIni.FontName, TJAPlayer3.Skin.TowerResult_Font_TowerText72);
-			}
-			else
-			{
-				this.pfTowerText = new CCachedFontRenderer(CFontRenderer.DefaultFontName, TJAPlayer3.Skin.TowerResult_Font_TowerText);
-				this.pfTowerText48 = new CCachedFontRenderer(CFontRenderer.DefaultFontName, TJAPlayer3.Skin.TowerResult_Font_TowerText48);
-				this.pfTowerText72 = new CCachedFontRenderer(CFontRenderer.DefaultFontName, TJAPlayer3.Skin.TowerResult_Font_TowerText72);
-			}
-
-			if (!string.IsNullOrEmpty(TJAPlayer3.ConfigIni.FontName))
-			{
-				this.pfDanTitles = new CCachedFontRenderer(TJAPlayer3.ConfigIni.FontName, TJAPlayer3.Skin.DanResult_Font_DanTitles_Size);
-			}
-			else
-			{
-				this.pfDanTitles = new CCachedFontRenderer(CFontRenderer.DefaultFontName, TJAPlayer3.Skin.DanResult_Font_DanTitles_Size);
-			}
+			this.pfTowerText = HPrivateFastFont.tInstantiateMainFont(TJAPlayer3.Skin.TowerResult_Font_TowerText);
+			this.pfTowerText48 = HPrivateFastFont.tInstantiateMainFont(TJAPlayer3.Skin.TowerResult_Font_TowerText48);
+			this.pfTowerText72 = HPrivateFastFont.tInstantiateMainFont(TJAPlayer3.Skin.TowerResult_Font_TowerText72);
+			
+			this.pfDanTitles = HPrivateFastFont.tInstantiateMainFont(TJAPlayer3.Skin.DanResult_Font_DanTitles_Size);
 
 			base.CreateManagedResource();
 		}
@@ -1816,25 +1800,25 @@ namespace TJAPlayer3
 
 			// Small digits
 			this.actParameterPanel.t小文字表示(TJAPlayer3.Skin.DanResult_Perfect[0] + offset, TJAPlayer3.Skin.DanResult_Perfect[1],
-				TJAPlayer3.stage演奏ドラム画面.CChartScore[0].nGreat);
+				TJAPlayer3.stage演奏ドラム画面.CChartScore[0].nGreat, 1.0f);
 
 			this.actParameterPanel.t小文字表示(TJAPlayer3.Skin.DanResult_Good[0] + offset, TJAPlayer3.Skin.DanResult_Good[1],
-				TJAPlayer3.stage演奏ドラム画面.CChartScore[0].nGood);
+				TJAPlayer3.stage演奏ドラム画面.CChartScore[0].nGood, 1.0f);
 
 			this.actParameterPanel.t小文字表示(TJAPlayer3.Skin.DanResult_Miss[0] + offset, TJAPlayer3.Skin.DanResult_Miss[1],
-				TJAPlayer3.stage演奏ドラム画面.CChartScore[0].nMiss);
+				TJAPlayer3.stage演奏ドラム画面.CChartScore[0].nMiss, 1.0f);
 
 			this.actParameterPanel.t小文字表示(TJAPlayer3.Skin.DanResult_Roll[0] + offset, TJAPlayer3.Skin.DanResult_Roll[1],
-				TJAPlayer3.stage演奏ドラム画面.GetRoll(0));
+				TJAPlayer3.stage演奏ドラム画面.GetRoll(0), 1.0f);
 
 			this.actParameterPanel.t小文字表示(TJAPlayer3.Skin.DanResult_MaxCombo[0] + offset, TJAPlayer3.Skin.DanResult_MaxCombo[1],
-				TJAPlayer3.stage演奏ドラム画面.actCombo.n現在のコンボ数.最高値[0]);
+				TJAPlayer3.stage演奏ドラム画面.actCombo.n現在のコンボ数.最高値[0], 1.0f);
 
 			this.actParameterPanel.t小文字表示(TJAPlayer3.Skin.DanResult_TotalHit[0] + offset, TJAPlayer3.Skin.DanResult_TotalHit[1],
-				totalHit);
+				totalHit, 1.0f);
 
 			// Large digits
-			this.actParameterPanel.tスコア文字表示(TJAPlayer3.Skin.DanResult_Score[0] + offset, TJAPlayer3.Skin.DanResult_Score[1], (int)TJAPlayer3.stage演奏ドラム画面.actScore.Get(E楽器パート.DRUMS, 0));
+			this.actParameterPanel.tスコア文字表示(TJAPlayer3.Skin.DanResult_Score[0] + offset, TJAPlayer3.Skin.DanResult_Score[1], (int)TJAPlayer3.stage演奏ドラム画面.actScore.Get(E楽器パート.DRUMS, 0), 1.0f);
 
 			#endregion
 
@@ -1917,7 +1901,7 @@ namespace TJAPlayer3
 
 			TJAPlayer3.Tx.Result_Number.Opacity = opacity;
 			for (int j = 0; j < 4; j++)
-				this.actParameterPanel.t小文字表示(num_x[j] + offset, num_y[j], scoresArr[j]);
+				this.actParameterPanel.t小文字表示(num_x[j] + offset, num_y[j], scoresArr[j], 1.0f);
 			TJAPlayer3.Tx.Result_Number.Opacity = 255;
 
 			TJAPlayer3.stage選曲.act曲リスト.ResolveTitleTexture(this.ttkDanTitles[i]).Opacity = opacity;
