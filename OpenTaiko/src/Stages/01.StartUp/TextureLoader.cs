@@ -408,6 +408,7 @@ namespace TJAPlayer3
             //Dani_Dan_Text = TxC(DANISELECT + "Dan_Text.png");
 
             Dani_DanPlates = TxC(DANISELECT + "DanPlates.png");
+            Dani_DanPlates_Back = TxC(DANISELECT + "DanPlates_Back.png");
             Dani_DanIcon = TxC(DANISELECT + "DanIcon.png");
             Dani_DanIcon_Fade = TxC(DANISELECT + "DanIcon_Fade.png");
             Dani_DanSides = TxC(DANISELECT + "DanSides.png");
@@ -479,13 +480,6 @@ namespace TJAPlayer3
             #endregion
 
             #region Mob
-
-            TJAPlayer3.Skin.Game_Mob_Ptn = TJAPlayer3.t連番画像の枚数を数える(CSkin.Path(BASE + GAME + MOB));
-            Mob = new CTexture[TJAPlayer3.Skin.Game_Mob_Ptn];
-            for (int i = 0; i < TJAPlayer3.Skin.Game_Mob_Ptn; i++)
-            {
-                Mob[i] = TxC(GAME + MOB + i.ToString() + ".png");
-            }
 
             #endregion
 
@@ -2444,6 +2438,7 @@ namespace TJAPlayer3
         //public CTexture Dani_Dan_Text;
 
         public CTexture Dani_DanPlates;
+        public CTexture Dani_DanPlates_Back;
         public CTexture Dani_DanIcon;
         public CTexture Dani_DanIcon_Fade;
         public CTexture Dani_DanSides;
@@ -2493,7 +2488,6 @@ namespace TJAPlayer3
 
 
         #region モブ
-        public CTexture[] Mob;
         #endregion
         #region 太鼓
         public CTexture[] Taiko_Base,
