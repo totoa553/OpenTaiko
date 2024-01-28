@@ -432,7 +432,7 @@ namespace TJAPlayer3
 		/// 4: Semi-Invisible
 		/// 5: Full-Invisible
 		/// </returns>
-		private int getDefaultSudHidValue( E楽器パート eInst )
+		private int getDefaultSudHidValue( EInstrumentPad eInst )
 		{
 			int defvar;
 			int nInst = (int) eInst;
@@ -470,7 +470,7 @@ namespace TJAPlayer3
 		}
 		public void tEnter押下()
 		{
-			TJAPlayer3.Skin.sound決定音.t再生する();
+			TJAPlayer3.Skin.soundDecideSFX.tPlay();
 			if( this.b要素値にフォーカス中 )
 			{
 				this.b要素値にフォーカス中 = false;
@@ -733,7 +733,7 @@ namespace TJAPlayer3
 					TJAPlayer3.actEnumSongs.Activate();
 					// TJAPlayer3.stage選曲.Refresh(TJAPlayer3.EnumSongs.Songs管理, true);
 
-					TJAPlayer3.stage選曲.act曲リスト.ResetSongIndex();
+					TJAPlayer3.stageSongSelect.actSongList.ResetSongIndex();
 				}
 				#endregion
 			}
@@ -754,11 +754,11 @@ namespace TJAPlayer3
 
 				if ( txSkinSample1 != null )
 				{
-					TJAPlayer3.t安全にDisposeする( ref txSkinSample1 );
+					TJAPlayer3.tDisposeSafely( ref txSkinSample1 );
 				}
 				txSkinSample1 = TJAPlayer3.tテクスチャの生成( bmSrc, false );
 
-				txSkinSample1.vc拡大縮小倍率 = new Silk.NET.Maths.Vector3D<float>(_w / (float)txSkinSample1.szテクスチャサイズ.Width, _h / (float)txSkinSample1.szテクスチャサイズ.Height, 0);
+				txSkinSample1.vcScaleRatio = new Silk.NET.Maths.Vector3D<float>(_w / (float)txSkinSample1.szTextureSize.Width, _h / (float)txSkinSample1.szTextureSize.Height, 0);
 
 				bmSrc.Dispose();
 				nSkinSampleIndex = nSkinIndex;
@@ -937,7 +937,7 @@ namespace TJAPlayer3
 		#endregion
 		public void t次に移動()
 		{
-			TJAPlayer3.Skin.soundカーソル移動音.t再生する();
+			TJAPlayer3.Skin.soundカーソル移動音.tPlay();
 			if( this.b要素値にフォーカス中 )
 			{
 				this.list項目リスト[ this.n現在の選択項目 ].t項目値を前へ移動();
@@ -950,7 +950,7 @@ namespace TJAPlayer3
 		}
 		public void t前に移動()
 		{
-			TJAPlayer3.Skin.soundカーソル移動音.t再生する();
+			TJAPlayer3.Skin.soundカーソル移動音.tPlay();
 			if( this.b要素値にフォーカス中 )
 			{
 				this.list項目リスト[ this.n現在の選択項目 ].t項目値を次へ移動();
@@ -1034,7 +1034,7 @@ namespace TJAPlayer3
 			#region [ Skin変更 ]
 			if ( TJAPlayer3.Skin.GetCurrentSkinSubfolderFullName( true ) != this.skinSubFolder_org )
 			{
-                TJAPlayer3.app.RefleshSkin();
+                TJAPlayer3.app.RefreshSkin();
             }
 			#endregion
 
@@ -1067,7 +1067,7 @@ namespace TJAPlayer3
 						soundDeviceType = ESoundDeviceType.Unknown;
 						break;
 				}
-				TJAPlayer3.Sound管理.tInitialize( soundDeviceType,
+				TJAPlayer3.SoundManager.tInitialize( soundDeviceType,
 										this.iSystemBassBufferSizeMs.n現在の値,
 										this.iSystemWASAPIBufferSizeMs.n現在の値,
 										0,
