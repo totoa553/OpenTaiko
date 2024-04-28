@@ -25,8 +25,8 @@ namespace TJAPlayer3
             [3] = "左側のメニューに戻ります。",
             [4] = "曲データ再読み込み",
             [5] = "曲データの一覧情報を取得し直します。",
-            [10148] = "曲データ再読み込み（ハード）",
-            [10149] = "データベースファイルを消して\n曲データを再読み込みます。",
+            [10148] = "キャッシュをクリアして曲データ再読み込み",
+            [10149] = "キャッシュをクリアして曲データの一覧情報を取得し直します。",
             [6] = "プレイ人数",
             [7] = "プレイ人数切り替え：\n5人までプレイできます。",
             [8] = "完璧モード",
@@ -74,7 +74,8 @@ namespace TJAPlayer3
             [25] = "プレビュー音演奏までの時間：\n曲にカーソルが合わされてからプレ\nビュー音が鳴り始めるまでの時間を\n指定します。\n0 ～ 10000 [ms] が指定可能です。",
             [26] = "プレビュー画像表示までの時間：\n曲にカーソルが合わされてからプレ\nビュー画像が表示されるまでの時間\nを指定します。\n0 ～ 10000 [ms] が指定可能です。",
             [27] = "演奏情報の表示：\n演奏中、BGA領域の下部に演奏情報\n（FPS、BPM、演奏時間など）を表示し\nます。\nまた、小節線の横に小節番号が表示\nされるようになります。",
-            //[28] = "背景画像の半透明割合：\n背景画像をDTXManiaのフレーム画像\nと合成する際の、背景画像の透明度\nを指定します。\n0 が完全透明で、255 が完全不透明\nとなります。",
+            // --------------------
+			[28] = "背景画像の半透明割合：\n背景画像をDTXManiaのフレーム画像\nと合成する際の、背景画像の透明度\nを指定します。\n0 が完全透明で、255 が完全不透明\nとなります。",
 			// Please update the translation above. The lane background (the bar drawn behind the notes) opacity is what's being adjusted, and will only take effect when videos are playing.
             [29] = "BGMの再生：\nこれをOFFにすると、BGM を再生しな\nくなります。",
             [30] = "演奏記録の保存：\nON で演奏記録を ～.score.ini ファイ\nルに保存します。\n",
@@ -90,21 +91,22 @@ namespace TJAPlayer3
 			[40] = "Discordに再生中の譜面情報を送信する",
 			[41] = "バッファ入力モード：\nON にすると、FPS を超える入力解像\n度を実現します。\nOFF にすると、入力解像度は FPS に\n等しくなります。",
 			[42] = "Traceログ出力：\nDTXManiaLog.txt にログを出力します。\n変更した場合は、DTXMania の再起動\n後に有効となります。",
-			// [43] = "サウンドの出力方式:\n" +
-			// 		"WASAPI, ASIO, DSound(DirectSound)\n" +
-			// 		"の中からサウンド出力方式を選択\n" +
-			// 		"します。\n" +
-			// 		"WASAPIはVista以降でのみ使用可能\n" +
-			// 		"です。ASIOは対応機器でのみ使用\n" +
-			// 		"可能です。\n" +
-			// 		"WASAPIかASIOを指定することで、\n" +
-			// 		"遅延の少ない演奏を楽しむことが\n" +
-			// 		"できます。\n" +
-			// 		"\n" +
-			// 		"※ 設定はCONFIGURATION画面の\n" +
-			// 		"　終了時に有効になります。",
-			// Please update the translation above; DirectSound is no longer used, and has been replaced with BASS. BASS is compatible with all platforms.
-			[44] = "WASAPI使用時のバッファサイズ:\n" +
+            // --------------------
+            [43] = "サウンドの出力方式:\n" +
+             		"WASAPI, ASIO, DSound(DirectSound)\n" +
+             		"の中からサウンド出力方式を選択\n" +
+             		"します。\n" +
+             		"WASAPIはVista以降でのみ使用可能\n" +
+             		"です。ASIOは対応機器でのみ使用\n" +
+             		"可能です。\n" +
+             		"WASAPIかASIOを指定することで、\n" +
+             		"遅延の少ない演奏を楽しむことが\n" +
+             		"できます。\n" +
+             		"\n" +
+             		"※ 設定はCONFIGURATION画面の\n" +
+             		"　終了時に有効になります。",
+            // Please update the translation above; DirectSound is no longer used, and has been replaced with BASS. BASS is compatible with all platforms.
+            [44] = "WASAPI使用時のバッファサイズ:\n" +
 					"0～99999ms を指定可能です。\n" +
 					"0を指定すると、OSがバッファの\n" +
 					"サイズを自動設定します。\n" +
@@ -214,29 +216,29 @@ namespace TJAPlayer3
 					"定します。",
 			[97] = "キャプチャ",
 			[98] = "キャプチャキー設定：\n画面キャプチャのキーの割り当てを設\n定します。",
-            // [10128] = "Increase Volume",
-            // [10129] = "System key assign:\nAssign any key for increasing music volume.\n(You can only use keyboard. You can't\nuse gamepads.)",
-            // [10130] = "Decrease Volume",
-            // [10131] = "System key assign:\nAssign any key for decreasing music volume.\n(You can only use keyboard. You can't\nuse gamepads.)",
-            // [10132] = "Display Hit Values",
-            // [10133] = "System key assign:\nAssign any key for displaying hit values.\n(You can only use keyboard. You can't\nuse gamepads.)",
-            // [10134] = "Display Debug Menu",
-            // [10135] = "System key assign:\nAssign any key for displaying debug menu.\n(You can only use keyboard. You can't\nuse gamepads.)",
-            // [10136] = "Quick Config",
-            // [10137] = "System key assign:\nAssign any key for accessing the quick config.\n(You can only use keyboard. You can't\nuse gamepads.)",
-            // [10138] = "Player Customization",
-            // [10139] = "System key assign:\nAssign any key for player customization.\n(You can only use keyboard. You can't\nuse gamepads.)",
-            // [10140] = "Change Song Sort",
-            // [10141] = "System key assign:\nAssign any key for resorting songs.\n(You can only use keyboard. You can't\nuse gamepads.)",
-            // [10142] = "Toggle Auto (P1)",
-            // [10143] = "System key assign:\nAssign any key for toggling auto (P1).\n(You can only use keyboard. You can't\nuse gamepads.)",
-            // [10144] = "Toggle Auto (P2)",
-            // [10145] = "System key assign:\nAssign any key for toggling auto (P2).\n(You can only use keyboard. You can't\nuse gamepads.)",
-            // [10146] = "Toggle Training Mode",
-            // [10147] = "System key assign:\nAssign any key for toggling training mode.\n(You can only use keyboard. You can't\nuse gamepads.)",
-            // [10152] = "Cycle Video Playback Display",
-            // [10153] = "System key assign:\nAssign any key for cycling video playback display modes.\n(You can only use keyboard. You can't\nuse gamepads.)",
-            // Please translate the text above!
+            [10128] = "音量を上げる",
+            [10129] = "システムキー割り当て:\n音量を上げるキーを割り当てます\n(キーボード以外は割り当てられません)",
+            [10130] = "音量を下げる",
+            [10131] = "システムキー割り当て:\n音量を下げるキーを割り当てます\n(キーボード以外は割り当てられません)",
+            [10132] = "叩いた数の表示切り替え",
+            [10133] = "システムキー割り当て:\n叩いた数の表示切り替えのキーを割り当てます\n(キーボード以外は割り当てられません)",
+            [10134] = "デバッグ表示切り替え",
+            [10135] = "システムキー割り当て:\nデバッグ表示切り替えのキーを割り当てます\n(キーボード以外は割り当てられません)",
+            [10136] = "簡易設定",
+            [10137] = "システムキー割り当:\n簡易設定のキーを割り当てます\n(キーボード以外は割り当てられません)",
+            [10138] = "プレイヤーカスタマイズ",
+            [10139] = "システムキー割り当て:\nプレイヤーカスタマイズのキーを割り当てます\n(キーボード以外は割り当てられません)",
+            [10140] = "曲リストのソート切り替え",
+            [10141] = "システムキー割り当て:\n曲リストのソート切り替えのキーを割り当てます\n(キーボード以外は割り当てられません)",
+            [10142] = "1Pオート切り替え",
+            [10143] = "システムキー割り当て:\n1Pオート切り替えのキーを割り当てます\n(キーボード以外は割り当てられません)",
+            [10144] = "2Pオート切り替え",
+            [10145] = "システムキー割り当て:\n2Pオート切り替えのキーを割り当てます\n(キーボード以外は割り当てられません)",
+            [10146] = "特訓モード切り替え",
+            [10147] = "システムキー割り当て:\n特訓モード切り替えのキーを割り当てます\n(キーボード以外は割り当てられません)",
+            [10152] = "動画再生モード切替",
+            [10153] = "システムキー割り当て:\n動画再生モード切替のキーを割り当てます\n(キーボード以外は割り当てられません)",
+
 			[99] = "LeftRed",
 
             [9992] = "太鼓の数字がアニメーションしなくなります\n" +
@@ -405,9 +407,8 @@ namespace TJAPlayer3
 			[10126] = "ゲージをNormalに固定",
 			[10127] = "ゲージをNormalに固定します",
 			
-            // [10150] = "Video Playback Display Mode",
-            // [10151] = "Change how videos are displayed\nin the background.",
-            // Please translate the text above!
+            [10150] = "動画再生モード",
+            [10151] = "動画の表示方法を変更します.",
 
 			[100] = "演奏ゲーム",
             [101] = "段位道場",
