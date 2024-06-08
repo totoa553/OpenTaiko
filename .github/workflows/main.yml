@@ -1,24 +1,15 @@
+# Original script from totoa553/OpenTaiko
+
 name: Build OpenTaiko
 
 on: 
   workflow_dispatch:
   
 jobs:
-  sync:
-    permissions:
-      actions: write
-      checks: write
-      contents: write
-      deployments: write
-      issues: write
-      packages: write
-      pull-requests: write
-      repository-projects: write
-      security-events: write
-      statuses: write
-    runs-on: windows-2019
+  build:
+    runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Merge upstream
         run: |
           git config --global user.name ${NAME}
@@ -27,63 +18,95 @@ jobs:
           git pull --unshallow
           git remote add upstream https://github.com/0auBSQ/OpenTaiko.git
           git fetch upstream
-          git checkout main
+          git checkout auto
           git merge --no-edit upstream/main
-          git push origin main
+          git push origin auto
         env:
           NAME: ${GITHUB_ACTOR}
           EMAIL: ${GITHUB_ACTOR}@users.noreply.github.com
 
-      - name: Setup MSBuild.exe
-        uses: microsoft/setup-msbuild@v1
-
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1
-
-      - name: Restore the application
-        run: nuget restore $Env:GITHUB_WORKSPACE\TJAPlayer3.sln
-
-      - name: Build the Solution(x64)
-        run: MSBuild.exe $Env:GITHUB_WORKSPACE\TJAPlayer3.sln -p:Configuration=Release -p:platform=x64
-        timeout-minutes: 5
-
-      - name: Create Archive(x64)
-        run: |
-          cd $Env:GITHUB_WORKSPACE
-          tar -a -cvf OpenTaiko.zip -C Test *
-          
-      - name: Create Archive(x64) nosong
-        run: |
-          cd $Env:GITHUB_WORKSPACE
-          tar -a -cvf OpenTaiko_nosong.zip --exclude='Songs/*' -C Test *
-
-      - name: Build the Solution(x86)
-        run: MSBuild.exe $Env:GITHUB_WORKSPACE\TJAPlayer3.sln -p:Configuration=Release -p:platform=x86
-        timeout-minutes: 5
-
-      - name: Create Archive(x86)
-        run: |
-          cd $Env:GITHUB_WORKSPACE
-          tar -a -cvf OpenTaiko-x86.zip -C Test *
-          
-      - name: Create Archive(x86) nosong
-        run: |
-          cd $Env:GITHUB_WORKSPACE
-          tar -a -cvf OpenTaiko_nosong-x86.zip --exclude='Songs/*' -C Test *
-
-      - name: Get Current Time
-        id: time
-        shell: pwsh
-        run: |
-          echo "::set-output name=time::$((Get-Date).addHours(9))"
-
-      - name: Upload Release Asset(x64)
-        uses: svenstaro/upload-release-action@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: https://uploads.github.com/repos/totoa553/OpenTaiko/releases/92287065/assets{?name,label}
-          file: ./*.zip
-          file_glob: true
+          dotnet-version: 7.0.x
+
+      - name: Observe the Directory
+        shell: cmd
+        run: |
+          dir
+
+      - name: Build for Windows x64
+        shell: cmd
+        run: |
+          build-win-x64.bat
+          
+      - name: Create Archive (Win x64)
+        shell: cmd
+        run: |
+          cd OpenTaiko\bin\Release\net7.0\win-x64\publish\
+          7z a ../../../../../../OpenTaiko_win_64bit.zip * -xr!Songs/ 
+          7z u ../../../../../../OpenTaiko_win_64bit.zip "Songs/L2 Custom Charts/*" "Songs/L3 Downloaded Songs/*" "Songs/S1 Dan-i Dojo/box.def" "Songs/S2 Taiko Towers/box.def" "Songs/X1 Favorite/*" "Songs/X2 Recent/*" "Songs/X3 Search By Difficulty/*"
+          cd ..\..\..\..\..\..\
+
+      - name: Build for Windows x86
+        shell: cmd
+        run: |
+          build-win-x86.bat
+          
+      - name: Create Archive (Win x86)
+        shell: cmd
+        run: |
+          cd OpenTaiko\bin\Release\net7.0\win-x86\publish\
+          7z a ../../../../../../OpenTaiko_win_32bit.zip * -xr!Songs/ 
+          7z u ../../../../../../OpenTaiko_win_32bit.zip "Songs/L2 Custom Charts/*" "Songs/L3 Downloaded Songs/*" "Songs/S1 Dan-i Dojo/box.def" "Songs/S2 Taiko Towers/box.def" "Songs/X1 Favorite/*" "Songs/X2 Recent/*" "Songs/X3 Search By Difficulty/*"
+          cd ..\..\..\..\..\..\
+
+      - name: Build for Mac x64
+        shell: cmd
+        run: |
+          build-osx-x64.bat
+          
+      - name: Create Archive (Mac x64)
+        shell: cmd
+        run: |
+          cd OpenTaiko\bin\Release\net7.0\osx-x64\publish\
+          7z a ../../../../../../OpenTaiko_osx_64bit.zip * -xr!Songs/ 
+          7z u ../../../../../../OpenTaiko_osx_64bit.zip "Songs/L2 Custom Charts/*" "Songs/L3 Downloaded Songs/*" "Songs/S1 Dan-i Dojo/box.def" "Songs/S2 Taiko Towers/box.def" "Songs/X1 Favorite/*" "Songs/X2 Recent/*" "Songs/X3 Search By Difficulty/*"
+          cd ..\..\..\..\..\..\
+      
+      - name: Build for Linux x64
+        shell: cmd
+        run: |
+          build-linux-x64.bat
+          
+      - name: Create Archive (Linux x64)
+        shell: cmd
+        run: |
+          cd OpenTaiko\bin\Release\net7.0\linux-x64\publish\
+          7z a ../../../../../../OpenTaiko_linux_64bit.zip * -xr!Songs/ 
+          7z u ../../../../../../OpenTaiko_linux_64bit.zip "Songs/L2 Custom Charts/*" "Songs/L3 Downloaded Songs/*" "Songs/S1 Dan-i Dojo/box.def" "Songs/S2 Taiko Towers/box.def" "Songs/X1 Favorite/*" "Songs/X2 Recent/*" "Songs/X3 Search By Difficulty/*"
+          cd ..\..\..\..\..\..\
+
+      - name: Create Archive (Songs)
+        shell: cmd
+        run: |
+          cd OpenTaiko\bin\Release\net7.0\linux-x64\publish\Songs\
+          7z a ../../../../../../../Songs.zip *
+          7z d ../../../../../../../Songs.zip "L2 Custom Charts/" "L3 Downloaded Songs/" "X1 Favorite/" "X2 Recent/" "X3 Search By Difficulty/"
+          cd ..\..\..\..\..\..\..\
+
+      #- name: Create Archive (System)
+      #  shell: cmd
+      #  run: |
+      #    cd OpenTaiko\bin\Release\net7.0\linux-x64\publish\System\
+      #    7z a ../../../../../../../System.zip *
+      #    cd ..\..\..\..\..\..\..\
+      
+      - name: Upload All Builds
+        uses: xresloader/upload-to-github-release@v1.4.2
+        with:
+          file: "OpenTaiko_win_64bit.zip;OpenTaiko_win_32bit.zip;OpenTaiko_osx_64bit.zip;OpenTaiko_linux_64bit.zip;Songs.zip"
           overwrite: true
-          tag: release
-          body: ${{ steps.time.outputs.time }}
+          tag_name: "autobuild"
+          draft: false
+          token: ${{ secrets.GITHUB_TOKEN }}
