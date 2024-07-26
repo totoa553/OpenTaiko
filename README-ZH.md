@@ -10,9 +10,9 @@
 
 - Discord：https://discord.gg/aA8scTvZ6B
 
-- Discord (日语) : https://discord.gg/CJ4nTkpy7t
+- Discord（日语）：https://discord.gg/CJ4nTkpy7t
 
-（译者注：由README-EN.md翻译。最近一次更新时间：2024年5月2日）
+（译者注：由README-EN.md翻译。最近一次更新时间：2024年7月26日）
 
 （译者注：编译指南：[https://github.com/l1m0n3/OpenTaiko/wiki/How-to-build-OpenTaiko-without-using-Visual-Studio-(on-Windows)](https://github.com/l1m0n3/OpenTaiko/wiki/How-to-build-OpenTaiko-without-using-Visual-Studio-(on-Windows))）
 
@@ -354,13 +354,13 @@ OpenTaiko是一个使用MIT许可证的开源软件。在MIT许可证下，您�
 
 ## 致谢
 
-> * [Takkkom/Major OpenTaiko features (1080p支持, AI对战模式, 5P模式等)](https://github.com/Takkkom)
+> * [Takkkom/主要OpenTaiko功能（1080P支持、AI对战模式、5玩家模式等）](https://github.com/Takkkom)
 > * [AkiraChnl/OpenTaiko图标](https://github.com/AkiraChnl)(@akirach_jp)
 > * [Reichisama/OpenTaiko 0.6.0 图标](https://twitter.com/himikoreichi135)(@himikoreichi135)
 > * [cien/OpenTaiko标志/多项默认皮肤资源](https://twitter.com/CienpixeL)(@CienpixeL)
-> * [funnym0th/OpenTaiko西班牙文翻译](https://github.com/funnym0th) (@funnym0th)
-> * [basketballsmash/英文README翻译](https://twitter.com/basketballsmash)(@basketballsmash)
-> * [Meowgister/OpenTaiko英文翻译](https://www.youtube.com/channel/UCDi5puZaJLMUA6OgIAb7rmQ)
+> * [funnym0th/OpenTaiko西班牙语翻译](https://github.com/funnym0th) (@funnym0th)
+> * [basketballsmash/英语README翻译](https://twitter.com/basketballsmash)(@basketballsmash)
+> * [Meowgister/OpenTaiko英语翻译](https://www.youtube.com/channel/UCDi5puZaJLMUA6OgIAb7rmQ)
 > * [WHMHammer/OpenTaiko中文翻译](https://github.com/whmhammer)(@WHMHammer)
 > * [Aioilight/TJAPlayer3](https://github.com/aioilight/TJAPlayer3)(@aioilight)
 > * [TwoPointZero/TJAPlayer3](https://github.com/twopointzero/TJAPlayer3)(@twopointzero)
