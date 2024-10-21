@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace TJAPlayer3 {
+namespace OpenTaiko {
 	internal class Program {
 		#region [ 二重起動チェック、DLL存在チェック ]
 		//-----------------------------
@@ -15,14 +15,12 @@ namespace TJAPlayer3 {
 			if (bLoadDllCheck) {
 				IntPtr hModule = LoadLibrary(strDll名);      // 実際にLoadDll()してチェックする
 				if (hModule == IntPtr.Zero) {
-					//MessageBox.Show( str存在しないときに表示するエラー文字列, "DTXMania runtime error", MessageBoxButtons.OK, MessageBoxIcon.Hand );
 					return false;
 				}
 				FreeLibrary(hModule);
 			} else {                                                    // 単純にファイルの存在有無をチェックするだけ (プロジェクトで「参照」していたり、アンマネージドなDLLが暗黙リンクされるものはこちら)
 				string path = Path.Combine(System.IO.Directory.GetCurrentDirectory(), strDll名);
 				if (!File.Exists(path)) {
-					//MessageBox.Show( str存在しないときに表示するエラー文字列, "DTXMania runtime error", MessageBoxButtons.OK, MessageBoxIcon.Hand );
 					return false;
 				}
 			}
@@ -30,7 +28,6 @@ namespace TJAPlayer3 {
 		}
 		private static bool tDLLの存在チェック(string strDll名, string str存在しないときに表示するエラー文字列jp, string str存在しないときに表示するエラー文字列en) {
 			return true;
-			//return tDLLの存在チェック( strDll名, str存在しないときに表示するエラー文字列jp, str存在しないときに表示するエラー文字列en, false );
 		}
 
 		#region [DllImport]
@@ -54,10 +51,7 @@ namespace TJAPlayer3 {
 				bool bDLLnotfound = false;
 
 				Trace.WriteLine("Current Directory: " + Environment.CurrentDirectory);
-				//Trace.WriteLine( "EXEのあるフォルダ: " + Path.GetDirectoryName( Application.ExecutablePath ) );
-
 				Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-
 
 				{
 					// BEGIN #23670 2010.11.13 from: キャッチされない例外は放出せずに、ログに詳細を出力する。
@@ -75,7 +69,7 @@ namespace TJAPlayer3 {
 						else if (OperatingSystem.IsLinux())
 							osplatform = "linux";
 						else
-							throw new PlatformNotSupportedException("TJAPlayer3-f does not support this OS.");
+							throw new PlatformNotSupportedException("OpenTaiko does not support this OS.");
 
 						string platform = "";
 
@@ -93,7 +87,7 @@ namespace TJAPlayer3 {
 								platform = "arm64";
 								break;
 							default:
-								throw new PlatformNotSupportedException($"TJAPlayer3 does not support this Architecture. ({RuntimeInformation.ProcessArchitecture})");
+								throw new PlatformNotSupportedException($"OpenTaiko does not support this architecture. ({RuntimeInformation.ProcessArchitecture})");
 						}
 
 						FFmpeg.AutoGen.ffmpeg.RootPath = AppContext.BaseDirectory + @"FFmpeg/" + osplatform + "-" + platform + "/";
@@ -104,11 +98,11 @@ namespace TJAPlayer3 {
 							fileinfo.CopyTo(AppContext.BaseDirectory + fileinfo.Name, true);
 						}
 
-						using (var mania = new TJAPlayer3())
+						using (var mania = new OpenTaiko())
 							mania.Run();
 
-						Trace.WriteLine("");
-						Trace.WriteLine("遊んでくれてありがとう！");
+						Trace.WriteLine( "" );
+						Trace.WriteLine( "Thank you for playing!" );
 					}
 #if !DEBUG
 					catch( Exception e )
@@ -148,8 +142,6 @@ namespace TJAPlayer3 {
 					Process current = Process.GetCurrentProcess();
 					Process[] running = Process.GetProcessesByName(current.ProcessName);
 					Process target = null;
-					//IntPtr hWnd = FindWindow( null, "DTXMania .NET style release " + CDTXMania.VERSION );
-
 					foreach (Process p in running) {
 						if (p.Id != current.Id) // プロセス名は同じでかつ、プロセスIDが自分自身とは異なるものを探す
 						{

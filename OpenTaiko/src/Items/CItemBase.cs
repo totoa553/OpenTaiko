@@ -1,11 +1,11 @@
 ﻿using System.Globalization;
 
-namespace TJAPlayer3 {
+namespace OpenTaiko {
 	/// <summary>
 	/// すべてのアイテムの基本クラス。
 	/// </summary>
 	internal class CItemBase {
-		// プロパティ
+		// Properties
 
 		public EPanelType eパネル種別;
 		public enum EPanelType {
@@ -40,7 +40,7 @@ namespace TJAPlayer3 {
 		}
 
 
-		// コンストラクタ
+		// Constructor
 
 		public CItemBase() {
 			this.str項目名 = "";

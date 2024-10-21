@@ -13,11 +13,11 @@ using Silk.NET.Maths;
 using SkiaSharp;
 using Rectangle = System.Drawing.Rectangle;
 
-namespace TJAPlayer3 {
-	internal class TJAPlayer3 : Game {
-		// プロパティ
+namespace OpenTaiko {
+	internal class OpenTaiko : Game {
+		// Properties
 		#region [ properties ]
-		public static readonly string VERSION = Assembly.GetExecutingAssembly().GetName().Version.ToString();//.Substring(0, Assembly.GetExecutingAssembly().GetName().Version.ToString().Length - 2);
+		public static readonly string VERSION = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 		public static readonly string AppDisplayThreePartVersion = GetAppDisplayThreePartVersion();
 		public static readonly string AppNumericThreePartVersion = GetAppNumericThreePartVersion();
 
@@ -41,15 +41,13 @@ namespace TJAPlayer3 {
 			?? $"{GetAppDisplayThreePartVersion()} (unknown informational version)";
 		public static readonly string SLIMDXDLL = "c_net20x86_Jun2010";
 		public static readonly string D3DXDLL = "d3dx9_43.dll";     // June 2010
-																	//public static readonly string D3DXDLL = "d3dx9_42.dll";	// February 2010
-																	//public static readonly string D3DXDLL = "d3dx9_41.dll";	// March 2009
 
 		public static CStage latestSongSelect {
 			get;
 			private set;
 		}
 
-		public static TJAPlayer3 app {
+		public static OpenTaiko app {
 			get;
 			private set;
 		}
@@ -161,15 +159,15 @@ namespace TJAPlayer3 {
 		public static CDTX GetDTX(int player) {
 			switch (player) {
 				case 0:
-					return TJAPlayer3.DTX;
+					return OpenTaiko.DTX;
 				case 1:
-					return TJAPlayer3.DTX_2P;
+					return OpenTaiko.DTX_2P;
 				case 2:
-					return TJAPlayer3.DTX_3P;
+					return OpenTaiko.DTX_3P;
 				case 3:
-					return TJAPlayer3.DTX_4P;
+					return OpenTaiko.DTX_4P;
 				case 4:
-					return TJAPlayer3.DTX_5P;
+					return OpenTaiko.DTX_5P;
 			}
 			return null;
 		}
@@ -197,7 +195,7 @@ namespace TJAPlayer3 {
 						return c曲リストノード.nPerfect範囲ms;
 					}
 				}
-				return ConfigIni.nヒット範囲ms.Perfect;
+				return ConfigIni.nHitRangeMs.Perfect;
 			}
 		}
 		public static int nGreat範囲ms {
@@ -208,7 +206,7 @@ namespace TJAPlayer3 {
 						return c曲リストノード.nGreat範囲ms;
 					}
 				}
-				return ConfigIni.nヒット範囲ms.Great;
+				return ConfigIni.nHitRangeMs.Great;
 			}
 		}
 		public static int nGood範囲ms {
@@ -219,7 +217,7 @@ namespace TJAPlayer3 {
 						return c曲リストノード.nGood範囲ms;
 					}
 				}
-				return ConfigIni.nヒット範囲ms.Good;
+				return ConfigIni.nHitRangeMs.Good;
 			}
 		}
 		public static int nPoor範囲ms {
@@ -230,7 +228,7 @@ namespace TJAPlayer3 {
 						return c曲リストノード.nPoor範囲ms;
 					}
 				}
-				return ConfigIni.nヒット範囲ms.Poor;
+				return ConfigIni.nHitRangeMs.Poor;
 			}
 		}
 		#endregion
@@ -311,11 +309,6 @@ namespace TJAPlayer3 {
 			get;
 			private set;
 		}
-		//		public static CStageオプション stageオプション
-		//		{
-		//			get;
-		//			private set;
-		//		}
 		public static CStageコンフィグ stageコンフィグ {
 			get;
 			private set;
@@ -430,15 +423,15 @@ namespace TJAPlayer3 {
 		}
 
 		public static bool P1IsBlue() {
-			return (TJAPlayer3.PlayerSide == 1 && TJAPlayer3.ConfigIni.nPlayerCount == 1);
+			return (OpenTaiko.PlayerSide == 1 && OpenTaiko.ConfigIni.nPlayerCount == 1);
 		}
 
 		#endregion
 
-		// コンストラクタ
+		// Constructor
 
-		public TJAPlayer3() : base("OpenTaiko.ico") {
-			TJAPlayer3.app = this;
+		public OpenTaiko() : base("OpenTaiko.ico") {
+			OpenTaiko.app = this;
 		}
 
 		public static string sEncType = "Shift_JIS";
@@ -516,9 +509,8 @@ namespace TJAPlayer3 {
 			if (File.Exists(path)) {
 				try {
 					// Load config info
-					ConfigIni.tファイルから読み込み(path);
+					ConfigIni.LoadFromFile(path);
 				} catch (Exception e) {
-					//ConfigIni = new CConfigIni();	// 存在してなければ新規生成
 					Trace.TraceError(e.ToString());
 					Trace.TraceError("例外が発生しましたが処理を継続します。 (b8d93255-bbe4-4ca3-8264-7ee5175b19f3)");
 				}
@@ -530,20 +522,6 @@ namespace TJAPlayer3 {
 				case 0:
 					GraphicsDeviceType_ = Silk.NET.GLFW.AnglePlatformType.OpenGL;
 					break;
-				/*
-				case 1:
-				GraphicsDeviceType_ = Silk.NET.GLFW.AnglePlatformType.D3D9;
-				break;
-				case 2:
-				GraphicsDeviceType_ = Silk.NET.GLFW.AnglePlatformType.D3D11;
-				break;
-				case 3:
-				GraphicsDeviceType_ = Silk.NET.GLFW.AnglePlatformType.Vulkan;
-				break;
-				case 4:
-				GraphicsDeviceType_ = Silk.NET.GLFW.AnglePlatformType.Metal;
-				break;
-				*/
 				case 1:
 					GraphicsDeviceType_ = Silk.NET.GLFW.AnglePlatformType.D3D11;
 					break;
@@ -565,33 +543,15 @@ namespace TJAPlayer3 {
 		}
 
 		protected override void Initialize() {
-
 			this.t起動処理();
-
-			/*
-			if ( this.listトップレベルActivities != null )
-			{
-				foreach( CActivity activity in this.listトップレベルActivities )
-					activity.OnManagedリソースの作成();
-			}
-
-			foreach( STPlugin st in this.listプラグイン )
-			{
-				Directory.SetCurrentDirectory( st.strプラグインフォルダ );
-				st.plugin.OnManagedリソースの作成();
-				Directory.SetCurrentDirectory( TJAPlayer3.strEXEのあるフォルダ );
-			}
-			*/
 		}
 
 		protected override void LoadContent() {
-			if (ConfigIni.bウィンドウモード) {
+			if (ConfigIni.bWindowMode) {
 				if (!this.bマウスカーソル表示中) {
-					//Cursor.Show();
 					this.bマウスカーソル表示中 = true;
 				}
 			} else if (this.bマウスカーソル表示中) {
-				//Cursor.Hide();
 				this.bマウスカーソル表示中 = false;
 			}
 
@@ -603,7 +563,7 @@ namespace TJAPlayer3 {
 			foreach (STPlugin st in this.PluginList) {
 				Directory.SetCurrentDirectory(st.pluginDirectory);
 				st.plugin.OnUnmanagedリソースの作成();
-				Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+				Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 			}
 		}
 		protected override void UnloadContent() {
@@ -615,7 +575,7 @@ namespace TJAPlayer3 {
 			foreach (STPlugin st in this.PluginList) {
 				Directory.SetCurrentDirectory(st.pluginDirectory);
 				st.plugin.OnUnmanagedリソースの解放();
-				Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+				Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 			}
 		}
 		protected override void OnExiting() {
@@ -631,14 +591,13 @@ namespace TJAPlayer3 {
 			base.OnExiting();
 		}
 		protected override void Update() {
-			InputManager?.Polling(TJAPlayer3.ConfigIni.bBufferedInputs);
+			InputManager?.Polling(OpenTaiko.ConfigIni.bBufferedInputs);
 		}
 		protected override void Draw() {
 #if !DEBUG
 			try
 #endif
 			{
-				// Sound管理?.t再生中の処理をする();
 				Timer?.Update();
 				SoundManager.PlayTimer?.Update();
 				FPS?.Update();
@@ -651,73 +610,10 @@ namespace TJAPlayer3 {
 					if (BeatScaling.CurrentValue == BeatScaling.EndValue) BeatScaling = null;
 				}
 
-				//CameraTest
-				/*
-				Camera *= Matrix4X4.CreateScale(1.0f / ScreenAspect, 1.0f, 1.0f) *
-				Matrix4X4.CreateRotationZ(MathF.PI / 4.0f) *
-				Matrix4X4.CreateScale(1.0f * ScreenAspect, 1.0f, 1.0f);
-				*/
-
 				// #xxxxx 2013.4.8 yyagi; sleepの挿入位置を、EndScnene～Present間から、BeginScene前に移動。描画遅延を小さくするため。
 
-				#region [ DTXCreatorからの指示 ]
-				/*
-				if ( this.Window.IsReceivedMessage )	// ウインドウメッセージで、
-				{
-					string strMes = this.Window.strMessage;
-					this.Window.IsReceivedMessage = false;
-
-					if ( strMes != null )
-					{
-						DTXVmode.ParseArguments( strMes );
-
-						if ( DTXVmode.Enabled )
-						{
-							bコンパクトモード = true;
-							strコンパクトモードファイル = DTXVmode.filename;
-							if ( DTXVmode.Command == CDTXVmode.ECommand.Preview )
-							{
-								// preview soundの再生
-								string strPreviewFilename = DTXVmode.previewFilename;
-	//Trace.TraceInformation( "Preview Filename=" + DTXVmode.previewFilename );
-								try
-								{
-									if ( this.previewSound != null )
-									{
-										this.previewSound.tサウンドを停止する();
-										this.previewSound.Dispose();
-										this.previewSound = null;
-									}
-									this.previewSound = TJAPlayer3.Sound管理.tサウンドを生成する( strPreviewFilename, ESoundGroup.SongPreview );
-
-									// 2018-08-23 twopointzero: DTXVmode previewVolume will always set
-									// Gain since in this mode it should override the application of
-									// SONGVOL or any other Gain source regardless of configuration.
-									this.previewSound.SetGain(DTXVmode.previewVolume);
-
-									this.previewSound.n位置 = DTXVmode.previewPan;
-									this.previewSound.t再生を開始する();
-									Trace.TraceInformation( "DTXCからの指示で、サウンドを生成しました。({0})", strPreviewFilename );
-								}
-								catch
-								{
-									Trace.TraceError(ToString());
-									Trace.TraceError( "DTXCからの指示での、サウンドの生成に失敗しました。({0})", strPreviewFilename );
-									if ( this.previewSound != null )
-									{
-										this.previewSound.Dispose();
-									}
-									this.previewSound = null;
-								}
-							}
-						}
-					}
-				}
-				*/
-				#endregion
-
 				if (r現在のステージ != null) {
-					TJAPlayer3.NamePlate.lcNamePlate.Update();
+					OpenTaiko.NamePlate.lcNamePlate.Update();
 					this.n進行描画の戻り値 = (r現在のステージ != null) ? r現在のステージ.Draw() : 0;
 
 					#region [ プラグインの進行描画 ]
@@ -725,12 +621,12 @@ namespace TJAPlayer3 {
 					foreach (STPlugin sp in this.PluginList) {
 						Directory.SetCurrentDirectory(sp.pluginDirectory);
 
-						if (TJAPlayer3.act現在入力を占有中のプラグイン == null || TJAPlayer3.act現在入力を占有中のプラグイン == sp.plugin)
-							sp.plugin.On進行描画(TJAPlayer3.Pad, TJAPlayer3.InputManager.Keyboard);
+						if (OpenTaiko.act現在入力を占有中のプラグイン == null || OpenTaiko.act現在入力を占有中のプラグイン == sp.plugin)
+							sp.plugin.On進行描画(OpenTaiko.Pad, OpenTaiko.InputManager.Keyboard);
 						else
 							sp.plugin.On進行描画(null, null);
 
-						Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+						Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 					}
 					//---------------------
 					#endregion
@@ -739,7 +635,7 @@ namespace TJAPlayer3 {
 					CScoreIni scoreIni = null;
 
 					#region [ 曲検索スレッドの起動/終了 ]					// ここに"Enumerating Songs..."表示を集約
-					if (!TJAPlayer3.bコンパクトモード) {
+					if (!OpenTaiko.bコンパクトモード) {
 						actEnumSongs.Draw();                            // "Enumerating Songs..."アイコンの描画
 					}
 					switch (r現在のステージ.eStageID) {
@@ -758,7 +654,7 @@ namespace TJAPlayer3 {
 										actEnumSongs.CreateManagedResource();
 										actEnumSongs.CreateUnmanagedResource();
 									}
-									TJAPlayer3.stageSongSelect.bIsEnumeratingSongs = true;
+									OpenTaiko.stageSongSelect.bIsEnumeratingSongs = true;
 									EnumSongs.Init();   // 取得した曲数を、新インスタンスにも与える
 									EnumSongs.StartEnumFromDisk();      // 曲検索スレッドの起動_開始
 								}
@@ -805,10 +701,10 @@ namespace TJAPlayer3 {
 										actEnumSongs.ReleaseManagedResource();
 										actEnumSongs.ReleaseUnmanagedResource();
 									}
-									TJAPlayer3.stageSongSelect.bIsEnumeratingSongs = false;
+									OpenTaiko.stageSongSelect.bIsEnumeratingSongs = false;
 
 									bool bRemakeSongTitleBar = (r現在のステージ.eStageID == CStage.EStage.SongSelect) ? true : false;
-									TJAPlayer3.stageSongSelect.Refresh(EnumSongs.Songs管理, bRemakeSongTitleBar);
+									OpenTaiko.stageSongSelect.Refresh(EnumSongs.Songs管理, bRemakeSongTitleBar);
 									EnumSongs.SongListEnumCompletelyDone();
 								}
 								#endregion
@@ -859,7 +755,7 @@ namespace TJAPlayer3 {
 								foreach (STPlugin pg in this.PluginList) {
 									Directory.SetCurrentDirectory(pg.pluginDirectory);
 									pg.plugin.Onステージ変更();
-									Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+									Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 								}
 
 								this.tガベージコレクションを実行する();
@@ -890,7 +786,7 @@ namespace TJAPlayer3 {
 									r直前のステージ = r現在のステージ;
 									r現在のステージ = stageSongSelect;
 
-									TJAPlayer3.latestSongSelect = stageSongSelect;
+									OpenTaiko.latestSongSelect = stageSongSelect;
 									//-----------------------------
 									#endregion
 									break;
@@ -912,7 +808,7 @@ namespace TJAPlayer3 {
 									}
 									r直前のステージ = r現在のステージ;
 									r現在のステージ = stage段位選択;
-									TJAPlayer3.latestSongSelect = stage段位選択;
+									OpenTaiko.latestSongSelect = stage段位選択;
 									//-----------------------------
 									#endregion
 									break;
@@ -1061,7 +957,7 @@ namespace TJAPlayer3 {
 									r直前のステージ = r現在のステージ;
 									r現在のステージ = stageSongSelect;
 
-									TJAPlayer3.latestSongSelect = stageSongSelect;
+									OpenTaiko.latestSongSelect = stageSongSelect;
 									ConfigIni.nPreviousPlayerCount = ConfigIni.nPlayerCount;
 									ConfigIni.nPlayerCount = 2;
 									ConfigIni.bAIBattleMode = true;
@@ -1075,10 +971,9 @@ namespace TJAPlayer3 {
 							foreach (STPlugin pg in this.PluginList) {
 								Directory.SetCurrentDirectory(pg.pluginDirectory);
 								pg.plugin.Onステージ変更();
-								Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+								Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 							}
 
-							//this.tガベージコレクションを実行する();		// #31980 2013.9.3 yyagi タイトル画面でだけ、毎フレームGCを実行して重くなっていた問題の修正
 							//-----------------------------
 							#endregion
 							break;
@@ -1110,7 +1005,7 @@ namespace TJAPlayer3 {
 										foreach (STPlugin pg in this.PluginList) {
 											Directory.SetCurrentDirectory(pg.pluginDirectory);
 											pg.plugin.Onステージ変更();
-											Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+											Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 										}
 
 										this.tガベージコレクションを実行する();
@@ -1139,7 +1034,7 @@ namespace TJAPlayer3 {
 										foreach (STPlugin pg in this.PluginList) {
 											Directory.SetCurrentDirectory(pg.pluginDirectory);
 											pg.plugin.Onステージ変更();
-											Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+											Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 										}
 
 										this.tガベージコレクションを実行する();
@@ -1190,7 +1085,7 @@ namespace TJAPlayer3 {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 
 									this.tガベージコレクションを実行する();
@@ -1226,7 +1121,7 @@ namespace TJAPlayer3 {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 
 									this.tガベージコレクションを実行する();
@@ -1280,7 +1175,7 @@ namespace TJAPlayer3 {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 
 									this.tガベージコレクションを実行する();
@@ -1341,7 +1236,7 @@ namespace TJAPlayer3 {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 
 									this.tガベージコレクションを実行する();
@@ -1371,7 +1266,7 @@ namespace TJAPlayer3 {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 
 									this.tガベージコレクションを実行する();
@@ -1409,7 +1304,7 @@ namespace TJAPlayer3 {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 
 									this.tガベージコレクションを実行する();
@@ -1425,14 +1320,14 @@ namespace TJAPlayer3 {
 							//-----------------------------
 							DTXVmode.Refreshed = false;     // 曲のリロード中に発生した再リロードは、無視する。
 							if (this.n進行描画の戻り値 != 0) {
-								TJAPlayer3.Pad.st検知したデバイス.Clear();  // 入力デバイスフラグクリア(2010.9.11)
+								OpenTaiko.Pad.st検知したデバイス.Clear();  // 入力デバイスフラグクリア(2010.9.11)
 								r現在のステージ.DeActivate();
 								if (!ConfigIni.PreAssetsLoading) {
 									r現在のステージ.ReleaseManagedResource();
 									r現在のステージ.ReleaseUnmanagedResource();
 								}
 								#region [ ESC押下時は、曲の読み込みを中止して選曲画面に戻る ]
-								if (this.n進行描画の戻り値 == (int)E曲読込画面の戻り値.読込中止) {
+								if (this.n進行描画の戻り値 == (int)ESongLoadingScreenReturnValue.LoadCanceled) {
 									//DTX.t全チップの再生停止();
 									if (DTX != null) {
 										DTX.DeActivate();
@@ -1463,20 +1358,20 @@ namespace TJAPlayer3 {
 
 									Trace.TraceInformation("----------------------");
 									Trace.TraceInformation("■ Return to song select menu");
-									TJAPlayer3.latestSongSelect.Activate();
+									OpenTaiko.latestSongSelect.Activate();
 									if (!ConfigIni.PreAssetsLoading) {
-										TJAPlayer3.latestSongSelect.CreateManagedResource();
-										TJAPlayer3.latestSongSelect.CreateUnmanagedResource();
+										OpenTaiko.latestSongSelect.CreateManagedResource();
+										OpenTaiko.latestSongSelect.CreateUnmanagedResource();
 									}
 									r直前のステージ = r現在のステージ;
 
 									// Seek latest registered song select screen
-									r現在のステージ = TJAPlayer3.latestSongSelect;
+									r現在のステージ = OpenTaiko.latestSongSelect;
 
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 
 									break;
@@ -1502,7 +1397,7 @@ for (int i = 0; i < 3; i++) {
 								foreach (STPlugin pg in this.PluginList) {
 									Directory.SetCurrentDirectory(pg.pluginDirectory);
 									pg.plugin.Onステージ変更();
-									Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+									Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 								}
 
 								this.tガベージコレクションを実行する();
@@ -1519,7 +1414,7 @@ for (int i = 0; i < 3; i++) {
 								DTXVmode.Refreshed = false;
 
 								if (DTXVmode.Command == CDTXVmode.ECommand.Stop) {
-									TJAPlayer3.stage演奏ドラム画面.t停止();
+									OpenTaiko.stage演奏ドラム画面.t停止();
 									if (previewSound != null) {
 										this.previewSound.tStopSound();
 										this.previewSound.Dispose();
@@ -1558,23 +1453,23 @@ for (int i = 0; i < 3; i++) {
 									//}
 								} else if (DTXVmode.Command == CDTXVmode.ECommand.Play) {
 									if (DTXVmode.NeedReload) {
-										TJAPlayer3.stage演奏ドラム画面.t再読込();
+										OpenTaiko.stage演奏ドラム画面.t再読込();
 
-										TJAPlayer3.ConfigIni.bTimeStretch = DTXVmode.TimeStretch;
+										OpenTaiko.ConfigIni.bTimeStretch = DTXVmode.TimeStretch;
 										SoundManager.bIsTimeStretch = DTXVmode.TimeStretch;
-										if (TJAPlayer3.ConfigIni.bEnableVSync != DTXVmode.VSyncWait) {
-											TJAPlayer3.ConfigIni.bEnableVSync = DTXVmode.VSyncWait;
-											TJAPlayer3.app.b次のタイミングで垂直帰線同期切り替えを行う = true;
+										if (OpenTaiko.ConfigIni.bEnableVSync != DTXVmode.VSyncWait) {
+											OpenTaiko.ConfigIni.bEnableVSync = DTXVmode.VSyncWait;
+											OpenTaiko.app.b次のタイミングで垂直帰線同期切り替えを行う = true;
 										}
 									} else {
-										TJAPlayer3.stage演奏ドラム画面.t演奏位置の変更(TJAPlayer3.DTXVmode.nStartBar, 0);
+										OpenTaiko.stage演奏ドラム画面.t演奏位置の変更(OpenTaiko.DTXVmode.nStartBar, 0);
 									}
 								}
 							}
 							#endregion
 
 							switch (this.n進行描画の戻り値) {
-								case (int)E演奏画面の戻り値.再読込_再演奏:
+								case (int)EGameplayScreenReturnValue.ReloadAndReplay:
 									#region [ DTXファイルを再読み込みして、再演奏 ]
 									DTX.t全チップの再生停止();
 									DTX.DeActivate();
@@ -1601,10 +1496,10 @@ for (int i = 0; i < 3; i++) {
 								#endregion
 								//	break;
 
-								case (int)E演奏画面の戻り値.継続:
+								case (int)EGameplayScreenReturnValue.Continue:
 									break;
 
-								case (int)E演奏画面の戻り値.演奏中断:
+								case (int)EGameplayScreenReturnValue.PerformanceInterrupted:
 									#region [ 演奏キャンセル ]
 									//-----------------------------
 
@@ -1613,7 +1508,7 @@ for (int i = 0; i < 3; i++) {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.On演奏キャンセル(scoreIni);
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 									//---------------------
 									#endregion
@@ -1651,22 +1546,22 @@ for (int i = 0; i < 3; i++) {
 
 									Trace.TraceInformation("----------------------");
 									Trace.TraceInformation("■ Return to song select menu");
-									TJAPlayer3.latestSongSelect.Activate();
+									OpenTaiko.latestSongSelect.Activate();
 									if (!ConfigIni.PreAssetsLoading) {
-										TJAPlayer3.latestSongSelect.CreateManagedResource();
-										TJAPlayer3.latestSongSelect.CreateUnmanagedResource();
+										OpenTaiko.latestSongSelect.CreateManagedResource();
+										OpenTaiko.latestSongSelect.CreateUnmanagedResource();
 									}
 									r直前のステージ = r現在のステージ;
 
 									// Seek latest registered song select screen
-									r現在のステージ = TJAPlayer3.latestSongSelect;
+									r現在のステージ = OpenTaiko.latestSongSelect;
 
 									#region [ プラグイン Onステージ変更() の呼び出し ]
 									//---------------------
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 									//---------------------
 									#endregion
@@ -1677,7 +1572,7 @@ for (int i = 0; i < 3; i++) {
 								//-----------------------------
 								#endregion
 
-								case (int)E演奏画面の戻り値.ステージ失敗:
+								case (int)EGameplayScreenReturnValue.StageFailed:
 									#region [ 演奏失敗(StageFailed) ]
 									//-----------------------------
 
@@ -1686,7 +1581,7 @@ for (int i = 0; i < 3; i++) {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.On演奏失敗(scoreIni);
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 									//---------------------
 									#endregion
@@ -1716,7 +1611,7 @@ for (int i = 0; i < 3; i++) {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 									//---------------------
 									#endregion
@@ -1726,7 +1621,7 @@ for (int i = 0; i < 3; i++) {
 								//-----------------------------
 								#endregion
 
-								case (int)E演奏画面の戻り値.ステージクリア:
+								case (int)EGameplayScreenReturnValue.StageCleared:
 									#region [ 演奏クリア ]
 									//-----------------------------
 
@@ -1740,7 +1635,7 @@ for (int i = 0; i < 3; i++) {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.On演奏クリア(scoreIni);
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 									//---------------------
 									#endregion
@@ -1766,7 +1661,7 @@ for (int i = 0; i < 3; i++) {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 									//---------------------
 									#endregion
@@ -1819,22 +1714,22 @@ for (int i = 0; i < 3; i++) {
 
 								Trace.TraceInformation("----------------------");
 								Trace.TraceInformation("■ Return to song select menu");
-								TJAPlayer3.latestSongSelect.Activate();
+								OpenTaiko.latestSongSelect.Activate();
 								if (!ConfigIni.PreAssetsLoading) {
-									TJAPlayer3.latestSongSelect.CreateManagedResource();
-									TJAPlayer3.latestSongSelect.CreateUnmanagedResource();
+									OpenTaiko.latestSongSelect.CreateManagedResource();
+									OpenTaiko.latestSongSelect.CreateUnmanagedResource();
 								}
 								r直前のステージ = r現在のステージ;
 
 								// Seek latest registered song select screen
-								r現在のステージ = TJAPlayer3.latestSongSelect;
+								r現在のステージ = OpenTaiko.latestSongSelect;
 
 								stageSongSelect.NowSong++;
 
 								foreach (STPlugin pg in this.PluginList) {
 									Directory.SetCurrentDirectory(pg.pluginDirectory);
 									pg.plugin.Onステージ変更();
-									Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+									Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 								}
 
 								this.tガベージコレクションを実行する();
@@ -1871,7 +1766,7 @@ for (int i = 0; i < 3; i++) {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 
 									this.tガベージコレクションを実行する();
@@ -1901,7 +1796,7 @@ for (int i = 0; i < 3; i++) {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 
 									this.tガベージコレクションを実行する();
@@ -1974,7 +1869,7 @@ for (int i = 0; i < 3; i++) {
 									foreach (STPlugin pg in this.PluginList) {
 										Directory.SetCurrentDirectory(pg.pluginDirectory);
 										pg.plugin.Onステージ変更();
-										Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+										Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 									}
 
 									this.tガベージコレクションを実行する();
@@ -1989,14 +1884,8 @@ for (int i = 0; i < 3; i++) {
 					actScanningLoudness?.Draw();
 
 					if (!ConfigIni.bTokkunMode) {
-						float screen_ratiox = TJAPlayer3.Skin.Resolution[0] / 1280.0f;
-						float screen_ratioy = TJAPlayer3.Skin.Resolution[1] / 720.0f;
-						/*
-						var mat = Matrix.LookAtLH(new Vector3(-fCamXOffset * screen_ratiox, fCamYOffset * screen_ratioy, (float)(-SampleFramework.GameWindowSize.Height / (fCamZoomFactor * 2) * Math.Sqrt(3.0))), new Vector3(-fCamXOffset * screen_ratiox, fCamYOffset * screen_ratioy, 0f), new Vector3(0f, 1f, 0f));
-						mat *= Matrix.RotationYawPitchRoll(0, 0, C変換.DegreeToRadian(fCamRotation));
-						mat *= Matrix.Scaling(fCamXScale, fCamYScale, 1f);
-						this.Device.SetTransform(TransformState.View, mat);
-						*/
+						float screen_ratiox = OpenTaiko.Skin.Resolution[0] / 1280.0f;
+						float screen_ratioy = OpenTaiko.Skin.Resolution[1] / 720.0f;
 
 						Camera *= Matrix4X4.CreateScale(fCamXScale, fCamYScale, 1f);
 
@@ -2006,9 +1895,9 @@ for (int i = 0; i < 3; i++) {
 
 						Camera *= Matrix4X4.CreateTranslation(fCamXOffset / 1280, fCamYOffset / 720, 1f);
 
-						if (TJAPlayer3.DTX != null) {
+						if (OpenTaiko.DTX != null) {
 							//object rendering
-							foreach (KeyValuePair<string, CSongObject> pair in TJAPlayer3.DTX.listObj) {
+							foreach (KeyValuePair<string, CSongObject> pair in OpenTaiko.DTX.listObj) {
 								pair.Value.tDraw();
 							}
 						}
@@ -2016,7 +1905,7 @@ for (int i = 0; i < 3; i++) {
 						Camera = Matrix4X4<float>.Identity;
 					}
 
-					if (r現在のステージ != null && r現在のステージ.eStageID != CStage.EStage.StartUp && TJAPlayer3.Tx.Network_Connection != null) {
+					if (r現在のステージ != null && r現在のステージ.eStageID != CStage.EStage.StartUp && OpenTaiko.Tx.Network_Connection != null) {
 						if (Math.Abs(SoundManager.PlayTimer.SystemTimeMs - this.前回のシステム時刻ms) > 10000) {
 							this.前回のシステム時刻ms = SoundManager.PlayTimer.SystemTimeMs;
 							Task.Factory.StartNew(() => {
@@ -2025,24 +1914,21 @@ for (int i = 0; i < 3; i++) {
 								this.bネットワークに接続中 = reply.Status == IPStatus.Success;
 							});
 						}
-						TJAPlayer3.Tx.Network_Connection.t2D描画(GameWindowSize.Width - (TJAPlayer3.Tx.Network_Connection.szTextureSize.Width / 2), GameWindowSize.Height - TJAPlayer3.Tx.Network_Connection.szTextureSize.Height, new Rectangle((TJAPlayer3.Tx.Network_Connection.szTextureSize.Width / 2) * (this.bネットワークに接続中 ? 0 : 1), 0, TJAPlayer3.Tx.Network_Connection.szTextureSize.Width / 2, TJAPlayer3.Tx.Network_Connection.szTextureSize.Height));
+						OpenTaiko.Tx.Network_Connection.t2D描画(GameWindowSize.Width - (OpenTaiko.Tx.Network_Connection.szTextureSize.Width / 2), GameWindowSize.Height - OpenTaiko.Tx.Network_Connection.szTextureSize.Height, new Rectangle((OpenTaiko.Tx.Network_Connection.szTextureSize.Width / 2) * (this.bネットワークに接続中 ? 0 : 1), 0, OpenTaiko.Tx.Network_Connection.szTextureSize.Width / 2, OpenTaiko.Tx.Network_Connection.szTextureSize.Height));
 					}
 					// オーバレイを描画する(テクスチャの生成されていない起動ステージは例外
 
 					// Display log cards
 					VisualLogManager.Display();
 
-					if (r現在のステージ != null && r現在のステージ.eStageID != CStage.EStage.StartUp && TJAPlayer3.Tx.Overlay != null) {
-						TJAPlayer3.Tx.Overlay.t2D描画(0, 0);
+					if (r現在のステージ != null && r現在のステージ.eStageID != CStage.EStage.StartUp && OpenTaiko.Tx.Overlay != null) {
+						OpenTaiko.Tx.Overlay.t2D描画(0, 0);
 					}
 				}
 
-				//foreach(var capture in ConfigIni.KeyAssign.System.Capture)
-				//{
-				//if (TJAPlayer3.Input管理.Keyboard.KeyPressed(capture.コード) && capture.コード != 0)
-				if (TJAPlayer3.ConfigIni.KeyAssign.KeyIsPressed(TJAPlayer3.ConfigIni.KeyAssign.System.Capture)) {
+				if (OpenTaiko.ConfigIni.KeyAssign.KeyIsPressed(OpenTaiko.ConfigIni.KeyAssign.System.Capture)) {
 #if DEBUG
-					if (TJAPlayer3.InputManager.Keyboard.KeyPressing((int)SlimDXKeys.Key.LeftControl)) {
+					if (OpenTaiko.InputManager.Keyboard.KeyPressing((int)SlimDXKeys.Key.LeftControl)) {
 						if (r現在のステージ.eStageID != CStage.EStage.Game) {
 							RefreshSkin();
 							r現在のステージ.DeActivate();
@@ -2059,26 +1945,17 @@ for (int i = 0; i < 3; i++) {
 					} else {
 						// Debug.WriteLine( "capture: " + string.Format( "{0:2x}", (int) e.KeyCode ) + " " + (int) e.KeyCode );
 						string strFullPath =
-						   Path.Combine(TJAPlayer3.strEXEのあるフォルダ, "Capture_img");
+						   Path.Combine(OpenTaiko.strEXEのあるフォルダ, "Capture_img");
 						strFullPath = Path.Combine(strFullPath, DateTime.Now.ToString("yyyyMMddHHmmss") + ".png");
 						SaveResultScreen(strFullPath);
 					}
 #else
 					string strFullPath =
-						Path.Combine(TJAPlayer3.strEXEのあるフォルダ, "Capture_img");
+						Path.Combine(OpenTaiko.strEXEのあるフォルダ, "Capture_img");
 					strFullPath = Path.Combine(strFullPath, DateTime.Now.ToString("yyyyMMddHHmmss") + ".png");
 					SaveResultScreen(strFullPath);
 #endif
 				}
-
-				//}
-
-				/*
-				if ( Sound管理?.GetCurrentSoundDeviceType() != "DirectSound" )
-				{
-					Sound管理?.t再生中の処理をする();	// サウンドバッファの更新; 画面描画と同期させることで、スクロールをスムーズにする
-				}
-				*/
 
 				#region [ 全画面_ウインドウ切り替え ]
 				if (this.b次のタイミングで全画面_ウィンドウ切り替えを行う) {
@@ -2093,6 +1970,13 @@ for (int i = 0; i < 3; i++) {
 					this.b次のタイミングで垂直帰線同期切り替えを行う = false;
 				}
 				#endregion
+
+#if DEBUG
+				if (OpenTaiko.InputManager.Keyboard.KeyPressed((int)SlimDXKeys.Key.F11))
+					OpenTaiko.ConfigIni.DEBUG_bShowImgui = !OpenTaiko.ConfigIni.DEBUG_bShowImgui;
+				if (OpenTaiko.ConfigIni.DEBUG_bShowImgui)
+					ImGuiDebugWindow.Draw();
+#endif
 			}
 #if !DEBUG
 			catch( Exception e )
@@ -2130,10 +2014,10 @@ for (int i = 0; i < 3; i++) {
 			}
 		}
 		public static void tテクスチャの解放(ref CTexture tx) {
-			TJAPlayer3.tDisposeSafely(ref tx);
+			OpenTaiko.tDisposeSafely(ref tx);
 		}
 		public static void tテクスチャの解放(ref CTextureAf tx) {
-			TJAPlayer3.tDisposeSafely(ref tx);
+			OpenTaiko.tDisposeSafely(ref tx);
 		}
 		public static CTexture tテクスチャの生成(SKBitmap bitmap) {
 			return tテクスチャの生成(bitmap, false);
@@ -2303,17 +2187,11 @@ for (int i = 0; i < 3; i++) {
 
 			VisualLogManager = new CVisualLogManager();
 
-
+			if (!File.Exists("Saves.db3")) {
+				File.Copy(@$".init{Path.DirectorySeparatorChar}Saves.db3", "Saves.db3");
+			}
 			// Add a condition here (if old Saves\ format save files exist) to port them to database (?)
 			SaveFileInstances = DBSaves.FetchSaveInstances();
-			/*
-            for (int i = 0; i < 5; i++)
-            {
-                SaveFileInstances[i] = new SaveFile();
-                SaveFileInstances[i].tSaveFile(TJAPlayer3.ConfigIni.sSaveFile[i]);
-            }
-			*/
-
 
 			//---------------------
 			#endregion
@@ -2323,7 +2201,7 @@ for (int i = 0; i < 3; i++) {
 			Trace.AutoFlush = true;
 			if (ConfigIni.bOutputLogs) {
 				try {
-					Trace.Listeners.Add(new CTraceLogListener(new StreamWriter(System.IO.Path.Combine(strEXEのあるフォルダ, "OpenTaiko.log"), false, Encoding.GetEncoding(TJAPlayer3.sEncType))));
+					Trace.Listeners.Add(new CTraceLogListener(new StreamWriter(System.IO.Path.Combine(strEXEのあるフォルダ, "OpenTaiko.log"), false, Encoding.GetEncoding(OpenTaiko.sEncType))));
 				} catch (System.UnauthorizedAccessException)            // #24481 2011.2.20 yyagi
 				  {
 					int c = (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ja") ? 0 : 1;
@@ -2331,7 +2209,6 @@ for (int i = 0; i < 3; i++) {
 						"OpenTaiko.logへの書き込みができませんでした。書き込みできるようにしてから、再度起動してください。",
 						"Failed to write OpenTaiko.log. Please set your device to READ/WRITE and try again."
 					};
-					//MessageBox.Show( mes_writeErr[c], "OpenTaiko Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
 					Environment.Exit(1);
 				}
 			}
@@ -2349,15 +2226,8 @@ for (int i = 0; i < 3; i++) {
 
 			#region [ DTXVmodeクラス の初期化 ]
 			//---------------------
-			//Trace.TraceInformation( "Initialize DTXV mode." );
-			//Trace.Indent();
-			try {
-				DTXVmode = new CDTXVmode();
-				DTXVmode.Enabled = false;
-				//Trace.TraceInformation( "DTXV initialization complete." );
-			} finally {
-				//Trace.Unindent();
-			}
+			DTXVmode = new CDTXVmode();
+			DTXVmode.Enabled = false;
 			//---------------------
 			#endregion
 
@@ -2372,10 +2242,10 @@ for (int i = 0; i < 3; i++) {
 			try
 #endif
 			{
-				Skin = new CSkin(TJAPlayer3.ConfigIni.strSystemSkinSubfolderFullName, false);
-				TJAPlayer3.ConfigIni.strSystemSkinSubfolderFullName = TJAPlayer3.Skin.GetCurrentSkinSubfolderFullName(true);  // 旧指定のSkinフォルダが消滅していた場合に備える
+				Skin = new CSkin(OpenTaiko.ConfigIni.strSystemSkinSubfolderFullName, false);
+				OpenTaiko.ConfigIni.strSystemSkinSubfolderFullName = OpenTaiko.Skin.GetCurrentSkinSubfolderFullName(true);  // 旧指定のSkinフォルダが消滅していた場合に備える
 
-				ChangeResolution(TJAPlayer3.Skin.Resolution[0], TJAPlayer3.Skin.Resolution[1]);
+				ChangeResolution(OpenTaiko.Skin.Resolution[0], OpenTaiko.Skin.Resolution[1]);
 
 				Trace.TraceInformation("Skin successfully initialized.");
 			}
@@ -2428,11 +2298,8 @@ for (int i = 0; i < 3; i++) {
 				actTextConsole = new CTextConsole();
 				Trace.TraceInformation("Console initialized.");
 				actTextConsole.Activate();
-				//if (!ConfigIni.PreAssetsLoading)
-				{
-					actTextConsole.CreateManagedResource();
-					actTextConsole.CreateUnmanagedResource();
-				}
+				actTextConsole.CreateManagedResource();
+				actTextConsole.CreateUnmanagedResource();
 				Trace.TraceInformation("Console has been activated.");
 				Trace.TraceInformation("Console has finished being initialized.");
 			} catch (Exception exception) {
@@ -2514,7 +2381,7 @@ for (int i = 0; i < 3; i++) {
 			Trace.Indent();
 			try {
 				ESoundDeviceType soundDeviceType;
-				switch (TJAPlayer3.ConfigIni.nSoundDeviceType) {
+				switch (OpenTaiko.ConfigIni.nSoundDeviceType) {
 					case 0:
 						soundDeviceType = ESoundDeviceType.Bass;
 						break;
@@ -2533,12 +2400,12 @@ for (int i = 0; i < 3; i++) {
 				}
 				SoundManager = new SoundManager(Window_,
 											soundDeviceType,
-											TJAPlayer3.ConfigIni.nBassBufferSizeMs,
-											TJAPlayer3.ConfigIni.nWASAPIBufferSizeMs,
+											OpenTaiko.ConfigIni.nBassBufferSizeMs,
+											OpenTaiko.ConfigIni.nWASAPIBufferSizeMs,
 											// CDTXMania.ConfigIni.nASIOBufferSizeMs,
 											0,
-											TJAPlayer3.ConfigIni.nASIODevice,
-											TJAPlayer3.ConfigIni.bUseOSTimer
+											OpenTaiko.ConfigIni.nASIODevice,
+											OpenTaiko.ConfigIni.bUseOSTimer
 				);
 				//Sound管理 = FDK.CSound管理.Instance;
 				//Sound管理.t初期化( soundDeviceType, 0, 0, CDTXMania.ConfigIni.nASIODevice, base.Window.Handle );
@@ -2568,9 +2435,8 @@ for (int i = 0; i < 3; i++) {
 				}
 
 				ShowWindowTitleWithSoundType();
-				FDK.SoundManager.bIsTimeStretch = TJAPlayer3.ConfigIni.bTimeStretch;
-				SoundManager.nMasterVolume = TJAPlayer3.ConfigIni.nMasterVolume;
-				//FDK.CSound管理.bIsMP3DecodeByWindowsCodec = CDTXMania.ConfigIni.bNoMP3Streaming;
+				FDK.SoundManager.bIsTimeStretch = OpenTaiko.ConfigIni.bTimeStretch;
+				SoundManager.nMasterVolume = OpenTaiko.ConfigIni.nMasterVolume;
 				Trace.TraceInformation("サウンドデバイスの初期化を完了しました。");
 			} catch (Exception e) {
 				throw new NullReferenceException("No sound devices are enabled. Please check your audio settings.", e);
@@ -2608,7 +2474,6 @@ for (int i = 0; i < 3; i++) {
 			r直前のステージ = null;
 			stage起動 = new CStage起動();
 			stageタイトル = new CStageタイトル();
-			//			stageオプション = new CStageオプション();
 			stageコンフィグ = new CStageコンフィグ();
 			stageSongSelect = new CStage選曲();
 			stage段位選択 = new CStage段位選択();
@@ -2629,7 +2494,6 @@ for (int i = 0; i < 3; i++) {
 			this.listトップレベルActivities.Add(actTextConsole);
 			this.listトップレベルActivities.Add(stage起動);
 			this.listトップレベルActivities.Add(stageタイトル);
-			//			this.listトップレベルActivities.Add( stageオプション );
 			this.listトップレベルActivities.Add(stageコンフィグ);
 			this.listトップレベルActivities.Add(stageSongSelect);
 			this.listトップレベルActivities.Add(stage段位選択);
@@ -2669,7 +2533,7 @@ for (int i = 0; i < 3; i++) {
 						st.plugin.On初期化(this.PluginHost);
 						st.plugin.OnManagedリソースの作成();
 						st.plugin.OnUnmanagedリソースの作成();
-						Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+						Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 					}
 					Trace.TraceInformation("All plugins have been initialized.");
 				} catch {
@@ -2690,10 +2554,10 @@ for (int i = 0; i < 3; i++) {
 			DiscordClient?.SetPresence(new RichPresence() {
 				Details = "",
 				State = "Startup",
-				Timestamps = new Timestamps(TJAPlayer3.StartupTime),
+				Timestamps = new Timestamps(OpenTaiko.StartupTime),
 				Assets = new Assets() {
-					LargeImageKey = TJAPlayer3.LargeImageKey,
-					LargeImageText = TJAPlayer3.LargeImageText,
+					LargeImageKey = OpenTaiko.LargeImageKey,
+					LargeImageText = OpenTaiko.LargeImageText,
 				}
 			});
 			#endregion
@@ -2707,7 +2571,7 @@ for (int i = 0; i < 3; i++) {
 			Trace.TraceInformation("----------------------");
 			Trace.TraceInformation("■ Startup");
 
-			if (TJAPlayer3.bコンパクトモード) {
+			if (OpenTaiko.bコンパクトモード) {
 				r現在のステージ = stage曲読み込み;
 			} else {
 				r現在のステージ = stage起動;
@@ -2756,7 +2620,7 @@ for (int i = 0; i < 3; i++) {
 				#endregion
 				#region [ 現在のステージの終了処理 ]
 				//---------------------
-				if (TJAPlayer3.r現在のステージ != null && TJAPlayer3.r現在のステージ.IsActivated)     // #25398 2011.06.07 MODIFY FROM
+				if (OpenTaiko.r現在のステージ != null && OpenTaiko.r現在のステージ.IsActivated)     // #25398 2011.06.07 MODIFY FROM
 				{
 					Trace.TraceInformation("Exiting stage...");
 					Trace.Indent();
@@ -2784,7 +2648,7 @@ for (int i = 0; i < 3; i++) {
 							st.plugin.OnUnmanagedリソースの解放();
 							st.plugin.OnManagedリソースの解放();
 							st.plugin.On終了();
-							Directory.SetCurrentDirectory(TJAPlayer3.strEXEのあるフォルダ);
+							Directory.SetCurrentDirectory(OpenTaiko.strEXEのあるフォルダ);
 						}
 						PluginHost = null;
 						Trace.TraceInformation("All plugins have been terminated.");
@@ -2806,7 +2670,7 @@ for (int i = 0; i < 3; i++) {
 #pragma warning disable SYSLIB0011
 						if (EnumSongs.IsSongListEnumCompletelyDone) {
 							BinaryFormatter songlistdb_ = new BinaryFormatter();
-							using Stream songlistdb = File.OpenWrite($"{TJAPlayer3.strEXEのあるフォルダ}songlist.db");
+							using Stream songlistdb = File.OpenWrite($"{OpenTaiko.strEXEのあるフォルダ}songlist.db");
 							songlistdb_.Serialize(songlistdb, Songs管理.listSongsDB);
 						}
 #pragma warning restore SYSLIB0011
@@ -2903,11 +2767,8 @@ for (int i = 0; i < 3; i++) {
 					Trace.Indent();
 					try {
 						actTextConsole.DeActivate();
-						//if (!ConfigIni.PreAssetsLoading)
-						{
-							actTextConsole.ReleaseManagedResource();
-							actTextConsole.ReleaseUnmanagedResource();
-						}
+						actTextConsole.ReleaseManagedResource();
+						actTextConsole.ReleaseUnmanagedResource();
 						actTextConsole = null;
 						Trace.TraceInformation("Console terminated.");
 					} catch (Exception exception6) {
@@ -2954,7 +2815,6 @@ for (int i = 0; i < 3; i++) {
 				//---------------------
 				Trace.TraceInformation("Outputting Config.ini...");
 				Trace.TraceInformation("This only needs to be done once, unless you have deleted the file!");
-				//				if ( ConfigIni.bIsSwappedGuitarBass )			// #24063 2011.1.16 yyagi ギターベースがスワップしているときは元に戻す
 				string str = strEXEのあるフォルダ + "Config.ini";
 				Trace.Indent();
 				try {
@@ -2995,23 +2855,12 @@ for (int i = 0; i < 3; i++) {
 				#endregion
 				#region [ DTXVmodeの終了処理 ]
 				//---------------------
-				//Trace.TraceInformation( "DTXVモードの終了処理を行います。" );
-				//Trace.Indent();
-				try {
-					if (DTXVmode != null) {
-						DTXVmode = null;
-						//Trace.TraceInformation( "DTXVモードの終了処理を完了しました。" );
-					} else {
-						//Trace.TraceInformation( "DTXVモードは使用されていません。" );
-					}
-				} finally {
-					//Trace.Unindent();
+				if (DTXVmode != null) {
+					DTXVmode = null;
 				}
 				//---------------------
 				#endregion
 				Trace.TraceInformation("OpenTaiko has closed down successfully.");
-
-
 				this.b終了処理完了済み = true;
 			}
 		}
@@ -3037,31 +2886,31 @@ for (int i = 0; i < 3; i++) {
 			GameWindowSize.Width = nWidth;
 			GameWindowSize.Height = nHeight;
 
-			WindowSize = new Silk.NET.Maths.Vector2D<int>(nWidth, nHeight);
+			//WindowSize = new Silk.NET.Maths.Vector2D<int>(nWidth, nHeight);
 		}
 
 		public void RefreshSkin() {
-			Trace.TraceInformation("Skin Change:" + TJAPlayer3.Skin.GetCurrentSkinSubfolderFullName(false));
+			Trace.TraceInformation("Skin Change:" + OpenTaiko.Skin.GetCurrentSkinSubfolderFullName(false));
 
-			TJAPlayer3.actTextConsole.DeActivate();
+			OpenTaiko.actTextConsole.DeActivate();
 			actTextConsole.ReleaseManagedResource();
 			actTextConsole.ReleaseUnmanagedResource();
 
-			TJAPlayer3.Skin.Dispose();
-			TJAPlayer3.Skin = null;
-			TJAPlayer3.Skin = new CSkin(TJAPlayer3.ConfigIni.strSystemSkinSubfolderFullName, false);
+			OpenTaiko.Skin.Dispose();
+			OpenTaiko.Skin = null;
+			OpenTaiko.Skin = new CSkin(OpenTaiko.ConfigIni.strSystemSkinSubfolderFullName, false);
 
-			TJAPlayer3.Tx.DisposeTexture();
+			OpenTaiko.Tx.DisposeTexture();
 
-			ChangeResolution(TJAPlayer3.Skin.Resolution[0], TJAPlayer3.Skin.Resolution[1]);
+			ChangeResolution(OpenTaiko.Skin.Resolution[0], OpenTaiko.Skin.Resolution[1]);
 
-			TJAPlayer3.Tx.LoadTexture();
+			OpenTaiko.Tx.LoadTexture();
 
-			TJAPlayer3.actTextConsole.Activate();
+			OpenTaiko.actTextConsole.Activate();
 			actTextConsole.CreateManagedResource();
 			actTextConsole.CreateUnmanagedResource();
-			TJAPlayer3.NamePlate.RefleshSkin();
-			TJAPlayer3.stage結果.RefreshSkin();
+			OpenTaiko.NamePlate.RefleshSkin();
+			OpenTaiko.stage結果.RefreshSkin();
 			CActSelectPopupMenu.RefleshSkin();
 			CActSelect段位リスト.RefleshSkin();
 		}
@@ -3109,19 +2958,6 @@ for (int i = 0; i < 3; i++) {
 				this.SearchAndGeneratePluginsInFolder(dir + Path.DirectorySeparatorChar, PluginTypeName);
 		}
 		//-----------------
-		/*
-		private void Window_ResizeEnd(object sender, EventArgs e)				// #23510 2010.11.20 yyagi: to get resized window size
-		{
-			if ( ConfigIni.bウィンドウモード )
-			{
-				ConfigIni.n初期ウィンドウ開始位置X = base.Window.Location.X;	// #30675 2013.02.04 ikanick add
-				ConfigIni.n初期ウィンドウ開始位置Y = base.Window.Location.Y;	//
-			}
-
-			ConfigIni.nウインドウwidth = (ConfigIni.bウィンドウモード) ? base.Window.ClientSize.Width : currentClientSize.Width;	// #23510 2010.10.31 yyagi add
-			ConfigIni.nウインドウheight = (ConfigIni.bウィンドウモード) ? base.Window.ClientSize.Height : currentClientSize.Height;
-		}
-		*/
 		#endregion
 		#endregion
 

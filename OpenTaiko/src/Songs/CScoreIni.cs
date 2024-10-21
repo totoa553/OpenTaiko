@@ -1,7 +1,7 @@
-﻿namespace TJAPlayer3 {
+﻿namespace OpenTaiko {
 	[Serializable]
 	public class CScoreIni {
-		// プロパティ
+		// Properties
 
 		[Serializable]
 		public class C演奏記録 {

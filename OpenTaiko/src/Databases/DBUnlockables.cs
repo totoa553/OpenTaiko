@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using static TJAPlayer3.BestPlayRecords;
+using static OpenTaiko.BestPlayRecords;
 
-namespace TJAPlayer3 {
+namespace OpenTaiko {
 	class DBUnlockables {
 		public static Dictionary<string, int> RequiredArgs = new Dictionary<string, int>() {
 			["ch"] = 1,
@@ -95,7 +95,6 @@ namespace TJAPlayer3 {
 						return CLangManager.LangInstance.GetString(exact ? "UNLOCK_CONDITION_REQUIRE_CLEAR" : "UNLOCK_CONDITION_REQUIRE_CLEAR_MORE");
 					case (int)EClearStatus.ASSISTED_CLEAR:
 						return CLangManager.LangInstance.GetString(exact ? "UNLOCK_CONDITION_REQUIRE_ASSIST" : "UNLOCK_CONDITION_REQUIRE_ASSIST_MORE");
-					case (int)EClearStatus.NONE:
 					default:
 						return CLangManager.LangInstance.GetString(exact ? "UNLOCK_CONDITION_REQUIRE_PLAY" : "UNLOCK_CONDITION_REQUIRE_PLAY_MORE");
 				}
@@ -116,7 +115,7 @@ namespace TJAPlayer3 {
              * ap : "AI battle plays", 1 value : [AI battle playcount]
              * aw : "AI battle wins", 1 value : [AI battle wins count]
              * ig : "Impossible to Get", (not recommanded) used to be able to have content in database that is impossible to unlock, no values
-             * 
+             *
             */
 			public (bool, string?) tConditionMetWrapper(int player, EScreen screen = EScreen.MyRoom) {
 				if (RequiredArgCount < 0 && RequiredArgs.ContainsKey(Condition))
@@ -127,27 +126,27 @@ namespace TJAPlayer3 {
 					case "cs":
 					case "cm":
 						if (this.Values.Length == 1)
-							return tConditionMet(new int[] { (int)TJAPlayer3.SaveFileInstances[player].data.Medals }, screen);
+							return tConditionMet(new int[] { (int)OpenTaiko.SaveFileInstances[player].data.Medals }, screen);
 						else
 							return (false, CLangManager.LangInstance.GetString("UNLOCK_CONDITION_ERROR", this.Condition, this.RequiredArgCount.ToString()));
 					case "ce":
 						if (this.Values.Length == 1)
-							return tConditionMet(new int[] { (int)TJAPlayer3.SaveFileInstances[player].data.TotalEarnedMedals }, screen);
+							return tConditionMet(new int[] { (int)OpenTaiko.SaveFileInstances[player].data.TotalEarnedMedals }, screen);
 						else
 							return (false, CLangManager.LangInstance.GetString("UNLOCK_CONDITION_ERROR", this.Condition, this.RequiredArgCount.ToString()));
 					case "ap":
 						if (this.Values.Length == 1)
-							return tConditionMet(new int[] { (int)TJAPlayer3.SaveFileInstances[player].data.AIBattleModePlaycount }, screen);
+							return tConditionMet(new int[] { (int)OpenTaiko.SaveFileInstances[player].data.AIBattleModePlaycount }, screen);
 						else
 							return (false, CLangManager.LangInstance.GetString("UNLOCK_CONDITION_ERROR", this.Condition, this.RequiredArgCount.ToString()));
 					case "aw":
 						if (this.Values.Length == 1)
-							return tConditionMet(new int[] { (int)TJAPlayer3.SaveFileInstances[player].data.AIBattleModeWins }, screen);
+							return tConditionMet(new int[] { (int)OpenTaiko.SaveFileInstances[player].data.AIBattleModeWins }, screen);
 						else
 							return (false, CLangManager.LangInstance.GetString("UNLOCK_CONDITION_ERROR", this.Condition, this.RequiredArgCount.ToString()));
 					case "tp":
 						if (this.Values.Length == 1)
-							return tConditionMet(new int[] { (int)TJAPlayer3.SaveFileInstances[player].data.TotalPlaycount }, screen);
+							return tConditionMet(new int[] { (int)OpenTaiko.SaveFileInstances[player].data.TotalPlaycount }, screen);
 						else
 							return (false, CLangManager.LangInstance.GetString("UNLOCK_CONDITION_ERROR", this.Condition, this.RequiredArgCount.ToString()));
 					case "dp":
@@ -230,6 +229,8 @@ namespace TJAPlayer3 {
 							this.Type = "me";
 							bool fulfiled = this.tValueRequirementMet(inputValues[0], this.Values[0]);
 							return (fulfiled, CLangManager.LangInstance.GetString(fulfiled ? "UNLOCK_COIN_BOUGHT" : "UNLOCK_COIN_MORE"));
+						default:
+							return (false, null);
 					}
 				}
 
@@ -245,7 +246,7 @@ namespace TJAPlayer3 {
 					return CLangManager.LangInstance.GetString("UNLOCK_CONDITION_ERROR", this.Condition, this.RequiredArgCount);
 
 				// Only the player loaded as 1P can check unlockables in real time
-				var SaveData = TJAPlayer3.SaveFileInstances[TJAPlayer3.SaveFile].data;
+				var SaveData = OpenTaiko.SaveFileInstances[OpenTaiko.SaveFile].data;
 				var ChartStats = SaveData.bestPlaysStats;
 
 				switch (this.Condition) {
@@ -428,8 +429,8 @@ namespace TJAPlayer3 {
 					if (this.Condition == "dp" && (_aimedDifficulty < (int)Difficulty.Easy || _aimedDifficulty > (int)Difficulty.Edit)) return 0;
 				}
 
-				var bpDistinctCharts = TJAPlayer3.SaveFileInstances[player].data.bestPlaysDistinctCharts;
-				var chartStats = TJAPlayer3.SaveFileInstances[player].data.bestPlaysStats;
+				var bpDistinctCharts = OpenTaiko.SaveFileInstances[player].data.bestPlaysDistinctCharts;
+				var chartStats = OpenTaiko.SaveFileInstances[player].data.bestPlaysStats;
 
 				switch (this.Condition) {
 					case "dp":
@@ -510,11 +511,6 @@ namespace TJAPlayer3 {
 			}
 
 			#endregion
-
 		}
-
 	}
-
-
-
 }

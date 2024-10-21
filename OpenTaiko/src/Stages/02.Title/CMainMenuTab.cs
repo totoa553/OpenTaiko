@@ -1,8 +1,7 @@
 ﻿using System.Drawing;
 using FDK;
-using static TJAPlayer3.CActSelect曲リスト;
 
-namespace TJAPlayer3 {
+namespace OpenTaiko {
 	class CMainMenuTab {
 		public static int __MenuCount = 14; // Number of existing menus
 		public static CMainMenuTab[] __Menus;
@@ -153,7 +152,7 @@ namespace TJAPlayer3 {
 					true,
 					true,
 					true,
-					true,
+					false,
 					true,
 					false,
 					false,

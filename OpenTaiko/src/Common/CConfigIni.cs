@@ -5,13 +5,13 @@ using System.Text;
 using FDK;
 using FDK.ExtensionMethods;
 
-namespace TJAPlayer3 {
+namespace OpenTaiko {
 	internal class CConfigIni : INotifyPropertyChanged {
 		private const int MinimumKeyboardSoundLevelIncrement = 1;
 		private const int MaximumKeyboardSoundLevelIncrement = 20;
 		private const int DefaultKeyboardSoundLevelIncrement = 5;
 
-		// クラス
+		// Class
 
 		#region [ CKeyAssign ]
 		public class CKeyAssign {
@@ -1054,18 +1054,18 @@ namespace TJAPlayer3 {
 			}
 
 			public bool KeyIsPressed(STKEYASSIGN[] pad) {
-				return TJAPlayer3.InputManager.Keyboard.KeyPressed(pad.ToList().ConvertAll<int>(key => key.コード));
+				return OpenTaiko.InputManager.Keyboard.KeyPressed(pad.ToList().ConvertAll<int>(key => key.Code));
 			}
 
 			[StructLayout(LayoutKind.Sequential)]
 			public struct STKEYASSIGN {
-				public EInputDevice 入力デバイス;
+				public EInputDevice InputDevice;
 				public int ID;
-				public int コード;
+				public int Code;
 				public STKEYASSIGN(EInputDevice DeviceType, int nID, int nCode) {
-					this.入力デバイス = DeviceType;
+					this.InputDevice = DeviceType;
 					this.ID = nID;
-					this.コード = nCode;
+					this.Code = nCode;
 				}
 			}
 
@@ -1077,42 +1077,42 @@ namespace TJAPlayer3 {
 			public CKeyAssignPad this[int index] {
 				get {
 					switch (index) {
-						case (int)EKeyConfigPart.DRUMS:
+						case (int)EKeyConfigPart.Drums:
 							return this.Drums;
 
-						case (int)EKeyConfigPart.GUITAR:
+						case (int)EKeyConfigPart.Guitar:
 							return this.Guitar;
 
-						case (int)EKeyConfigPart.BASS:
+						case (int)EKeyConfigPart.Bass:
 							return this.Bass;
 
-						case (int)EKeyConfigPart.TAIKO:
+						case (int)EKeyConfigPart.Taiko:
 							return this.Taiko;
 
-						case (int)EKeyConfigPart.SYSTEM:
+						case (int)EKeyConfigPart.System:
 							return this.System;
 					}
 					throw new IndexOutOfRangeException();
 				}
 				set {
 					switch (index) {
-						case (int)EKeyConfigPart.DRUMS:
+						case (int)EKeyConfigPart.Drums:
 							this.Drums = value;
 							return;
 
-						case (int)EKeyConfigPart.GUITAR:
+						case (int)EKeyConfigPart.Guitar:
 							this.Guitar = value;
 							return;
 
-						case (int)EKeyConfigPart.BASS:
+						case (int)EKeyConfigPart.Bass:
 							this.Bass = value;
 							return;
 
-						case (int)EKeyConfigPart.TAIKO:
+						case (int)EKeyConfigPart.Taiko:
 							this.Taiko = value;
 							return;
 
-						case (int)EKeyConfigPart.SYSTEM:
+						case (int)EKeyConfigPart.System:
 							this.System = value;
 							return;
 					}
@@ -1130,7 +1130,7 @@ namespace TJAPlayer3 {
 			WASAPI_Shared,
 			Unknown = 99
 		}
-		// プロパティ
+		// Properties
 
 		public class CAIPerformances {
 			public int nGoodOdds;
@@ -1164,10 +1164,10 @@ namespace TJAPlayer3 {
 		public int nBGAlpha;
 		public bool bEnableAVI;
 		public bool bEnableBGA;
-		public bool bBGM音を発声する;
-		public bool bLogDTX詳細ログ出力;
-		public bool bLog曲検索ログ出力;
-		public bool bLog作成解放ログ出力;
+		public bool bBGMPlayVoiceSound;
+		public bool bOutputDetailedDTXLog;
+		public bool bOutputSongSearchLog;
+		public bool bOutputCreationReleaseLog;
 		public STDGBVALUE<bool> bReverse;
 
 		public bool bDanTowerHide;
@@ -1178,6 +1178,7 @@ namespace TJAPlayer3 {
 		public bool bDisplayDebugInfo;
 		public bool bEnableVSync;
 		public bool bFullScreen;
+		public bool bIgnoreSongUnlockables;
 		public int nWindowBaseXPosition; // #30675 2013.02.04 ikanick add
 		public int nWindowBaseYPosition;
 		public int nWindowWidth;             // #23510 2010.10.31 yyagi add
@@ -1186,17 +1187,17 @@ namespace TJAPlayer3 {
 		public Dictionary<int, string> dicGamepad;
 		public ERandomMode[] eRandom;
 		public CKeyAssign KeyAssign;
-		public int n非フォーカス時スリープms;       // #23568 2010.11.04 ikanick add
-		public int nフレーム毎スリープms;            // #xxxxx 2011.11.27 yyagi add
+		public int nMsSleepUnfocused;       // #23568 2010.11.04 ikanick add
+		public int nMsSleepPerFrame;            // #xxxxx 2011.11.27 yyagi add
 		public int nSongSpeed;
 
 		public double SongPlaybackSpeed {
 			get => ((double)nSongSpeed) / 20.0;
 		}
 
-		public bool b演奏速度が一倍速であるとき以外音声を再生しない;
-		public int n曲が選択されてからプレビュー音が鳴るまでのウェイトms;
-		public int n曲が選択されてからプレビュー画像が表示開始されるまでのウェイトms;
+		public bool bNoAudioIfNot1xSpeed; // FIXME: Negation should be removed and booleans flipped
+		public int nMsWaitPreviewSoundFromSongSelected;
+		public int nMsWaitPreviewImageFromSongSelected;
 
 		private bool _applyLoudnessMetadata;
 
@@ -1257,7 +1258,7 @@ namespace TJAPlayer3 {
 				nameof(KeyboardSoundLevelIncrement));
 		}
 
-		public STDGBVALUE<int> n表示可能な最小コンボ数;
+		public STDGBVALUE<int> nMinDisplayedCombo;
 		public int[] nScrollSpeed;
 		public int[] nTimingZones;
 		public EGameType[] nGameType;
@@ -1334,7 +1335,7 @@ namespace TJAPlayer3 {
 
 		public bool bEnableCountdownTimer;
 
-		// 各画像の表示・非表示設定
+		// Display/Hide settings for each image
 		public bool ShowChara;
 		public bool ShowDancer;
 		public bool ShowRunner;
@@ -1368,9 +1369,7 @@ namespace TJAPlayer3 {
 
 		public bool bEndingAnime = false;   // 2017.01.27 DD 「また遊んでね」画面の有効/無効オプション追加
 
-		public STDGBVALUE<E判定文字表示位置> 判定文字表示位置;
-		//		public int nハイハット切り捨て下限Velocity;
-		//		public int n切り捨て下限Velocity;			// #23857 2010.12.12 yyagi VelocityMin
+		public STDGBVALUE<EJudgeTextDisplayPosition> JudgeTextDisplayPosition;
 		public int nInputAdjustTimeMs;
 		public int nGlobalOffsetMs;
 		public bool bIsAutoResultCapture;           // #25399 2011.6.9 yyagi リザルト画像自動保存機能のON/OFF制御
@@ -1383,12 +1382,12 @@ namespace TJAPlayer3 {
 			this.nAILevel = this.nDefaultAILevel;
 		}
 
-		public bool bEnterがキー割り当てのどこにも使用されていない {
+		public bool bEnterIsNotUsedInKeyAssignments {
 			get {
-				for (int i = 0; i <= (int)EKeyConfigPart.SYSTEM; i++) {
-					for (int j = 0; j < (int)EKeyConfigPad.MAX; j++) {
+				for (int i = 0; i <= (int)EKeyConfigPart.System; i++) {
+					for (int j = 0; j < (int)EKeyConfigPad.Max; j++) {
 						for (int k = 0; k < 0x10; k++) {
-							if ((this.KeyAssign[i][j][k].入力デバイス == EInputDevice.Keyboard) && (this.KeyAssign[i][j][k].コード == (int)SlimDXKeys.Key.Return)) {
+							if ((this.KeyAssign[i][j][k].InputDevice == EInputDevice.Keyboard) && (this.KeyAssign[i][j][k].Code == (int)SlimDXKeys.Key.Return)) {
 								return false;
 							}
 						}
@@ -1397,7 +1396,7 @@ namespace TJAPlayer3 {
 				return true;
 			}
 		}
-		public bool bウィンドウモード {
+		public bool bWindowMode {
 			get {
 				return !this.bFullScreen;
 			}
@@ -1405,7 +1404,7 @@ namespace TJAPlayer3 {
 				this.bFullScreen = !value;
 			}
 		}
-		public bool b演奏情報を表示しない {
+		public bool bDoNotDisplayPerformanceInfos { // FIXME: should be flipped
 			get {
 				return !this.bDisplayDebugInfo;
 			}
@@ -1413,7 +1412,7 @@ namespace TJAPlayer3 {
 				this.bDisplayDebugInfo = !value;
 			}
 		}
-		public int n背景の透過度 {
+		public int nBackgroundTransparency {
 			get {
 				return this.nBGAlpha;
 			}
@@ -1446,7 +1445,6 @@ namespace TJAPlayer3 {
 		public bool bViewerShowDebugStatus;
 		public bool bViewerTimeStretch;
 		public bool bViewerDrums有効, bViewerGuitar有効;
-		//public bool bNoMP3Streaming;				// 2014.4.14 yyagi; mp3のシーク位置がおかしくなる場合は、これをtrueにすることで、wavにデコードしてからオンメモリ再生する
 		public int nMasterVolume;
 		public bool ShinuchiMode; // 真打モード
 		public bool FastRender; // 事前画像描画モード
@@ -1465,7 +1463,7 @@ namespace TJAPlayer3 {
 		public bool SendDiscordPlayingInformation;
 
 		#region [ STRANGE ]
-		public STRANGE nヒット範囲ms;
+		public STRANGE nHitRangeMs;
 		[StructLayout(LayoutKind.Sequential)]
 		public struct STRANGE {
 			public int Perfect;
@@ -1644,48 +1642,53 @@ namespace TJAPlayer3 {
 		#endregion
 
 		#region[Position]
-		public Eレーンタイプ eLaneType;
-		public Eミラー eMirror;
+		public ELaneType eLaneType;
+		public EMirror eMirror;
 
 		#endregion
 		#region[System]
 		public bool bDirectShowMode;
 		#endregion
 
+		#region[DEBUG]
+		public bool DEBUG_bShowImgui;
+		#endregion
+
 		//--------------------------
 		#endregion
 
 
-		// コンストラクタ
+		// Constructor
 
 		public CConfigIni() {
 			this.strSongsPath = "Songs" + Path.DirectorySeparatorChar;
 			this.bFullScreen = false;
+			this.bIgnoreSongUnlockables = false;
 			this.bEnableVSync = true;
 			this.nWindowBaseXPosition = 100; // #30675 2013.02.04 ikanick add
 			this.nWindowBaseYPosition = 100;
 			this.nWindowWidth = SampleFramework.GameWindowSize.Width;           // #23510 2010.10.31 yyagi add
-			this.nWindowHeight = SampleFramework.GameWindowSize.Height;         // 
-			this.nフレーム毎スリープms = -1;         // #xxxxx 2011.11.27 yyagi add
-			this.n非フォーカス時スリープms = 1;            // #23568 2010.11.04 ikanick add
-			this._bGuitar有効 = true;
-			this._bDrums有効 = true;
+			this.nWindowHeight = SampleFramework.GameWindowSize.Height;         //
+			this.nMsSleepPerFrame = -1;         // #xxxxx 2011.11.27 yyagi add
+			this.nMsSleepUnfocused = 1;            // #23568 2010.11.04 ikanick add
+			this._bGuitarEnabled = true;
+			this._bDrumsEnabled = true;
 			this.nBGAlpha = 100;
 			this.bEnableAVI = false;
-			this.eClipDispType = EClipDispType.背景のみ;
+			this.eClipDispType = EClipDispType.BackgroundOnly;
 			this.bEnableBGA = true;
-			this.n曲が選択されてからプレビュー音が鳴るまでのウェイトms = 1000;
-			this.n曲が選択されてからプレビュー画像が表示開始されるまでのウェイトms = 100;
-			this.bBGM音を発声する = true;
+			this.nMsWaitPreviewSoundFromSongSelected = 1000;
+			this.nMsWaitPreviewImageFromSongSelected = 100;
+			this.bBGMPlayVoiceSound = true;
 
 			this.bDanTowerHide = false;
 
 			this.bIncludeSubfoldersOnRandomSelect = true;
-			this.n表示可能な最小コンボ数 = new STDGBVALUE<int>();
-			this.n表示可能な最小コンボ数.Drums = 10;
-			this.n表示可能な最小コンボ数.Guitar = 10;
-			this.n表示可能な最小コンボ数.Bass = 10;
-			this.n表示可能な最小コンボ数.Taiko = 10;
+			this.nMinDisplayedCombo = new STDGBVALUE<int>();
+			this.nMinDisplayedCombo.Drums = 10;
+			this.nMinDisplayedCombo.Guitar = 10;
+			this.nMinDisplayedCombo.Bass = 10;
+			this.nMinDisplayedCombo.Taiko = 10;
 			this.nRollsPerSec = 15;
 			this.nAILevel = 1;
 			this.bAIBattleMode = false;
@@ -1723,28 +1726,28 @@ namespace TJAPlayer3 {
 			this.bOutputLogs = true;
 			this.bReverse = new STDGBVALUE<bool>();
 			this.eRandom = new ERandomMode[5];
-			this.判定文字表示位置 = new STDGBVALUE<E判定文字表示位置>();
+			this.JudgeTextDisplayPosition = new STDGBVALUE<EJudgeTextDisplayPosition>();
 			this.nScrollSpeed = new int[5] { 9, 9, 9, 9, 9 };
 			this.nTimingZones = new int[5] { 2, 2, 2, 2, 2 };
-			this.nGameType = new EGameType[5] { EGameType.TAIKO, EGameType.TAIKO, EGameType.TAIKO, EGameType.TAIKO, EGameType.TAIKO };
-			this.nFunMods = new EFunMods[5] { EFunMods.NONE, EFunMods.NONE, EFunMods.NONE, EFunMods.NONE, EFunMods.NONE };
+			this.nGameType = new EGameType[5] { EGameType.Taiko, EGameType.Taiko, EGameType.Taiko, EGameType.Taiko, EGameType.Taiko };
+			this.nFunMods = new EFunMods[5] { EFunMods.None, EFunMods.None, EFunMods.None, EFunMods.None, EFunMods.None };
 			this.nInputAdjustTimeMs = 0;
 			this.nGlobalOffsetMs = 0;
 			for (int i = 0; i < 3; i++) {
 				this.bReverse[i] = false;
-				this.判定文字表示位置[i] = E判定文字表示位置.レーン上;
-				this.eInvisible[i] = EInvisible.OFF;
+				this.JudgeTextDisplayPosition[i] = EJudgeTextDisplayPosition.AboveLane;
+				this.eInvisible[i] = EInvisible.Off;
 			}
 
 
 			for (int i = 0; i < 5; i++) {
-				this.eRandom[i] = ERandomMode.OFF;
+				this.eRandom[i] = ERandomMode.Off;
 				this.nScrollSpeed[i] = 9;
 				this.nTimingZones[i] = 2;
 			}
 
 			this.nSongSpeed = 20;
-			this.b演奏速度が一倍速であるとき以外音声を再生しない = false;
+			this.bNoAudioIfNot1xSpeed = false;
 			#region [ AutoPlay ]
 
 			for (int i = 0; i < 5; i++) {
@@ -1752,15 +1755,15 @@ namespace TJAPlayer3 {
 			}
 			this.bAuto先生の連打 = true;
 			#endregion
-			this.nヒット範囲ms = new STRANGE();
-			this.nヒット範囲ms.Perfect = 25;
-			this.nヒット範囲ms.Great = -1; //使用しません。
-			this.nヒット範囲ms.Good = 75;
-			this.nヒット範囲ms.Poor = 108;
-			this.ConfigIniファイル名 = "";
+			this.nHitRangeMs = new STRANGE();
+			this.nHitRangeMs.Perfect = 25;
+			this.nHitRangeMs.Great = -1; //使用しません。
+			this.nHitRangeMs.Good = 75;
+			this.nHitRangeMs.Poor = 108;
+			this.ConfigIniFileName = "";
 			this.dicJoystick = new Dictionary<int, string>(10);
 			this.dicGamepad = new Dictionary<int, string>(10);
-			this.tデフォルトのキーアサインに設定する();
+			this.SetDefaultKeyAssignments();
 			#region [ velocityMin ]
 			this.nVelocityMin.LC = 0;                   // #23857 2011.1.31 yyagi VelocityMin
 			this.nVelocityMin.HH = 20;
@@ -1830,7 +1833,7 @@ namespace TJAPlayer3 {
 			this.eSTEALTH = new EStealthMode[5];
 
 			for (int i = 0; i < 5; i++)
-				this.eSTEALTH[i] = EStealthMode.OFF;
+				this.eSTEALTH[i] = EStealthMode.Off;
 
 			this.bNoInfo = false;
 
@@ -1839,7 +1842,7 @@ namespace TJAPlayer3 {
 			this.bHispeedRandom = false;
 			this.nDefaultSongSort = 2;
 			this.nRecentlyPlayedMax = 5;
-			this.eGameMode = EGame.OFF;
+			this.eGameMode = EGame.Off;
 			this.TokkunMashInterval = 750;
 			this.bEndingAnime = false;
 			this.nPlayerCount = 1; //2017.08.18 kairera0467 マルチプレイ対応
@@ -1852,21 +1855,24 @@ namespace TJAPlayer3 {
 			MusicPreTimeMs = 1000; // 一秒
 			SendDiscordPlayingInformation = true;
 			#region[ Ver.K追加 ]
-			this.eLaneType = Eレーンタイプ.TypeA;
+			this.eLaneType = ELaneType.TypeA;
 			this.bDirectShowMode = false;
+			#endregion
+			#region[DEBUG]
+			DEBUG_bShowImgui = true;
 			#endregion
 		}
 		public CConfigIni(string iniファイル名)
 			: this() {
-			this.tファイルから読み込み(iniファイル名);
+			this.LoadFromFile(iniファイル名);
 		}
 
 
 		// メソッド
 
-		public void t指定した入力が既にアサイン済みである場合はそれを全削除する(EInputDevice DeviceType, int nID, int nCode, EKeyConfigPad pad) {
+		public void RemoveDuplicateKeyAssignments(EInputDevice DeviceType, int nID, int nCode, EKeyConfigPad pad) {
 			var isMenu = pad == EKeyConfigPad.Decide || pad == EKeyConfigPad.RightChange || pad == EKeyConfigPad.LeftChange;
-			for (int i = 0; i <= (int)EKeyConfigPart.SYSTEM; i++) {
+			for (int i = 0; i <= (int)EKeyConfigPart.System; i++) {
 				for (int j = 0; j < (int)EKeyConfigPad.Capture; j++) // Do not restrict duplicate keybinds for System controls
 				{
 					if (isMenu ?
@@ -1876,13 +1882,13 @@ namespace TJAPlayer3 {
 						(j == (int)EKeyConfigPad.LeftChange || j == (int)EKeyConfigPad.RightChange ||
 						j == (int)EKeyConfigPad.Decide)) continue;
 					for (int k = 0; k < 0x10; k++) {
-						if (((this.KeyAssign[i][j][k].入力デバイス == DeviceType) && (this.KeyAssign[i][j][k].ID == nID)) && (this.KeyAssign[i][j][k].コード == nCode)) {
+						if (((this.KeyAssign[i][j][k].InputDevice == DeviceType) && (this.KeyAssign[i][j][k].ID == nID)) && (this.KeyAssign[i][j][k].Code == nCode)) {
 							for (int m = k; m < 15; m++) {
 								this.KeyAssign[i][j][m] = this.KeyAssign[i][j][m + 1];
 							}
-							this.KeyAssign[i][j][15].入力デバイス = EInputDevice.Unknown;
+							this.KeyAssign[i][j][15].InputDevice = EInputDevice.Unknown;
 							this.KeyAssign[i][j][15].ID = 0;
-							this.KeyAssign[i][j][15].コード = 0;
+							this.KeyAssign[i][j][15].Code = 0;
 							k--;
 						}
 					}
@@ -1890,7 +1896,7 @@ namespace TJAPlayer3 {
 			}
 		}
 		public void t書き出し(string iniファイル名) {
-			StreamWriter sw = new StreamWriter(iniファイル名, false, Encoding.GetEncoding(TJAPlayer3.sEncType));
+			StreamWriter sw = new StreamWriter(iniファイル名, false, Encoding.GetEncoding(OpenTaiko.sEncType));
 			sw.WriteLine(";-------------------");
 
 			#region [ System ]
@@ -1900,7 +1906,7 @@ namespace TJAPlayer3 {
 			#region [ Version ]
 			sw.WriteLine("; リリースバージョン");
 			sw.WriteLine("; Release Version.");
-			sw.WriteLine("Version={0}", TJAPlayer3.VERSION);
+			sw.WriteLine("Version={0}", OpenTaiko.VERSION);
 			sw.WriteLine();
 			#endregion
 			#region [ TJAPath ]
@@ -1913,11 +1919,11 @@ namespace TJAPlayer3 {
 			#endregion
 			#region [ スキン関連 ]
 			#region [ Skinパスの絶対パス→相対パス変換 ]
-			Uri uriRoot = new Uri(System.IO.Path.Combine(TJAPlayer3.strEXEのあるフォルダ, "System" + System.IO.Path.DirectorySeparatorChar));
+			Uri uriRoot = new Uri(System.IO.Path.Combine(OpenTaiko.strEXEのあるフォルダ, "System" + System.IO.Path.DirectorySeparatorChar));
 			if (strSystemSkinSubfolderFullName != null && strSystemSkinSubfolderFullName.Length == 0) {
 				// Config.iniが空の状態でDTXManiaをViewerとして起動_終了すると、strSystemSkinSubfolderFullName が空の状態でここに来る。
 				// → 初期値として Default/ を設定する。
-				strSystemSkinSubfolderFullName = System.IO.Path.Combine(TJAPlayer3.strEXEのあるフォルダ, "System" + System.IO.Path.DirectorySeparatorChar + "Default" + System.IO.Path.DirectorySeparatorChar);
+				strSystemSkinSubfolderFullName = System.IO.Path.Combine(OpenTaiko.strEXEのあるフォルダ, "System" + System.IO.Path.DirectorySeparatorChar + "Default" + System.IO.Path.DirectorySeparatorChar);
 			}
 			Uri uriPath = new Uri(System.IO.Path.Combine(this.strSystemSkinSubfolderFullName, "." + System.IO.Path.DirectorySeparatorChar));
 			string relPath = uriRoot.MakeRelativeUri(uriPath).ToString();               // 相対パスを取得
@@ -1973,6 +1979,9 @@ namespace TJAPlayer3 {
 			sw.WriteLine("; File paths on the Saves folder.");
 			sw.WriteLine("SaveFileName={0}", String.Join(",", this.sSaveFile));
 			sw.WriteLine();
+			sw.WriteLine("; Ignore song unlockables (0: No, 1: Yes)");
+			sw.WriteLine("IgnoreSongUnlockables={0}", this.bIgnoreSongUnlockables ? 1 : 0);
+			sw.WriteLine();
 
 			#endregion
 
@@ -2012,7 +2021,7 @@ namespace TJAPlayer3 {
 			sw.WriteLine();                                                                             //
 			sw.WriteLine("; 非フォーカス時のsleep値[ms]");                       // #23568 2011.11.04 ikanick add
 			sw.WriteLine("; A sleep time[ms] while the window is inactive.");   //
-			sw.WriteLine("BackSleep={0}", this.n非フォーカス時スリープms);     // そのまま引用（苦笑）
+			sw.WriteLine("BackSleep={0}", this.nMsSleepUnfocused);     // そのまま引用（苦笑）
 			sw.WriteLine();                                                             //
 			#endregion
 			#region [ フォント ]
@@ -2031,7 +2040,7 @@ namespace TJAPlayer3 {
 			sw.WriteLine();
 			sw.WriteLine("; フレーム毎のsleep値[ms] (-1でスリープ無し, 0以上で毎フレームスリープ。動画キャプチャ等で活用下さい)");   // #xxxxx 2011.11.27 yyagi add
 			sw.WriteLine("; A sleep time[ms] per frame.");                          //
-			sw.WriteLine("SleepTimePerFrame={0}", this.nフレーム毎スリープms);       //
+			sw.WriteLine("SleepTimePerFrame={0}", this.nMsSleepPerFrame);       //
 			sw.WriteLine();                                                             //
 			#endregion
 
@@ -2114,24 +2123,24 @@ namespace TJAPlayer3 {
 			#endregion
 			#region [ プレビュー音 ]
 			sw.WriteLine("; 曲選択からプレビュー音の再生までのウェイト[ms]");
-			sw.WriteLine("PreviewSoundWait={0}", this.n曲が選択されてからプレビュー音が鳴るまでのウェイトms);
+			sw.WriteLine("PreviewSoundWait={0}", this.nMsWaitPreviewSoundFromSongSelected);
 			sw.WriteLine();
 			sw.WriteLine("; 曲選択からプレビュー画像表示までのウェイト[ms]");
-			sw.WriteLine("PreviewImageWait={0}", this.n曲が選択されてからプレビュー画像が表示開始されるまでのウェイトms);
+			sw.WriteLine("PreviewImageWait={0}", this.nMsWaitPreviewImageFromSongSelected);
 			sw.WriteLine();
 			#endregion
 			//sw.WriteLine( "; Waveの再生位置自動補正(0:OFF, 1:ON)" );
 			//sw.WriteLine( "AdjustWaves={0}", this.bWave再生位置自動調整機能有効 ? 1 : 0 );
 			#region [ BGM/ドラムヒット音の再生 ]
 			sw.WriteLine("; BGM の再生(0:OFF, 1:ON)");
-			sw.WriteLine("BGMSound={0}", this.bBGM音を発声する ? 1 : 0);
+			sw.WriteLine("BGMSound={0}", this.bBGMPlayVoiceSound ? 1 : 0);
 			sw.WriteLine();
 			#endregion
 			sw.WriteLine("; Hide Dan and Tower charts from the ensou song select screen (0:OFF, 1:ON)");
 			sw.WriteLine("DanTowerHide={0}", this.bDanTowerHide ? 1 : 0);
 			sw.WriteLine();
 			sw.WriteLine("; 最小表示コンボ数");
-			sw.WriteLine("MinComboDrums={0}", this.n表示可能な最小コンボ数.Drums);
+			sw.WriteLine("MinComboDrums={0}", this.nMinDisplayedCombo.Drums);
 			sw.WriteLine();
 			sw.WriteLine("; RANDOM SELECT で子BOXを検索対象に含める (0:OFF, 1:ON)");
 			sw.WriteLine("RandomFromSubBox={0}", this.bIncludeSubfoldersOnRandomSelect ? 1 : 0);
@@ -2237,23 +2246,9 @@ namespace TJAPlayer3 {
 			sw.WriteLine("TaikoAutoRoll={0}", this.bAuto先生の連打 ? 1 : 0);
 			sw.WriteLine("RollsPerSec={0}", this.nRollsPerSec);
 			sw.WriteLine("DefaultAILevel={0}", this.nDefaultAILevel);
-			//sw.WriteLine("AIBattleMode={0}", bAIBattleMode ? 1 : 0);
 			sw.WriteLine();
 			sw.WriteLine(";-------------------");
 			#endregion
-
-			/*
-            #region [ HitRange ]
-            sw.WriteLine("[HitRange]");
-            sw.WriteLine();
-            sw.WriteLine("; Perfect～Poor とみなされる範囲[ms]");
-            sw.WriteLine("Perfect={0}", this.nヒット範囲ms.Perfect);
-            sw.WriteLine("Good={0}", this.nヒット範囲ms.Good);
-            sw.WriteLine("Poor={0}", this.nヒット範囲ms.Poor);
-            sw.WriteLine();
-            sw.WriteLine(";-------------------");
-            #endregion
-			*/
 
 			#region [ Log ]
 			sw.WriteLine("[Log]");
@@ -2262,13 +2257,13 @@ namespace TJAPlayer3 {
 			sw.WriteLine("OutputLog={0}", this.bOutputLogs ? 1 : 0);
 			sw.WriteLine();
 			sw.WriteLine("; 曲データ検索に関するLog出力(0:OFF, 1:ON)");
-			sw.WriteLine("TraceSongSearch={0}", this.bLog曲検索ログ出力 ? 1 : 0);
+			sw.WriteLine("TraceSongSearch={0}", this.bOutputSongSearchLog ? 1 : 0);
 			sw.WriteLine();
 			sw.WriteLine("; 画像やサウンドの作成_解放に関するLog出力(0:OFF, 1:ON)");
-			sw.WriteLine("TraceCreatedDisposed={0}", this.bLog作成解放ログ出力 ? 1 : 0);
+			sw.WriteLine("TraceCreatedDisposed={0}", this.bOutputCreationReleaseLog ? 1 : 0);
 			sw.WriteLine();
 			sw.WriteLine("; DTX読み込み詳細に関するLog出力(0:OFF, 1:ON)");
-			sw.WriteLine("TraceDTXDetails={0}", this.bLogDTX詳細ログ出力 ? 1 : 0);
+			sw.WriteLine("TraceDTXDetails={0}", this.bOutputDetailedDTXLog ? 1 : 0);
 			sw.WriteLine();
 			sw.WriteLine(";-------------------");
 			#endregion
@@ -2345,7 +2340,7 @@ namespace TJAPlayer3 {
 			sw.WriteLine();
 
 			sw.WriteLine("; 演奏速度が一倍速であるときのみBGMを再生する(0:OFF, 1:ON)");
-			sw.WriteLine("PlaySpeedNotEqualOneNoSound={0}", this.b演奏速度が一倍速であるとき以外音声を再生しない ? 1 : 0);
+			sw.WriteLine("PlaySpeedNotEqualOneNoSound={0}", this.bNoAudioIfNot1xSpeed ? 1 : 0);
 			sw.WriteLine();
 			sw.WriteLine("; デフォルトで選択される難易度");
 			sw.WriteLine("DefaultCourse={0}", this.nDefaultCourse);
@@ -2463,97 +2458,97 @@ namespace TJAPlayer3 {
 			sw.WriteLine();
 
 			sw.Write("LeftRed=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.LeftRed);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.LeftRed);
 			sw.WriteLine();
 			sw.Write("RightRed=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.RightRed);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.RightRed);
 			sw.WriteLine();
 			sw.Write("LeftBlue=");                                      // #27029 2012.1.4 from
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.LeftBlue);   //
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.LeftBlue);   //
 			sw.WriteLine();                                         //
 			sw.Write("RightBlue=");                                     // #27029 2012.1.4 from
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.RightBlue);  //
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.RightBlue);  //
 			sw.WriteLine();
 
 			sw.Write("LeftRed2P=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.LeftRed2P);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.LeftRed2P);
 			sw.WriteLine();
 			sw.Write("RightRed2P=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.RightRed2P);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.RightRed2P);
 			sw.WriteLine();
 			sw.Write("LeftBlue2P=");                                        // #27029 2012.1.4 from
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.LeftBlue2P); //
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.LeftBlue2P); //
 			sw.WriteLine();                                                 //
 			sw.Write("RightBlue2P=");                                       // #27029 2012.1.4 from
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.RightBlue2P);  //
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.RightBlue2P);  //
 			sw.WriteLine();
 
 			sw.Write("LeftRed3P=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.LeftRed3P);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.LeftRed3P);
 			sw.WriteLine();
 			sw.Write("RightRed3P=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.RightRed3P);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.RightRed3P);
 			sw.WriteLine();
 			sw.Write("LeftBlue3P=");                                        // #27029 2012.1.4 from
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.LeftBlue3P); //
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.LeftBlue3P); //
 			sw.WriteLine();                                                 //
 			sw.Write("RightBlue3P=");                                       // #27029 2012.1.4 from
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.RightBlue3P);  //
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.RightBlue3P);  //
 			sw.WriteLine();
 
 			sw.Write("LeftRed4P=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.LeftRed4P);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.LeftRed4P);
 			sw.WriteLine();
 			sw.Write("RightRed4P=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.RightRed4P);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.RightRed4P);
 			sw.WriteLine();
 			sw.Write("LeftBlue4P=");                                        // #27029 2012.1.4 from
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.LeftBlue4P); //
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.LeftBlue4P); //
 			sw.WriteLine();                                                 //
 			sw.Write("RightBlue4P=");                                       // #27029 2012.1.4 from
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.RightBlue4P);  //
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.RightBlue4P);  //
 			sw.WriteLine();
 
 			sw.Write("LeftRed5P=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.LeftRed5P);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.LeftRed5P);
 			sw.WriteLine();
 			sw.Write("RightRed5P=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.RightRed5P);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.RightRed5P);
 			sw.WriteLine();
 			sw.Write("LeftBlue5P=");                                        // #27029 2012.1.4 from
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.LeftBlue5P); //
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.LeftBlue5P); //
 			sw.WriteLine();                                                 //
 			sw.Write("RightBlue5P=");                                       // #27029 2012.1.4 from
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.RightBlue5P);  //
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.RightBlue5P);  //
 			sw.WriteLine();
 
 			sw.Write("Clap=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.Clap);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.Clap);
 			sw.WriteLine();
 			sw.Write("Clap2P=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.Clap2P);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.Clap2P);
 			sw.WriteLine();
 			sw.Write("Clap3P=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.Clap3P);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.Clap3P);
 			sw.WriteLine();
 			sw.Write("Clap4P=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.Clap4P);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.Clap4P);
 			sw.WriteLine();
 			sw.Write("Clap5P=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.Clap5P);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.Clap5P);
 			sw.WriteLine();
 
 			sw.Write("Decide=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.Decide);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.Decide);
 			sw.WriteLine();
 			sw.Write("Cancel=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.Cancel);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.Cancel);
 			sw.WriteLine();
 			sw.Write("LeftChange=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.LeftChange);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.LeftChange);
 			sw.WriteLine();
 			sw.Write("RightChange=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.RightChange);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.RightChange);
 			sw.WriteLine();
 
 			sw.WriteLine();
@@ -2562,40 +2557,40 @@ namespace TJAPlayer3 {
 			sw.WriteLine("[SystemKeyAssign]");
 			sw.WriteLine();
 			sw.Write("Capture=");
-			this.tキーの書き出し(sw, this.KeyAssign.System.Capture);
+			this.WriteKeyAssignment(sw, this.KeyAssign.System.Capture);
 			sw.WriteLine();
 			sw.Write("SongVolumeIncrease=");
-			this.tキーの書き出し(sw, this.KeyAssign.System.SongVolIncrease);
+			this.WriteKeyAssignment(sw, this.KeyAssign.System.SongVolIncrease);
 			sw.WriteLine();
 			sw.Write("SongVolumeDecrease=");
-			this.tキーの書き出し(sw, this.KeyAssign.System.SongVolDecrease);
+			this.WriteKeyAssignment(sw, this.KeyAssign.System.SongVolDecrease);
 			sw.WriteLine();
 			sw.Write("DisplayHits=");
-			this.tキーの書き出し(sw, this.KeyAssign.System.DisplayHits);
+			this.WriteKeyAssignment(sw, this.KeyAssign.System.DisplayHits);
 			sw.WriteLine();
 			sw.Write("DisplayDebug=");
-			this.tキーの書き出し(sw, this.KeyAssign.System.DisplayDebug);
+			this.WriteKeyAssignment(sw, this.KeyAssign.System.DisplayDebug);
 			sw.WriteLine();
 			sw.Write("QuickConfig=");
-			this.tキーの書き出し(sw, this.KeyAssign.System.QuickConfig);
+			this.WriteKeyAssignment(sw, this.KeyAssign.System.QuickConfig);
 			sw.WriteLine();
 			sw.Write("NewHeya=");
-			this.tキーの書き出し(sw, this.KeyAssign.System.NewHeya);
+			this.WriteKeyAssignment(sw, this.KeyAssign.System.NewHeya);
 			sw.WriteLine();
 			sw.Write("SortSongs=");
-			this.tキーの書き出し(sw, this.KeyAssign.System.SortSongs);
+			this.WriteKeyAssignment(sw, this.KeyAssign.System.SortSongs);
 			sw.WriteLine();
 			sw.Write("ToggleAutoP1=");
-			this.tキーの書き出し(sw, this.KeyAssign.System.ToggleAutoP1);
+			this.WriteKeyAssignment(sw, this.KeyAssign.System.ToggleAutoP1);
 			sw.WriteLine();
 			sw.Write("ToggleAutoP2=");
-			this.tキーの書き出し(sw, this.KeyAssign.System.ToggleAutoP2);
+			this.WriteKeyAssignment(sw, this.KeyAssign.System.ToggleAutoP2);
 			sw.WriteLine();
 			sw.Write("ToggleTrainingMode=");
-			this.tキーの書き出し(sw, this.KeyAssign.System.ToggleTrainingMode);
+			this.WriteKeyAssignment(sw, this.KeyAssign.System.ToggleTrainingMode);
 			sw.WriteLine();
 			sw.Write("CycleVideoDisplayMode=");
-			this.tキーの書き出し(sw, this.KeyAssign.System.CycleVideoDisplayMode);
+			this.WriteKeyAssignment(sw, this.KeyAssign.System.CycleVideoDisplayMode);
 			sw.WriteLine();
 			sw.WriteLine();
 			#endregion
@@ -2604,74 +2599,82 @@ namespace TJAPlayer3 {
 			sw.WriteLine("[TrainingKeyAssign]");
 			sw.WriteLine();
 			sw.Write("TrainingIncreaseScrollSpeed=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingIncreaseScrollSpeed);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingIncreaseScrollSpeed);
 			sw.WriteLine();
 			sw.Write("TrainingDecreaseScrollSpeed=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingDecreaseScrollSpeed);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingDecreaseScrollSpeed);
 			sw.WriteLine();
 			sw.Write("TrainingIncreaseSongSpeed=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingIncreaseSongSpeed);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingIncreaseSongSpeed);
 			sw.WriteLine();
 			sw.Write("TrainingDecreaseSongSpeed=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingDecreaseSongSpeed);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingDecreaseSongSpeed);
 			sw.WriteLine();
 			sw.Write("TrainingToggleAuto=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingToggleAuto);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingToggleAuto);
 			sw.WriteLine();
 			sw.Write("TrainingBranchNormal=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingBranchNormal);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingBranchNormal);
 			sw.WriteLine();
 			sw.Write("TrainingBranchExpert=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingBranchExpert);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingBranchExpert);
 			sw.WriteLine();
 			sw.Write("TrainingBranchMaster=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingBranchMaster);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingBranchMaster);
 			sw.WriteLine();
 			sw.Write("TrainingPause=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingPause);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingPause);
 			sw.WriteLine();
 			sw.Write("TrainingBookmark=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingBookmark);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingBookmark);
 			sw.WriteLine();
 			sw.Write("TrainingMoveForwardMeasure=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingMoveForwardMeasure);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingMoveForwardMeasure);
 			sw.WriteLine();
 			sw.Write("TrainingMoveBackMeasure=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingMoveBackMeasure);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingMoveBackMeasure);
 			sw.WriteLine();
 			sw.Write("TrainingSkipForwardMeasure=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingSkipForwardMeasure);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingSkipForwardMeasure);
 			sw.WriteLine();
 			sw.Write("TrainingSkipBackMeasure=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingSkipBackMeasure);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingSkipBackMeasure);
 			sw.WriteLine();
 			sw.Write("TrainingJumpToFirstMeasure=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingJumpToFirstMeasure);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingJumpToFirstMeasure);
 			sw.WriteLine();
 			sw.Write("TrainingJumpToLastMeasure=");
-			this.tキーの書き出し(sw, this.KeyAssign.Drums.TrainingJumpToLastMeasure);
+			this.WriteKeyAssignment(sw, this.KeyAssign.Drums.TrainingJumpToLastMeasure);
+			sw.WriteLine();
+			sw.WriteLine();
+			#endregion
+			#region [DEBUG]
+			sw.WriteLine("[DEBUG]");
+			sw.WriteLine();
+			sw.WriteLine("ImGui={0}", this.DEBUG_bShowImgui ? 1 : 0);
 			sw.WriteLine();
 			sw.WriteLine();
 			#endregion
 
 			sw.Close();
 		}
-		public void tファイルから読み込み(string iniファイル名) {
-			this.ConfigIniファイル名 = iniファイル名;
-			this.bConfigIniが存在している = File.Exists(this.ConfigIniファイル名);
-			if (this.bConfigIniが存在している) {
+
+		public void LoadFromFile(string iniFileName) {
+			this.ConfigIniFileName = iniFileName;
+			this.bConfigIniFileExists = File.Exists(this.ConfigIniFileName);
+			if (this.bConfigIniFileExists) {
 				string str;
-				this.tキーアサインを全部クリアする();
-				using (StreamReader reader = new StreamReader(this.ConfigIniファイル名, Encoding.GetEncoding(TJAPlayer3.sEncType))) {
+				this.ClearAllKeyAssignments();
+				using (StreamReader reader = new StreamReader(this.ConfigIniFileName, Encoding.GetEncoding(OpenTaiko.sEncType))) {
 					str = reader.ReadToEnd();
 				}
-				t文字列から読み込み(str);
+				LoadFromString(str);
 			}
 		}
 
-		private void t文字列から読み込み(string strAllSettings)  // 2011.4.13 yyagi; refactored to make initial KeyConfig easier.
+		private void LoadFromString(string strAllSettings)
 		{
-			Eセクション種別 unknown = Eセクション種別.Unknown;
+			ESectionType unknown = ESectionType.Unknown;
 			string[] delimiter = { "\n" };
 			string[] strSingleLine = strAllSettings.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
 			foreach (string s in strSingleLine) {
@@ -2681,7 +2684,7 @@ namespace TJAPlayer3 {
 						string str3;
 						string str4;
 						if (str[0] == '[') {
-							#region [ セクションの変更 ]
+							#region [ Section Change ]
 							//-----------------------------
 							StringBuilder builder = new StringBuilder(0x20);
 							int num = 1;
@@ -2690,29 +2693,31 @@ namespace TJAPlayer3 {
 							}
 							string str2 = builder.ToString();
 							if (str2.Equals("System")) {
-								unknown = Eセクション種別.System;
+								unknown = ESectionType.System;
 							} else if (str2.Equals("AutoPlay")) {
-								unknown = Eセクション種別.AutoPlay;
+								unknown = ESectionType.AutoPlay;
 							} else if (str2.Equals("HitRange")) {
-								unknown = Eセクション種別.HitRange;
+								unknown = ESectionType.HitRange;
 							} else if (str2.Equals("Log")) {
-								unknown = Eセクション種別.Log;
+								unknown = ESectionType.Log;
 							} else if (str2.Equals("PlayOption")) {
-								unknown = Eセクション種別.PlayOption;
+								unknown = ESectionType.PlayOption;
 							} else if (str2.Equals("ViewerOption")) {
-								unknown = Eセクション種別.ViewerOption;
+								unknown = ESectionType.ViewerOption;
 							} else if (str2.Equals("GUID")) {
-								unknown = Eセクション種別.GUID;
+								unknown = ESectionType.GUID;
 							} else if (str2.Equals("DrumsKeyAssign")) {
-								unknown = Eセクション種別.DrumsKeyAssign;
+								unknown = ESectionType.DrumsKeyAssign;
 							} else if (str2.Equals("SystemKeyAssign")) {
-								unknown = Eセクション種別.SystemKeyAssign;
+								unknown = ESectionType.SystemKeyAssign;
 							} else if (str2.Equals("TrainingKeyAssign")) {
-								unknown = Eセクション種別.TrainingKeyAssign;
+								unknown = ESectionType.TrainingKeyAssign;
+							} else if (str2.Equals("DEBUG")) {
+								unknown = ESectionType.DEBUG;
 							} else if (str2.Equals("Temp")) {
-								unknown = Eセクション種別.Temp;
+								unknown = ESectionType.Temp;
 							} else {
-								unknown = Eセクション種別.Unknown;
+								unknown = ESectionType.Unknown;
 							}
 							//-----------------------------
 							#endregion
@@ -2724,7 +2729,7 @@ namespace TJAPlayer3 {
 								switch (unknown) {
 									#region [ [System] ]
 									//-----------------------------
-									case Eセクション種別.System: {
+									case ESectionType.System: {
 											#region [ TJAPath ]
 											if (str3.Equals("TJAPath")) {
 												this.strSongsPath = str4;
@@ -2745,13 +2750,15 @@ namespace TJAPlayer3 {
 														this.sSaveFile[i] = _s[i];
 													}
 												}
+											} else if (str3.Equals("IgnoreSongUnlockables")) {
+												this.bIgnoreSongUnlockables = CConversion.bONorOFF(str4[0]);
 											}
 
 											#region [ skin関係 ]
 											  else if (str3.Equals("SkinPath")) {
 												string absSkinPath = str4;
 												if (!System.IO.Path.IsPathRooted(str4)) {
-													absSkinPath = System.IO.Path.Combine(TJAPlayer3.strEXEのあるフォルダ, "System");
+													absSkinPath = System.IO.Path.Combine(OpenTaiko.strEXEのあるフォルダ, "System");
 													absSkinPath = System.IO.Path.Combine(absSkinPath, str4);
 													Uri u = new Uri(absSkinPath);
 													absSkinPath = u.AbsolutePath.ToString();    // str4内に相対パスがある場合に備える
@@ -2775,26 +2782,26 @@ namespace TJAPlayer3 {
 											#endregion
 											#region [ Window関係 ]
 											  else if (str3.Equals("GraphicsDeviceType")) {
-												this.nGraphicsDeviceType = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 4, this.nGraphicsDeviceType);
+												this.nGraphicsDeviceType = CConversion.ParseIntInRange(str4, 0, 4, this.nGraphicsDeviceType);
 											} else if (str3.Equals("FullScreen")) {
 												this.bFullScreen = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("WindowX"))      // #30675 2013.02.04 ikanick add
 											  {
-												this.nWindowBaseXPosition = CConversion.n値を文字列から取得して範囲内に丸めて返す(
+												this.nWindowBaseXPosition = CConversion.ParseIntInRange(
 													str4, 0, 9999, this.nWindowBaseXPosition);
 											} else if (str3.Equals("WindowY"))      // #30675 2013.02.04 ikanick add
 											  {
-												this.nWindowBaseYPosition = CConversion.n値を文字列から取得して範囲内に丸めて返す(
+												this.nWindowBaseYPosition = CConversion.ParseIntInRange(
 													str4, 0, 9999, this.nWindowBaseYPosition);
 											} else if (str3.Equals("WindowWidth"))      // #23510 2010.10.31 yyagi add
 											  {
-												this.nWindowWidth = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 1, 65535, this.nWindowWidth);
+												this.nWindowWidth = CConversion.ParseIntInRange(str4, 1, 65535, this.nWindowWidth);
 												if (this.nWindowWidth <= 0) {
 													this.nWindowWidth = SampleFramework.GameWindowSize.Width;
 												}
 											} else if (str3.Equals("WindowHeight"))     // #23510 2010.10.31 yyagi add
 											  {
-												this.nWindowHeight = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 1, 65535, this.nWindowHeight);
+												this.nWindowHeight = CConversion.ParseIntInRange(str4, 1, 65535, this.nWindowHeight);
 												if (this.nWindowHeight <= 0) {
 													this.nWindowHeight = SampleFramework.GameWindowSize.Height;
 												}
@@ -2806,40 +2813,26 @@ namespace TJAPlayer3 {
 												this.bIsEnabledSystemMenu = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("BackSleep"))                // #23568 2010.11.04 ikanick add
 											  {
-												this.n非フォーカス時スリープms = CConversion.n値を文字列から取得して範囲内にちゃんと丸めて返す(str4, 0, 50, this.n非フォーカス時スリープms);
+												this.nMsSleepUnfocused = CConversion.ParseIntInRangeAndClamp(str4, 0, 50, this.nMsSleepUnfocused);
 											}
 											#endregion
 
 											#region [ WASAPI/ASIO関係 ]
 											  else if (str3.Equals("SoundDeviceType")) {
-												this.nSoundDeviceType = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 4, this.nSoundDeviceType);
+												this.nSoundDeviceType = CConversion.ParseIntInRange(str4, 0, 4, this.nSoundDeviceType);
 											} else if (str3.Equals("BassBufferSizeMs")) {
-												this.nBassBufferSizeMs = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 9999, this.nBassBufferSizeMs);
+												this.nBassBufferSizeMs = CConversion.ParseIntInRange(str4, 0, 9999, this.nBassBufferSizeMs);
 											} else if (str3.Equals("WASAPIBufferSizeMs")) {
-												this.nWASAPIBufferSizeMs = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 9999, this.nWASAPIBufferSizeMs);
+												this.nWASAPIBufferSizeMs = CConversion.ParseIntInRange(str4, 0, 9999, this.nWASAPIBufferSizeMs);
 											} else if (str3.Equals("ASIODevice")) {
 												string[] asiodev = CEnumerateAllAsioDevices.GetAllASIODevices();
-												this.nASIODevice = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, asiodev.Length - 1, this.nASIODevice);
-											}
-											  //else if ( str3.Equals( "ASIOBufferSizeMs" ) )
-											  //{
-											  //    this.nASIOBufferSizeMs = C変換.n値を文字列から取得して範囲内に丸めて返す( str4, 0, 9999, this.nASIOBufferSizeMs );
-											  //}
-											  //else if ( str3.Equals( "DynamicBassMixerManagement" ) )
-											  //{
-											  //    this.bDynamicBassMixerManagement = C変換.bONorOFF( str4[ 0 ] );
-											  //}
-											  else if (str3.Equals("SoundTimerType"))           // #33689 2014.6.6 yyagi
-											  {
+												this.nASIODevice = CConversion.ParseIntInRange(str4, 0, asiodev.Length - 1, this.nASIODevice);
+											} else if (str3.Equals("SoundTimerType")) {
 												this.bUseOSTimer = CConversion.bONorOFF(str4[0]);
 											}
-											  //else if ( str3.Equals( "MasterVolume" ) )
-											  //{
-											  //    this.nMasterVolume = C変換.n値を文字列から取得して範囲内に丸めて返す( str4, 0, 100, this.nMasterVolume );
-											  //}
 											#endregion
 
-											#region [ フォント ]
+											#region [ Font ]
 											  else if (str3.Equals("FontName")) {
 												this.FontName = str4;
 											} else if (str3.Equals("BoxFontName")) {
@@ -2849,11 +2842,10 @@ namespace TJAPlayer3 {
 
 											  else if (str3.Equals("VSyncWait")) {
 												this.bEnableVSync = CConversion.bONorOFF(str4[0]);
-											} else if (str3.Equals("SleepTimePerFrame"))        // #23568 2011.11.27 yyagi
-											  {
-												this.nフレーム毎スリープms = CConversion.n値を文字列から取得して範囲内にちゃんと丸めて返す(str4, -1, 50, this.nフレーム毎スリープms);
+											} else if (str3.Equals("SleepTimePerFrame")) {
+												this.nMsSleepPerFrame = CConversion.ParseIntInRangeAndClamp(str4, -1, 50, this.nMsSleepPerFrame);
 											} else if (str3.Equals("BGAlpha")) {
-												this.n背景の透過度 = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 0xff, this.n背景の透過度);
+												this.nBackgroundTransparency = CConversion.ParseIntInRange(str4, 0, 0xff, this.nBackgroundTransparency);
 											}
 											#region [ AVI/BGA ]
 											  else if (str3.Equals("AVI")) {
@@ -2861,19 +2853,19 @@ namespace TJAPlayer3 {
 											} else if (str3.Equals("BGA")) {
 												this.bEnableBGA = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("ClipDispType")) {
-												this.eClipDispType = (EClipDispType)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 3, (int)this.eClipDispType);
+												this.eClipDispType = (EClipDispType)CConversion.ParseIntInRange(str4, 0, 3, (int)this.eClipDispType);
 											}
 											#endregion
-											#region [ プレビュー音 ]
+											#region [ Preview Sound ]
 											  else if (str3.Equals("PreviewSoundWait")) {
-												this.n曲が選択されてからプレビュー音が鳴るまでのウェイトms = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 0x5f5e0ff, this.n曲が選択されてからプレビュー音が鳴るまでのウェイトms);
+												this.nMsWaitPreviewSoundFromSongSelected = CConversion.ParseIntInRange(str4, 0, 0x5f5e0ff, this.nMsWaitPreviewSoundFromSongSelected);
 											} else if (str3.Equals("PreviewImageWait")) {
-												this.n曲が選択されてからプレビュー画像が表示開始されるまでのウェイトms = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 0x5f5e0ff, this.n曲が選択されてからプレビュー画像が表示開始されるまでのウェイトms);
+												this.nMsWaitPreviewImageFromSongSelected = CConversion.ParseIntInRange(str4, 0, 0x5f5e0ff, this.nMsWaitPreviewImageFromSongSelected);
 											}
 											#endregion
-											#region [ BGM/ドラムのヒット音 ]
+											#region [ BGM/Drum Hit Sound ]
 											  else if (str3.Equals("BGMSound")) {
-												this.bBGM音を発声する = CConversion.bONorOFF(str4[0]);
+												this.bBGMPlayVoiceSound = CConversion.bONorOFF(str4[0]);
 											}
 											#endregion
 											  else if (str3.Equals("DanTowerHide")) {
@@ -2881,9 +2873,9 @@ namespace TJAPlayer3 {
 											} else if (str3.Equals("RandomFromSubBox")) {
 												this.bIncludeSubfoldersOnRandomSelect = CConversion.bONorOFF(str4[0]);
 											}
-											#region [ コンボ数 ]
+											#region [ Combo ]
 											  else if (str3.Equals("MinComboDrums")) {
-												this.n表示可能な最小コンボ数.Drums = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 1, 0x1869f, this.n表示可能な最小コンボ数.Drums);
+												this.nMinDisplayedCombo.Drums = CConversion.ParseIntInRange(str4, 1, 0x1869f, this.nMinDisplayedCombo.Drums);
 											}
 											#endregion
 											  else if (str3.Equals("ShowDebugStatus")) {
@@ -2891,76 +2883,61 @@ namespace TJAPlayer3 {
 											} else if (str3.Equals(nameof(ApplyLoudnessMetadata))) {
 												this.ApplyLoudnessMetadata = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals(nameof(TargetLoudness))) {
-												this.TargetLoudness = CConversion.db値を文字列から取得して範囲内に丸めて返す(str4, CSound.MinimumLufs.ToDouble(), CSound.MaximumLufs.ToDouble(), this.TargetLoudness);
+												this.TargetLoudness = CConversion.ParseDoubleInRange(str4, CSound.MinimumLufs.ToDouble(), CSound.MaximumLufs.ToDouble(), this.TargetLoudness);
 											} else if (str3.Equals(nameof(ApplySongVol))) {
 												this.ApplySongVol = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals(nameof(SoundEffectLevel))) {
-												this.SoundEffectLevel = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, CSound.MinimumGroupLevel, CSound.MaximumGroupLevel, this.SoundEffectLevel);
+												this.SoundEffectLevel = CConversion.ParseIntInRange(str4, CSound.MinimumGroupLevel, CSound.MaximumGroupLevel, this.SoundEffectLevel);
 											} else if (str3.Equals(nameof(VoiceLevel))) {
-												this.VoiceLevel = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, CSound.MinimumGroupLevel, CSound.MaximumGroupLevel, this.VoiceLevel);
+												this.VoiceLevel = CConversion.ParseIntInRange(str4, CSound.MinimumGroupLevel, CSound.MaximumGroupLevel, this.VoiceLevel);
 											} else if (str3.Equals(nameof(SongPreviewLevel))) {
-												this.SongPreviewLevel = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, CSound.MinimumGroupLevel, CSound.MaximumGroupLevel, this.SongPreviewLevel);
+												this.SongPreviewLevel = CConversion.ParseIntInRange(str4, CSound.MinimumGroupLevel, CSound.MaximumGroupLevel, this.SongPreviewLevel);
 											} else if (str3.Equals(nameof(SongPlaybackLevel))) {
-												this.SongPlaybackLevel = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, CSound.MinimumGroupLevel, CSound.MaximumGroupLevel, this.SongPlaybackLevel);
+												this.SongPlaybackLevel = CConversion.ParseIntInRange(str4, CSound.MinimumGroupLevel, CSound.MaximumGroupLevel, this.SongPlaybackLevel);
 											} else if (str3.Equals(nameof(KeyboardSoundLevelIncrement))) {
-												this.KeyboardSoundLevelIncrement = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, MinimumKeyboardSoundLevelIncrement, MaximumKeyboardSoundLevelIncrement, this.KeyboardSoundLevelIncrement);
+												this.KeyboardSoundLevelIncrement = CConversion.ParseIntInRange(str4, MinimumKeyboardSoundLevelIncrement, MaximumKeyboardSoundLevelIncrement, this.KeyboardSoundLevelIncrement);
 											} else if (str3.Equals(nameof(MusicPreTimeMs))) {
 												MusicPreTimeMs = int.Parse(str4);
 											} else if (str3.Equals("AutoResultCapture")) {
 												this.bIsAutoResultCapture = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals(nameof(SendDiscordPlayingInformation))) {
 												SendDiscordPlayingInformation = CConversion.bONorOFF(str4[0]);
-											} else if (str3.Equals("TimeStretch"))              // #23664 2013.2.24 yyagi
-											  {
+											} else if (str3.Equals("TimeStretch")) {
 												this.bTimeStretch = CConversion.bONorOFF(str4[0]);
 											}
 											#region [ AdjustTime ]
 											  else if (str3.Equals("GlobalOffset")) {
-												this.nGlobalOffsetMs = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, -9999, 9999, this.nGlobalOffsetMs);
+												this.nGlobalOffsetMs = CConversion.ParseIntInRange(str4, -9999, 9999, this.nGlobalOffsetMs);
 											}
 											#endregion
 											  else if (str3.Equals("BufferedInput")) {
 												this.bBufferedInputs = CConversion.bONorOFF(str4[0]);
-											} else if (str3.Equals("PolyphonicSounds"))     // #28228 2012.5.1 yyagi
-											  {
-												this.nPoliphonicSounds = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 1, 8, this.nPoliphonicSounds);
+											} else if (str3.Equals("PolyphonicSounds")) {
+												this.nPoliphonicSounds = CConversion.ParseIntInRange(str4, 1, 8, this.nPoliphonicSounds);
 											}
 											#region [ VelocityMin ]
-											  else if (str3.Equals("LCVelocityMin"))            // #23857 2010.12.12 yyagi
-											  {
-												this.nVelocityMin.LC = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 127, this.nVelocityMin.LC);
+											  else if (str3.Equals("LCVelocityMin")) {
+												this.nVelocityMin.LC = CConversion.ParseIntInRange(str4, 0, 127, this.nVelocityMin.LC);
 											} else if (str3.Equals("HHVelocityMin")) {
-												this.nVelocityMin.HH = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 127, this.nVelocityMin.HH);
-											} else if (str3.Equals("SDVelocityMin"))            // #23857 2011.1.31 yyagi
-											  {
-												this.nVelocityMin.SD = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 127, this.nVelocityMin.SD);
-											} else if (str3.Equals("BDVelocityMin"))            // #23857 2011.1.31 yyagi
-											  {
-												this.nVelocityMin.BD = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 127, this.nVelocityMin.BD);
-											} else if (str3.Equals("HTVelocityMin"))            // #23857 2011.1.31 yyagi
-											  {
-												this.nVelocityMin.HT = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 127, this.nVelocityMin.HT);
-											} else if (str3.Equals("LTVelocityMin"))            // #23857 2011.1.31 yyagi
-											  {
-												this.nVelocityMin.LT = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 127, this.nVelocityMin.LT);
-											} else if (str3.Equals("FTVelocityMin"))            // #23857 2011.1.31 yyagi
-											  {
-												this.nVelocityMin.FT = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 127, this.nVelocityMin.FT);
-											} else if (str3.Equals("CYVelocityMin"))            // #23857 2011.1.31 yyagi
-											  {
-												this.nVelocityMin.CY = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 127, this.nVelocityMin.CY);
-											} else if (str3.Equals("RDVelocityMin"))            // #23857 2011.1.31 yyagi
-											  {
-												this.nVelocityMin.RD = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 127, this.nVelocityMin.RD);
+												this.nVelocityMin.HH = CConversion.ParseIntInRange(str4, 0, 127, this.nVelocityMin.HH);
+											} else if (str3.Equals("SDVelocityMin")) {
+												this.nVelocityMin.SD = CConversion.ParseIntInRange(str4, 0, 127, this.nVelocityMin.SD);
+											} else if (str3.Equals("BDVelocityMin")) {
+												this.nVelocityMin.BD = CConversion.ParseIntInRange(str4, 0, 127, this.nVelocityMin.BD);
+											} else if (str3.Equals("HTVelocityMin")) {
+												this.nVelocityMin.HT = CConversion.ParseIntInRange(str4, 0, 127, this.nVelocityMin.HT);
+											} else if (str3.Equals("LTVelocityMin")) {
+												this.nVelocityMin.LT = CConversion.ParseIntInRange(str4, 0, 127, this.nVelocityMin.LT);
+											} else if (str3.Equals("FTVelocityMin")) {
+												this.nVelocityMin.FT = CConversion.ParseIntInRange(str4, 0, 127, this.nVelocityMin.FT);
+											} else if (str3.Equals("CYVelocityMin")) {
+												this.nVelocityMin.CY = CConversion.ParseIntInRange(str4, 0, 127, this.nVelocityMin.CY);
+											} else if (str3.Equals("RDVelocityMin")) {
+												this.nVelocityMin.RD = CConversion.ParseIntInRange(str4, 0, 127, this.nVelocityMin.RD);
 											}
 											#endregion
-											  //else if ( str3.Equals( "NoMP3Streaming" ) )
-											  //{
-											  //    this.bNoMP3Streaming = C変換.bONorOFF( str4[ 0 ] );
-											  //}
-											#region[ Ver.K追加 ]
-											  else if (str3.Equals("DirectShowMode"))       // #28228 2012.5.1 yyagi
-											  {
+											#region[ Ver.K Addition ]
+											  else if (str3.Equals("DirectShowMode")) {
 												this.bDirectShowMode = CConversion.bONorOFF(str4[0]); ;
 											}
 											#endregion
@@ -2977,7 +2954,7 @@ namespace TJAPlayer3 {
 
 									#region [ [AutoPlay] ]
 									//-----------------------------
-									case Eセクション種別.AutoPlay:
+									case ESectionType.AutoPlay:
 										if (str3.Equals("Taiko")) {
 											this.bAutoPlay[0] = CConversion.bONorOFF(str4[0]);
 										} else if (str3.Equals("Taiko2P")) {
@@ -2996,27 +2973,21 @@ namespace TJAPlayer3 {
 											this.nDefaultAILevel = int.Parse(str4);
 											this.nAILevel = this.nDefaultAILevel;
 										}
-										/*
-										if (str3.Equals("AIBattleMode"))
-										{
-											bAIBattleMode = C変換.bONorOFF(str4[0]);
-										}
-										*/
 										continue;
 									//-----------------------------
 									#endregion
 
 									#region [ [HitRange] ]
 									//-----------------------------
-									case Eセクション種別.HitRange:
+									case ESectionType.HitRange:
 										if (str3.Equals("Perfect")) {
-											this.nヒット範囲ms.Perfect = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 0x3e7, this.nヒット範囲ms.Perfect);
+											this.nHitRangeMs.Perfect = CConversion.ParseIntInRange(str4, 0, 0x3e7, this.nHitRangeMs.Perfect);
 										} else if (str3.Equals("Great")) {
-											this.nヒット範囲ms.Great = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 0x3e7, this.nヒット範囲ms.Great);
+											this.nHitRangeMs.Great = CConversion.ParseIntInRange(str4, 0, 0x3e7, this.nHitRangeMs.Great);
 										} else if (str3.Equals("Good")) {
-											this.nヒット範囲ms.Good = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 0x3e7, this.nヒット範囲ms.Good);
+											this.nHitRangeMs.Good = CConversion.ParseIntInRange(str4, 0, 0x3e7, this.nHitRangeMs.Good);
 										} else if (str3.Equals("Poor")) {
-											this.nヒット範囲ms.Poor = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 0x3e7, this.nヒット範囲ms.Poor);
+											this.nHitRangeMs.Poor = CConversion.ParseIntInRange(str4, 0, 0x3e7, this.nHitRangeMs.Poor);
 										}
 										continue;
 
@@ -3025,15 +2996,15 @@ namespace TJAPlayer3 {
 
 									#region [ [Log] ]
 									//-----------------------------
-									case Eセクション種別.Log: {
+									case ESectionType.Log: {
 											if (str3.Equals("OutputLog")) {
 												this.bOutputLogs = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("TraceCreatedDisposed")) {
-												this.bLog作成解放ログ出力 = CConversion.bONorOFF(str4[0]);
+												this.bOutputCreationReleaseLog = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("TraceDTXDetails")) {
-												this.bLogDTX詳細ログ出力 = CConversion.bONorOFF(str4[0]);
+												this.bOutputDetailedDTXLog = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("TraceSongSearch")) {
-												this.bLog曲検索ログ出力 = CConversion.bONorOFF(str4[0]);
+												this.bOutputSongSearchLog = CConversion.bONorOFF(str4[0]);
 											}
 											continue;
 										}
@@ -3042,7 +3013,7 @@ namespace TJAPlayer3 {
 
 									#region [ [PlayOption] ]
 									//-----------------------------
-									case Eセクション種別.PlayOption: {
+									case ESectionType.PlayOption: {
 											if (str3.Equals("ShowChara")) {
 												ShowChara = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("ShowDancer")) {
@@ -3061,14 +3032,14 @@ namespace TJAPlayer3 {
 
 											#region [ Invisible ]
 											  else if (str3.Equals("DrumsInvisible")) {
-												this.eInvisible.Drums = (EInvisible)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 2, (int)this.eInvisible.Drums);
+												this.eInvisible.Drums = (EInvisible)CConversion.ParseIntInRange(str4, 0, 2, (int)this.eInvisible.Drums);
 											}
 
 											#endregion
 											  else if (str3.Equals("DrumsReverse")) {
 												this.bReverse.Drums = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("DrumsPosition")) {
-												this.判定文字表示位置.Drums = (E判定文字表示位置)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 2, (int)this.判定文字表示位置.Drums);
+												this.JudgeTextDisplayPosition.Drums = (EJudgeTextDisplayPosition)CConversion.ParseIntInRange(str4, 0, 2, (int)this.JudgeTextDisplayPosition.Drums);
 											}
 
 											#region [Mods]
@@ -3076,15 +3047,15 @@ namespace TJAPlayer3 {
 											#region [Scroll Speed]
 
 											  else if (str3.Equals("DrumsScrollSpeed") || str3.Equals("DrumsScrollSpeed1P")) {
-												this.nScrollSpeed[0] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 0x7cf, this.nScrollSpeed[0]);
+												this.nScrollSpeed[0] = CConversion.ParseIntInRange(str4, 0, 0x7cf, this.nScrollSpeed[0]);
 											} else if (str3.Equals("DrumsScrollSpeed2P")) {
-												this.nScrollSpeed[1] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 0x7cf, this.nScrollSpeed[1]);
+												this.nScrollSpeed[1] = CConversion.ParseIntInRange(str4, 0, 0x7cf, this.nScrollSpeed[1]);
 											} else if (str3.Equals("DrumsScrollSpeed3P")) {
-												this.nScrollSpeed[2] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 0x7cf, this.nScrollSpeed[2]);
+												this.nScrollSpeed[2] = CConversion.ParseIntInRange(str4, 0, 0x7cf, this.nScrollSpeed[2]);
 											} else if (str3.Equals("DrumsScrollSpeed4P")) {
-												this.nScrollSpeed[3] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 0x7cf, this.nScrollSpeed[3]);
+												this.nScrollSpeed[3] = CConversion.ParseIntInRange(str4, 0, 0x7cf, this.nScrollSpeed[3]);
 											} else if (str3.Equals("DrumsScrollSpeed5P")) {
-												this.nScrollSpeed[4] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 0x7cf, this.nScrollSpeed[4]);
+												this.nScrollSpeed[4] = CConversion.ParseIntInRange(str4, 0, 0x7cf, this.nScrollSpeed[4]);
 											}
 
 											#endregion
@@ -3092,15 +3063,15 @@ namespace TJAPlayer3 {
 											#region [Timing Zones]
 
 											  else if (str3.Equals("TimingZones1P")) {
-												this.nTimingZones[0] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 4, this.nTimingZones[0]);
+												this.nTimingZones[0] = CConversion.ParseIntInRange(str4, 0, 4, this.nTimingZones[0]);
 											} else if (str3.Equals("TimingZones2P")) {
-												this.nTimingZones[1] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 4, this.nTimingZones[1]);
+												this.nTimingZones[1] = CConversion.ParseIntInRange(str4, 0, 4, this.nTimingZones[1]);
 											} else if (str3.Equals("TimingZones3P")) {
-												this.nTimingZones[2] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 4, this.nTimingZones[2]);
+												this.nTimingZones[2] = CConversion.ParseIntInRange(str4, 0, 4, this.nTimingZones[2]);
 											} else if (str3.Equals("TimingZones4P")) {
-												this.nTimingZones[3] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 4, this.nTimingZones[3]);
+												this.nTimingZones[3] = CConversion.ParseIntInRange(str4, 0, 4, this.nTimingZones[3]);
 											} else if (str3.Equals("TimingZones5P")) {
-												this.nTimingZones[4] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 4, this.nTimingZones[4]);
+												this.nTimingZones[4] = CConversion.ParseIntInRange(str4, 0, 4, this.nTimingZones[4]);
 											}
 
 
@@ -3109,15 +3080,15 @@ namespace TJAPlayer3 {
 											#region [Just]
 
 											  else if (str3.Equals("Just") || str3.Equals("Just1P")) {
-												this.bJust[0] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 2, this.bJust[0]);
+												this.bJust[0] = CConversion.ParseIntInRange(str4, 0, 2, this.bJust[0]);
 											} else if (str3.Equals("Just2P")) {
-												this.bJust[1] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 2, this.bJust[1]);
+												this.bJust[1] = CConversion.ParseIntInRange(str4, 0, 2, this.bJust[1]);
 											} else if (str3.Equals("Just3P")) {
-												this.bJust[2] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 2, this.bJust[2]);
+												this.bJust[2] = CConversion.ParseIntInRange(str4, 0, 2, this.bJust[2]);
 											} else if (str3.Equals("Just4P")) {
-												this.bJust[3] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 2, this.bJust[3]);
+												this.bJust[3] = CConversion.ParseIntInRange(str4, 0, 2, this.bJust[3]);
 											} else if (str3.Equals("Just5P")) {
-												this.bJust[4] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 2, this.bJust[4]);
+												this.bJust[4] = CConversion.ParseIntInRange(str4, 0, 2, this.bJust[4]);
 											}
 
 											#endregion
@@ -3125,15 +3096,15 @@ namespace TJAPlayer3 {
 											#region [Hitsounds]
 
 											  else if (str3.Equals("HitSounds1P")) {
-												this.nHitSounds[0] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 9999999, this.nHitSounds[0]);
+												this.nHitSounds[0] = CConversion.ParseIntInRange(str4, 0, 9999999, this.nHitSounds[0]);
 											} else if (str3.Equals("HitSounds2P")) {
-												this.nHitSounds[1] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 9999999, this.nHitSounds[1]);
+												this.nHitSounds[1] = CConversion.ParseIntInRange(str4, 0, 9999999, this.nHitSounds[1]);
 											} else if (str3.Equals("HitSounds3P")) {
-												this.nHitSounds[2] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 9999999, this.nHitSounds[2]);
+												this.nHitSounds[2] = CConversion.ParseIntInRange(str4, 0, 9999999, this.nHitSounds[2]);
 											} else if (str3.Equals("HitSounds4P")) {
-												this.nHitSounds[3] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 9999999, this.nHitSounds[3]);
+												this.nHitSounds[3] = CConversion.ParseIntInRange(str4, 0, 9999999, this.nHitSounds[3]);
 											} else if (str3.Equals("HitSounds5P")) {
-												this.nHitSounds[4] = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 9999999, this.nHitSounds[4]);
+												this.nHitSounds[4] = CConversion.ParseIntInRange(str4, 0, 9999999, this.nHitSounds[4]);
 											}
 
 											#endregion
@@ -3141,15 +3112,15 @@ namespace TJAPlayer3 {
 											#region [Gametype]
 
 											  else if (str3.Equals("Gametype1P")) {
-												this.nGameType[0] = (EGameType)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 1, (int)this.nGameType[0]);
+												this.nGameType[0] = (EGameType)CConversion.ParseIntInRange(str4, 0, 1, (int)this.nGameType[0]);
 											} else if (str3.Equals("Gametype2P")) {
-												this.nGameType[1] = (EGameType)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 1, (int)this.nGameType[1]);
+												this.nGameType[1] = (EGameType)CConversion.ParseIntInRange(str4, 0, 1, (int)this.nGameType[1]);
 											} else if (str3.Equals("Gametype3P")) {
-												this.nGameType[2] = (EGameType)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 1, (int)this.nGameType[2]);
+												this.nGameType[2] = (EGameType)CConversion.ParseIntInRange(str4, 0, 1, (int)this.nGameType[2]);
 											} else if (str3.Equals("Gametype4P")) {
-												this.nGameType[3] = (EGameType)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 1, (int)this.nGameType[3]);
+												this.nGameType[3] = (EGameType)CConversion.ParseIntInRange(str4, 0, 1, (int)this.nGameType[3]);
 											} else if (str3.Equals("Gametype5P")) {
-												this.nGameType[4] = (EGameType)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 1, (int)this.nGameType[4]);
+												this.nGameType[4] = (EGameType)CConversion.ParseIntInRange(str4, 0, 1, (int)this.nGameType[4]);
 											}
 
 											#endregion
@@ -3157,15 +3128,15 @@ namespace TJAPlayer3 {
 											#region [Fun mods]
 
 											  else if (str3.Equals("FunMods1P")) {
-												this.nFunMods[0] = (EFunMods)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, (int)EFunMods.TOTAL - 1, (int)this.nFunMods[0]);
+												this.nFunMods[0] = (EFunMods)CConversion.ParseIntInRange(str4, 0, (int)EFunMods.Total - 1, (int)this.nFunMods[0]);
 											} else if (str3.Equals("FunMods2P")) {
-												this.nFunMods[1] = (EFunMods)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, (int)EFunMods.TOTAL - 1, (int)this.nFunMods[1]);
+												this.nFunMods[1] = (EFunMods)CConversion.ParseIntInRange(str4, 0, (int)EFunMods.Total - 1, (int)this.nFunMods[1]);
 											} else if (str3.Equals("FunMods3P")) {
-												this.nFunMods[2] = (EFunMods)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, (int)EFunMods.TOTAL - 1, (int)this.nFunMods[2]);
+												this.nFunMods[2] = (EFunMods)CConversion.ParseIntInRange(str4, 0, (int)EFunMods.Total - 1, (int)this.nFunMods[2]);
 											} else if (str3.Equals("FunMods4P")) {
-												this.nFunMods[3] = (EFunMods)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, (int)EFunMods.TOTAL - 1, (int)this.nFunMods[3]);
+												this.nFunMods[3] = (EFunMods)CConversion.ParseIntInRange(str4, 0, (int)EFunMods.Total - 1, (int)this.nFunMods[3]);
 											} else if (str3.Equals("FunMods5P")) {
-												this.nFunMods[4] = (EFunMods)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, (int)EFunMods.TOTAL - 1, (int)this.nFunMods[4]);
+												this.nFunMods[4] = (EFunMods)CConversion.ParseIntInRange(str4, 0, (int)EFunMods.Total - 1, (int)this.nFunMods[4]);
 											}
 
 											#endregion
@@ -3173,15 +3144,15 @@ namespace TJAPlayer3 {
 											#region [Stealh]
 
 											  else if (str3.Equals("TaikoStealth1P") || str3.Equals("TaikoStealth")) {
-												this.eSTEALTH[0] = (EStealthMode)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 3, (int)this.eSTEALTH[0]);
+												this.eSTEALTH[0] = (EStealthMode)CConversion.ParseIntInRange(str4, 0, 3, (int)this.eSTEALTH[0]);
 											} else if (str3.Equals("TaikoStealth2P")) {
-												this.eSTEALTH[1] = (EStealthMode)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 3, (int)this.eSTEALTH[1]);
+												this.eSTEALTH[1] = (EStealthMode)CConversion.ParseIntInRange(str4, 0, 3, (int)this.eSTEALTH[1]);
 											} else if (str3.Equals("TaikoStealth3P")) {
-												this.eSTEALTH[2] = (EStealthMode)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 3, (int)this.eSTEALTH[2]);
+												this.eSTEALTH[2] = (EStealthMode)CConversion.ParseIntInRange(str4, 0, 3, (int)this.eSTEALTH[2]);
 											} else if (str3.Equals("TaikoStealth4P")) {
-												this.eSTEALTH[3] = (EStealthMode)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 3, (int)this.eSTEALTH[3]);
+												this.eSTEALTH[3] = (EStealthMode)CConversion.ParseIntInRange(str4, 0, 3, (int)this.eSTEALTH[3]);
 											} else if (str3.Equals("TaikoStealth5P")) {
-												this.eSTEALTH[4] = (EStealthMode)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 3, (int)this.eSTEALTH[4]);
+												this.eSTEALTH[4] = (EStealthMode)CConversion.ParseIntInRange(str4, 0, 3, (int)this.eSTEALTH[4]);
 											}
 
 											#endregion
@@ -3189,68 +3160,63 @@ namespace TJAPlayer3 {
 											#region [Random/Mirror]
 
 											  else if (str3.Equals("TaikoRandom1P") || str3.Equals("TaikoRandom")) {
-												this.eRandom[0] = (ERandomMode)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 4, (int)this.eRandom[0]);
+												this.eRandom[0] = (ERandomMode)CConversion.ParseIntInRange(str4, 0, 4, (int)this.eRandom[0]);
 											} else if (str3.Equals("TaikoRandom2P")) {
-												this.eRandom[1] = (ERandomMode)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 4, (int)this.eRandom[1]);
+												this.eRandom[1] = (ERandomMode)CConversion.ParseIntInRange(str4, 0, 4, (int)this.eRandom[1]);
 											} else if (str3.Equals("TaikoRandom3P")) {
-												this.eRandom[2] = (ERandomMode)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 4, (int)this.eRandom[2]);
+												this.eRandom[2] = (ERandomMode)CConversion.ParseIntInRange(str4, 0, 4, (int)this.eRandom[2]);
 											} else if (str3.Equals("TaikoRandom4P")) {
-												this.eRandom[3] = (ERandomMode)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 4, (int)this.eRandom[3]);
+												this.eRandom[3] = (ERandomMode)CConversion.ParseIntInRange(str4, 0, 4, (int)this.eRandom[3]);
 											} else if (str3.Equals("TaikoRandom5P")) {
-												this.eRandom[4] = (ERandomMode)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 4, (int)this.eRandom[4]);
+												this.eRandom[4] = (ERandomMode)CConversion.ParseIntInRange(str4, 0, 4, (int)this.eRandom[4]);
 											}
 
 											#endregion
 
-
 											#endregion
 
-
-
 											  else if (str3.Equals("PlaySpeed")) {
-												this.nSongSpeed = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 5, 400, this.nSongSpeed);
+												this.nSongSpeed = CConversion.ParseIntInRange(str4, 5, 400, this.nSongSpeed);
 											} else if (str3.Equals("PlaySpeedNotEqualOneNoSound")) {
-												this.b演奏速度が一倍速であるとき以外音声を再生しない = CConversion.bONorOFF(str4[0]);
-											} else if (str3.Equals("Risky"))                    // #23559 2011.6.23  yyagi
-											  {
-												this.nRisky = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 10, this.nRisky);
+												this.bNoAudioIfNot1xSpeed = CConversion.bONorOFF(str4[0]);
+											} else if (str3.Equals("Risky")) {
+												this.nRisky = CConversion.ParseIntInRange(str4, 0, 10, this.nRisky);
 											} else if (str3.Equals("DrumsTight")) {
 												this.bTight = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("BranchGuide")) {
 												this.bBranchGuide = CConversion.bONorOFF(str4[0]);
-											} else if (str3.Equals("DefaultCourse")) //2017.01.30 DD
-											  {
-												this.nDefaultCourse = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 5, this.nDefaultCourse);
+											} else if (str3.Equals("DefaultCourse")) {
+												this.nDefaultCourse = CConversion.ParseIntInRange(str4, 0, 5, this.nDefaultCourse);
 											} else if (str3.Equals("ScoreMode")) {
-												this.nScoreMode = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 3, this.nScoreMode);
+												this.nScoreMode = CConversion.ParseIntInRange(str4, 0, 3, this.nScoreMode);
 											} else if (str3.Equals("HispeedRandom")) {
 												this.bHispeedRandom = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("BigNotesWaitTime")) {
-												this.nBigNoteWaitTimems = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 1, 100, this.nBigNoteWaitTimems);
+												this.nBigNoteWaitTimems = CConversion.ParseIntInRange(str4, 1, 100, this.nBigNoteWaitTimems);
 											} else if (str3.Equals("BigNotesJudge")) {
 												this.bJudgeBigNotes = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("ForceNormalGauge")) {
 												this.bForceNormalGauge = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("BranchAnime")) {
-												this.nBranchAnime = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 1, this.nBranchAnime);
+												this.nBranchAnime = CConversion.ParseIntInRange(str4, 0, 1, this.nBranchAnime);
 											} else if (str3.Equals("NoInfo")) {
 												this.bNoInfo = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("DefaultSongSort")) {
-												this.nDefaultSongSort = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 2, this.nDefaultSongSort);
+												this.nDefaultSongSort = CConversion.ParseIntInRange(str4, 0, 2, this.nDefaultSongSort);
 											} else if (str3.Equals("RecentlyPlayedMax")) {
-												this.nRecentlyPlayedMax = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 9999, this.nRecentlyPlayedMax);
+												this.nRecentlyPlayedMax = CConversion.ParseIntInRange(str4, 0, 9999, this.nRecentlyPlayedMax);
 											} else if (str3.Equals("GameMode")) {
-												this.eGameMode = (EGame)CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 2, (int)this.eGameMode);
+												this.eGameMode = (EGame)CConversion.ParseIntInRange(str4, 0, 2, (int)this.eGameMode);
 											} else if (str3.Equals("TokkunSkipMeasures")) {
-												this.TokkunSkipMeasures = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 9999, this.TokkunSkipMeasures);
+												this.TokkunSkipMeasures = CConversion.ParseIntInRange(str4, 0, 9999, this.TokkunSkipMeasures);
 											} else if (str3.Equals(nameof(TokkunMashInterval))) {
-												this.TokkunMashInterval = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 0, 9999, this.TokkunMashInterval);
+												this.TokkunMashInterval = CConversion.ParseIntInRange(str4, 0, 9999, this.TokkunMashInterval);
 											} else if (str3.Equals("JudgeCountDisplay")) {
 												this.bJudgeCountDisplay = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("ShowExExtraAnime")) {
 												this.ShowExExtraAnime = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("PlayerCount")) {
-												this.nPlayerCount = CConversion.n値を文字列から取得して範囲内に丸めて返す(str4, 1, 5, this.nPlayerCount);
+												this.nPlayerCount = CConversion.ParseIntInRange(str4, 1, 5, this.nPlayerCount);
 											} else if (str3.Equals(nameof(ShinuchiMode))) {
 												ShinuchiMode = CConversion.bONorOFF(str4[0]);
 											}
@@ -3261,21 +3227,7 @@ namespace TJAPlayer3 {
 
 									#region [ [ViewerOption] ]
 									//-----------------------------
-									case Eセクション種別.ViewerOption: {
-											/*
-											if ( str3.Equals( "ViewerDrumsScrollSpeed" ) )
-											{
-												this.nViewerScrollSpeed.Drums = C変換.n値を文字列から取得して範囲内に丸めて返す( str4, 0, 1999, this.nViewerScrollSpeed.Drums );
-											}
-											else if ( str3.Equals( "ViewerGuitarScrollSpeed" ) )
-											{
-												this.nViewerScrollSpeed.Guitar = C変換.n値を文字列から取得して範囲内に丸めて返す( str4, 0, 1999, this.nViewerScrollSpeed.Guitar );
-											}
-											else if ( str3.Equals( "ViewerBassScrollSpeed" ) )
-											{
-												this.nViewerScrollSpeed.Bass = C変換.n値を文字列から取得して範囲内に丸めて返す( str4, 0, 1999, this.nViewerScrollSpeed.Bass );
-											}
-											*/
+									case ESectionType.ViewerOption: {
 											if (str3.Equals("ViewerVSyncWait")) {
 												this.bViewerVSyncWait = CConversion.bONorOFF(str4[0]);
 											} else if (str3.Equals("ViewerShowDebugStatus")) {
@@ -3294,7 +3246,7 @@ namespace TJAPlayer3 {
 
 									#region [ [GUID] ]
 									//-----------------------------
-									case Eセクション種別.GUID:
+									case ESectionType.GUID:
 										if (str3.Equals("JoystickID")) {
 											this.tJoystickIDの取得(str4);
 										} else if (str3.Equals("GamepadID")) {
@@ -3306,80 +3258,65 @@ namespace TJAPlayer3 {
 
 									#region [ [DrumsKeyAssign] ]
 									//-----------------------------
-									case Eセクション種別.DrumsKeyAssign: {
+									case ESectionType.DrumsKeyAssign: {
 											if (str3.Equals("LeftRed")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.LeftRed);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.LeftRed);
 											} else if (str3.Equals("RightRed")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.RightRed);
-											} else if (str3.Equals("LeftBlue"))                                     // #27029 2012.1.4 from
-											  {                                                                 //
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.LeftBlue);  //
-											}                                                                   //
-											  else if (str3.Equals("RightBlue"))                                        // #27029 2012.1.4 from
-											  {                                                                 //
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.RightBlue); //
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.RightRed);
+											} else if (str3.Equals("LeftBlue")) {
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.LeftBlue);
+											} else if (str3.Equals("RightBlue")) {
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.RightBlue);
 											} else if (str3.Equals("LeftRed2P")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.LeftRed2P);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.LeftRed2P);
 											} else if (str3.Equals("RightRed2P")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.RightRed2P);
-											} else if (str3.Equals("LeftBlue2P"))                                       // #27029 2012.1.4 from
-											  {                                                                 //
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.LeftBlue2P);    //
-											}                                                                   //
-											  else if (str3.Equals("RightBlue2P"))                                      // #27029 2012.1.4 from
-											  {                                                                 //
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.RightBlue2P); //
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.RightRed2P);
+											} else if (str3.Equals("LeftBlue2P")) {
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.LeftBlue2P);
+											} else if (str3.Equals("RightBlue2P")) {
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.RightBlue2P);
 											} else if (str3.Equals("LeftRed3P")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.LeftRed3P);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.LeftRed3P);
 											} else if (str3.Equals("RightRed3P")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.RightRed3P);
-											} else if (str3.Equals("LeftBlue3P"))                                     // #27029 2012.1.4 from
-											  {                                                                   //
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.LeftBlue3P);    //
-											}                                                                   //
-											  else if (str3.Equals("RightBlue3P"))                                        // #27029 2012.1.4 from
-											  {                                                                   //
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.RightBlue3P); //
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.RightRed3P);
+											} else if (str3.Equals("LeftBlue3P")) {
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.LeftBlue3P);
+											} else if (str3.Equals("RightBlue3P")) {
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.RightBlue3P);
 											} else if (str3.Equals("LeftRed4P")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.LeftRed4P);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.LeftRed4P);
 											} else if (str3.Equals("RightRed4P")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.RightRed4P);
-											} else if (str3.Equals("LeftBlue4P"))                                     // #27029 2012.1.4 from
-											  {                                                                   //
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.LeftBlue4P);    //
-											}                                                                   //
-											  else if (str3.Equals("RightBlue4P"))                                        // #27029 2012.1.4 from
-											  {                                                                   //
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.RightBlue4P); //
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.RightRed4P);
+											} else if (str3.Equals("LeftBlue4P")) {
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.LeftBlue4P);
+											} else if (str3.Equals("RightBlue4P")) {
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.RightBlue4P);
 											} else if (str3.Equals("LeftRed5P")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.LeftRed5P);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.LeftRed5P);
 											} else if (str3.Equals("RightRed5P")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.RightRed5P);
-											} else if (str3.Equals("LeftBlue5P"))                                     // #27029 2012.1.4 from
-											  {                                                                   //
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.LeftBlue5P);    //
-											}                                                                   //
-											  else if (str3.Equals("RightBlue5P"))                                        // #27029 2012.1.4 from
-											  {                                                                   //
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.RightBlue5P); //
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.RightRed5P);
+											} else if (str3.Equals("LeftBlue5P")) {
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.LeftBlue5P);
+											} else if (str3.Equals("RightBlue5P")) {
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.RightBlue5P);
 											} else if (str3.Equals("Clap")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.Clap);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.Clap);
 											} else if (str3.Equals("Clap2P")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.Clap2P);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.Clap2P);
 											} else if (str3.Equals("Clap3P")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.Clap3P);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.Clap3P);
 											} else if (str3.Equals("Clap4P")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.Clap4P);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.Clap4P);
 											} else if (str3.Equals("Clap5P")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.Clap5P);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.Clap5P);
 											} else if (str3.Equals("Decide")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.Decide);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.Decide);
 											} else if (str3.Equals("Cancel")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.Cancel);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.Cancel);
 											} else if (str3.Equals("LeftChange")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.LeftChange);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.LeftChange);
 											} else if (str3.Equals("RightChange")) {
-												this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.RightChange);
+												this.ReadAndSetKey(str4, this.KeyAssign.Drums.RightChange);
 											}
 
 											continue;
@@ -3389,54 +3326,54 @@ namespace TJAPlayer3 {
 
 									#region [ [SystemKeyAssign] ]
 									//-----------------------------
-									case Eセクション種別.SystemKeyAssign: {
+									case ESectionType.SystemKeyAssign: {
 											switch (str3) {
 												case "Capture": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.System.Capture);
+														this.ReadAndSetKey(str4, this.KeyAssign.System.Capture);
 														break;
 													}
 												case "SongVolumeIncrease": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.System.SongVolIncrease);
+														this.ReadAndSetKey(str4, this.KeyAssign.System.SongVolIncrease);
 														break;
 													}
 												case "SongVolumeDecrease": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.System.SongVolDecrease);
+														this.ReadAndSetKey(str4, this.KeyAssign.System.SongVolDecrease);
 														break;
 													}
 												case "DisplayHits": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.System.DisplayHits);
+														this.ReadAndSetKey(str4, this.KeyAssign.System.DisplayHits);
 														break;
 													}
 												case "DisplayDebug": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.System.DisplayDebug);
+														this.ReadAndSetKey(str4, this.KeyAssign.System.DisplayDebug);
 														break;
 													}
 												case "QuickConfig": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.System.QuickConfig);
+														this.ReadAndSetKey(str4, this.KeyAssign.System.QuickConfig);
 														break;
 													}
 												case "NewHeya": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.System.NewHeya);
+														this.ReadAndSetKey(str4, this.KeyAssign.System.NewHeya);
 														break;
 													}
 												case "SortSongs": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.System.SortSongs);
+														this.ReadAndSetKey(str4, this.KeyAssign.System.SortSongs);
 														break;
 													}
 												case "ToggleAutoP1": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.System.ToggleAutoP1);
+														this.ReadAndSetKey(str4, this.KeyAssign.System.ToggleAutoP1);
 														break;
 													}
 												case "ToggleAutoP2": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.System.ToggleAutoP2);
+														this.ReadAndSetKey(str4, this.KeyAssign.System.ToggleAutoP2);
 														break;
 													}
 												case "ToggleTrainingMode": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.System.ToggleTrainingMode);
+														this.ReadAndSetKey(str4, this.KeyAssign.System.ToggleTrainingMode);
 														break;
 													}
 												case "CycleVideoDisplayMode": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.System.CycleVideoDisplayMode);
+														this.ReadAndSetKey(str4, this.KeyAssign.System.CycleVideoDisplayMode);
 														break;
 													}
 											}
@@ -3444,77 +3381,86 @@ namespace TJAPlayer3 {
 										}
 									#endregion
 									#region [ [TrainingKeyAssign] ]
-									case Eセクション種別.TrainingKeyAssign: {
+									case ESectionType.TrainingKeyAssign: {
 											switch (str3) {
 												case "TrainingIncreaseScrollSpeed": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingIncreaseScrollSpeed);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingIncreaseScrollSpeed);
 														break;
 													}
 												case "TrainingDecreaseScrollSpeed": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingDecreaseScrollSpeed);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingDecreaseScrollSpeed);
 														break;
 													}
 												case "TrainingIncreaseSongSpeed": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingIncreaseSongSpeed);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingIncreaseSongSpeed);
 														break;
 													}
 												case "TrainingDecreaseSongSpeed": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingDecreaseSongSpeed);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingDecreaseSongSpeed);
 														break;
 													}
 												case "TrainingToggleAuto": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingToggleAuto);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingToggleAuto);
 														break;
 													}
 												case "TrainingBranchNormal": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingBranchNormal);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingBranchNormal);
 														break;
 													}
 												case "TrainingBranchExpert": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingBranchExpert);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingBranchExpert);
 														break;
 													}
 												case "TrainingBranchMaster": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingBranchMaster);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingBranchMaster);
 														break;
 													}
 												case "TrainingPause": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingPause);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingPause);
 														break;
 													}
 												case "TrainingBookmark": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingBookmark);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingBookmark);
 														break;
 													}
 												case "TrainingMoveForwardMeasure": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingMoveForwardMeasure);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingMoveForwardMeasure);
 														break;
 													}
 												case "TrainingMoveBackMeasure": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingMoveBackMeasure);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingMoveBackMeasure);
 														break;
 													}
 												case "TrainingSkipForwardMeasure": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingSkipForwardMeasure);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingSkipForwardMeasure);
 														break;
 													}
 												case "TrainingSkipBackMeasure": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingSkipBackMeasure);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingSkipBackMeasure);
 														break;
 													}
 												case "TrainingJumpToFirstMeasure": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingJumpToFirstMeasure);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingJumpToFirstMeasure);
 														break;
 													}
 												case "TrainingJumpToLastMeasure": {
-														this.tキーの読み出しと設定(str4, this.KeyAssign.Drums.TrainingJumpToLastMeasure);
+														this.ReadAndSetKey(str4, this.KeyAssign.Drums.TrainingJumpToLastMeasure);
 														break;
 													}
 											}
 											continue;
 										}
-										//-----------------------------
-										#endregion
+									//-----------------------------
+									#endregion
+									case ESectionType.DEBUG: {
+											switch(str3) {
+												case "ImGui": {
+														this.DEBUG_bShowImgui = CConversion.bONorOFF(str4[0]);
+														break;
+													}
+											}
+											continue;
+										}
 								}
 							}
 						}
@@ -3532,7 +3478,7 @@ namespace TJAPlayer3 {
 
 		#region [ private ]
 		//-----------------
-		private enum Eセクション種別 {
+		private enum ESectionType {
 			Unknown,
 			System,
 			Log,
@@ -3544,13 +3490,14 @@ namespace TJAPlayer3 {
 			DrumsKeyAssign,
 			SystemKeyAssign,
 			TrainingKeyAssign,
+			DEBUG,
 			Temp,
 		}
 
-		private bool _bDrums有効;
-		private bool _bGuitar有効;
-		private bool bConfigIniが存在している;
-		private string ConfigIniファイル名;
+		private bool _bDrumsEnabled;
+		private bool _bGuitarEnabled;
+		private bool bConfigIniFileExists;
+		private string ConfigIniFileName;
 
 		private void tJoystickIDの取得(string strキー記述) {
 			string[] strArray = strキー記述.Split(new char[] { ',' });
@@ -3576,10 +3523,11 @@ namespace TJAPlayer3 {
 				}
 			}
 		}
-		private void tキーアサインを全部クリアする() {
+
+		private void ClearAllKeyAssignments() {
 			this.KeyAssign = new CKeyAssign();
-			for (int i = 0; i <= (int)EKeyConfigPart.SYSTEM; i++) {
-				for (int j = 0; j < (int)EKeyConfigPad.MAX; j++) {
+			for (int i = 0; i <= (int)EKeyConfigPart.System; i++) {
+				for (int j = 0; j < (int)EKeyConfigPad.Max; j++) {
 					this.KeyAssign[i][j] = new CKeyAssign.STKEYASSIGN[16];
 					for (int k = 0; k < 16; k++) {
 						this.KeyAssign[i][j][k] = new CKeyAssign.STKEYASSIGN(EInputDevice.Unknown, 0, 0);
@@ -3587,17 +3535,18 @@ namespace TJAPlayer3 {
 				}
 			}
 		}
-		private void tキーの書き出し(StreamWriter sw, CKeyAssign.STKEYASSIGN[] assign) {
+
+		private void WriteKeyAssignment(StreamWriter sw, CKeyAssign.STKEYASSIGN[] assign) {
 			bool flag = true;
 			for (int i = 0; i < 0x10; i++) {
-				if (assign[i].入力デバイス == EInputDevice.Unknown) {
+				if (assign[i].InputDevice == EInputDevice.Unknown) {
 					continue;
 				}
 				if (!flag) {
 					sw.Write(',');
 				}
 				flag = false;
-				switch (assign[i].入力デバイス) {
+				switch (assign[i].InputDevice) {
 					case EInputDevice.Keyboard:
 						sw.Write('K');
 						break;
@@ -3618,56 +3567,57 @@ namespace TJAPlayer3 {
 						sw.Write('N');
 						break;
 				}
-				sw.Write("{0}{1}", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".Substring(assign[i].ID, 1), assign[i].コード);   // #24166 2011.1.15 yyagi: to support ID > 10, change 2nd character from Decimal to 36-numeral system. (e.g. J1023 -> JA23)
+				sw.Write("{0}{1}", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".Substring(assign[i].ID, 1), assign[i].Code);   // #24166 2011.1.15 yyagi: to support ID > 10, change 2nd character from Decimal to 36-numeral system. (e.g. J1023 -> JA23)
 			}
 		}
-		private void tキーの読み出しと設定(string strキー記述, CKeyAssign.STKEYASSIGN[] assign) {
-			string[] strArray = strキー記述.Split(new char[] { ',' });
+
+		private void ReadAndSetKey(string keyDescription, CKeyAssign.STKEYASSIGN[] assign) {
+			string[] strArray = keyDescription.Split(new char[] { ',' });
 			for (int i = 0; (i < strArray.Length) && (i < 0x10); i++) {
-				EInputDevice e入力デバイス;
+				EInputDevice eInputDevice;
 				int id;
 				int code;
 				string str = strArray[i].Trim().ToUpper();
 				if (str.Length >= 3) {
-					e入力デバイス = EInputDevice.Unknown;
+					eInputDevice = EInputDevice.Unknown;
 					switch (str[0]) {
 						case 'J':
-							e入力デバイス = EInputDevice.Joypad;
+							eInputDevice = EInputDevice.Joypad;
 							break;
 
 						case 'G':
-							e入力デバイス = EInputDevice.Gamepad;
+							eInputDevice = EInputDevice.Gamepad;
 							break;
 
 						case 'K':
-							e入力デバイス = EInputDevice.Keyboard;
+							eInputDevice = EInputDevice.Keyboard;
 							break;
 
 						case 'L':
 							continue;
 
 						case 'M':
-							e入力デバイス = EInputDevice.MIDIInput;
+							eInputDevice = EInputDevice.MIDIInput;
 							break;
 
 						case 'N':
-							e入力デバイス = EInputDevice.Mouse;
+							eInputDevice = EInputDevice.Mouse;
 							break;
 					}
 				} else {
 					continue;
 				}
-				id = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".IndexOf(str[1]);    // #24166 2011.1.15 yyagi: to support ID > 10, change 2nd character from Decimal to 36-numeral system. (e.g. J1023 -> JA23)
+				id = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".IndexOf(str[1]);
 				if (((id >= 0) && int.TryParse(str.Substring(2), out code)) && ((code >= 0) && (code <= 0xff))) {
-					//this.t指定した入力が既にアサイン済みである場合はそれを全削除する( e入力デバイス, id, code );
-					assign[i].入力デバイス = e入力デバイス;
+					assign[i].InputDevice = eInputDevice;
 					assign[i].ID = id;
-					assign[i].コード = code;
+					assign[i].Code = code;
 				}
 			}
 		}
-		private void tデフォルトのキーアサインに設定する() {
-			this.tキーアサインを全部クリアする();
+
+		private void SetDefaultKeyAssignments() {
+			this.ClearAllKeyAssignments();
 
 			string strDefaultKeyAssign = @"
 [DrumsKeyAssign]
@@ -3733,7 +3683,7 @@ TrainingSkipBackMeasure=K0108
 TrainingJumpToFirstMeasure=K070
 TrainingJumpToLastMeasure=K051
 ";
-			t文字列から読み込み(strDefaultKeyAssign);
+			LoadFromString(strDefaultKeyAssign);
 		}
 		//-----------------
 		#endregion

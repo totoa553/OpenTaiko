@@ -2,10 +2,10 @@
 using System.Runtime.InteropServices;
 using FDK;
 
-namespace TJAPlayer3 {
+namespace OpenTaiko {
 	[Serializable]
 	internal class Cスコア {
-		// プロパティ
+		// Properties
 
 		public STScoreIni情報 ScoreIni情報;
 		[Serializable]
@@ -211,7 +211,7 @@ namespace TJAPlayer3 {
 		}
 
 
-		// コンストラクタ
+		// Constructor
 
 		public Cスコア() {
 			this.ScoreIni情報 = new STScoreIni情報(DateTime.MinValue, 0L);
@@ -256,13 +256,7 @@ namespace TJAPlayer3 {
 			this.譜面情報.nLevelIcon = new CDTX.ELevelIcon[(int)Difficulty.Total] { CDTX.ELevelIcon.eNone, CDTX.ELevelIcon.eNone, CDTX.ELevelIcon.eNone, CDTX.ELevelIcon.eNone, CDTX.ELevelIcon.eNone, CDTX.ELevelIcon.eNone, CDTX.ELevelIcon.eNone };
 			this.譜面情報.nクリア = new int[5];
 			this.譜面情報.nスコアランク = new int[5];
-
 			this.譜面情報.nExamResult = new List<int[]> { };
-			//for (int i = 0; i < TJAPlayer3.stage選曲.r確定された曲.DanSongs.Count; i++)
-			//{
-			//	譜面情報.nExamResult.Add(new int[CExamInfo.cMaxExam]);
-			//}
-
 			this.譜面情報.nLife = 5;
 			this.譜面情報.nTotalFloor = 140;
 		}

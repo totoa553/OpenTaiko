@@ -1,14 +1,13 @@
-﻿namespace TJAPlayer3 {
+﻿namespace OpenTaiko {
 	/// <summary>
 	/// 「トグル」（ON, OFF の2状態）を表すアイテム。
 	/// </summary>
 	internal class CItemToggle : CItemBase {
-		// プロパティ
+		// Properties
 
 		public bool bON;
 
-
-		// コンストラクタ
+		// Constructor
 
 		public CItemToggle() {
 			base.e種別 = CItemBase.E種別.ONorOFFトグル;

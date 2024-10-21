@@ -1,15 +1,11 @@
 ﻿using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
-using static TJAPlayer3.DBNameplateUnlockables;
+using static OpenTaiko.DBNameplateUnlockables;
 
-namespace TJAPlayer3 {
+namespace OpenTaiko {
 	internal class DBNameplateUnlockables : CSavableT<Dictionary<Int64, NameplateUnlockable>> {
 		public DBNameplateUnlockables() {
-			//_fn = @$"{TJAPlayer3.strEXEのあるフォルダ}Databases{Path.DirectorySeparatorChar}NameplateUnlockables.json";
-			//base.tDBInitSavable();
-
-			_fn = @$"{TJAPlayer3.strEXEのあるフォルダ}Databases{Path.DirectorySeparatorChar}NameplateUnlockables.db3";
-
+			_fn = @$"{OpenTaiko.strEXEのあるフォルダ}Databases{Path.DirectorySeparatorChar}NameplateUnlockables.db3";
 
 			using (var connection = new SqliteConnection(@$"Data Source={_fn}")) {
 				connection.Open();
@@ -60,9 +56,8 @@ namespace TJAPlayer3 {
 		}
 
 		public void tGetUnlockedItems(int _player, ModalQueue mq) {
-			int player = TJAPlayer3.GetActualPlayer(_player);
-			//var _sf = TJAPlayer3.SaveFileInstances[player].data.NamePlateTitles;
-			var _sf = TJAPlayer3.SaveFileInstances[player].data.UnlockedNameplateIds;
+			int player = OpenTaiko.GetActualPlayer(_player);
+			var _sf = OpenTaiko.SaveFileInstances[player].data.UnlockedNameplateIds;
 			bool _edited = false;
 
 			foreach (KeyValuePair<Int64, NameplateUnlockable> item in data) {
@@ -72,25 +67,24 @@ namespace TJAPlayer3 {
 					var _fulfilled = item.Value.unlockConditions.tConditionMetWrapper(player, DBUnlockables.CUnlockConditions.EScreen.Internal).Item1;
 
 					if (_fulfilled) {
-						//_sf.Add(_npvKey, item.Value.nameplateInfo);
 						_sf.Add(_npvKey);
 						_edited = true;
 						mq.tAddModal(
 							new Modal(
 								Modal.EModalType.Title,
-								HRarity.tRarityToLangInt(item.Value.rarity),
+								HRarity.tRarityToModalInt(item.Value.rarity),
 								item,
-								TJAPlayer3.NamePlate.lcNamePlate
+								OpenTaiko.NamePlate.lcNamePlate
 								),
 							_player);
 
-						DBSaves.RegisterUnlockedNameplate(TJAPlayer3.SaveFileInstances[player].data.SaveId, _npvKey);
+						DBSaves.RegisterUnlockedNameplate(OpenTaiko.SaveFileInstances[player].data.SaveId, _npvKey);
 					}
 				}
 			}
 
 			if (_edited)
-				TJAPlayer3.SaveFileInstances[player].tApplyHeyaChanges();
+				OpenTaiko.SaveFileInstances[player].tApplyHeyaChanges();
 		}
 	}
 }

@@ -1,8 +1,8 @@
 ﻿using FDK;
-using static TJAPlayer3.CActSelect曲リスト;
+using static OpenTaiko.CActSelect曲リスト;
 using Color = System.Drawing.Color;
 
-namespace TJAPlayer3 {
+namespace OpenTaiko {
 	class CHeyaDisplayAssetInformations {
 		private static TitleTextureKey? ttkDescription = null;
 
@@ -10,13 +10,13 @@ namespace TJAPlayer3 {
 
 		private static int XOrigin {
 			get {
-				return TJAPlayer3.Skin.Heya_DescriptionTextOrigin[0];
+				return OpenTaiko.Skin.Heya_DescriptionTextOrigin[0];
 			}
 		}
 
 		private static int YOrigin {
 			get {
-				return TJAPlayer3.Skin.Heya_DescriptionTextOrigin[1];
+				return OpenTaiko.Skin.Heya_DescriptionTextOrigin[1];
 			}
 		}
 
@@ -57,12 +57,12 @@ namespace TJAPlayer3 {
 			description += $"{CLangManager.LangInstance.GetString("HEYA_DESCRIPTION_COIN_MULTIPLIER").SafeFormat(character.effect.GetCoinMultiplier())}\n";
 
 
-			if (ttkDescription is null || ttkDescription.str文字 != description) {
+			if (ttkDescription is null || ttkDescription.str != description) {
 				ttkDescription = new TitleTextureKey(description, pf, Color.White, Color.Black, 1000);
 			}
 
-			TJAPlayer3.Tx.Heya_Description_Panel?.t2D描画(0, 0);
-			TJAPlayer3.stageSongSelect.actSongList.ResolveTitleTexture(ttkDescription).t2D描画(XOrigin, YOrigin);
+			OpenTaiko.Tx.Heya_Description_Panel?.t2D描画(0, 0);
+			TitleTextureKey.ResolveTitleTexture(ttkDescription).t2D描画(XOrigin, YOrigin);
 		}
 
 		public static void DisplayPuchicharaInfo(CCachedFontRenderer pf, CPuchichara puchi) {
@@ -76,18 +76,18 @@ namespace TJAPlayer3 {
 			if (puchi.metadata.tGetDescription() != "") description += puchi.metadata.tGetDescription() + "\n";
 			description += $"{CLangManager.LangInstance.GetString("HEYA_DESCRIPTION_AUTHOR").SafeFormat(puchi.metadata.tGetAuthor())}\n\n";
 
-			if (puchi.effect.AllPurple) description += "All big notes become <c.#c800ff>Swap</c> notes\n";
-			if (puchi.effect.ShowAdlib) description += "<c.#c4ffe2>ADLib</c> notes become visible\n";
-			if (puchi.effect.Autoroll > 0) description += $"Automatic <c.#ffff00>Rolls</c> at {puchi.effect.Autoroll} hits/s\n";
-			if (puchi.effect.SplitLane) description += "<c.#ff4040>Split</c> <c.#4053ff>Lanes</c>\n";
+			if (puchi.effect.AllPurple) description += CLangManager.LangInstance.GetString("HEYA_DESCRIPTION_EFFECTS_ALLSWAP") + "\n";
+			if (puchi.effect.ShowAdlib) description += CLangManager.LangInstance.GetString("HEYA_DESCRIPTION_EFFECTS_SHOWADLIB") + "\n";
+			if (puchi.effect.Autoroll > 0) description += CLangManager.LangInstance.GetString("HEYA_DESCRIPTION_EFFECTS_AUTOROLL", puchi.effect.Autoroll) + "\n";
+			if (puchi.effect.SplitLane) description += CLangManager.LangInstance.GetString("HEYA_DESCRIPTION_EFFECTS_SPLITLANE") + "\n";
 			description += $"{CLangManager.LangInstance.GetString("HEYA_DESCRIPTION_COIN_MULTIPLIER").SafeFormat(puchi.effect.GetCoinMultiplier())}\n";
 
-			if (ttkDescription is null || ttkDescription.str文字 != description) {
+			if (ttkDescription is null || ttkDescription.str != description) {
 				ttkDescription = new TitleTextureKey(description, pf, Color.White, Color.Black, 1000);
 			}
 
-			TJAPlayer3.Tx.Heya_Description_Panel?.t2D描画(0, 0);
-			TJAPlayer3.stageSongSelect.actSongList.ResolveTitleTexture(ttkDescription).t2D描画(XOrigin, YOrigin);
+			OpenTaiko.Tx.Heya_Description_Panel?.t2D描画(0, 0);
+			TitleTextureKey.ResolveTitleTexture(ttkDescription).t2D描画(XOrigin, YOrigin);
 		}
 
 		public static void DisplayNameplateTitleInfo(CCachedFontRenderer pf) {

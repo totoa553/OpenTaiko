@@ -9,7 +9,7 @@ namespace FDK {
 		public static int DefaultVolume = 110;
 
 
-		// プロパティ
+		// Properties
 
 		public List<IInputDevice> InputDevices {
 			get;
@@ -45,7 +45,7 @@ namespace FDK {
 		}
 
 
-		// コンストラクタ
+		// Constructor
 		public CInputManager(IWindow window, bool bUseMidiIn = true) {
 			Initialize(window, bUseMidiIn);
 		}
@@ -83,6 +83,8 @@ namespace FDK {
 					Trace.TraceInformation("Input Device #" + i + " (" + InputDevices[i].CurrentType.ToString() + ")");
 				} catch { }
 			}
+
+			SampleFramework.Game.InitImGuiController(window, Context);
 		}
 
 

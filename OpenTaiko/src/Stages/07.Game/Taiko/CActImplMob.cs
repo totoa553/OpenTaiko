@@ -1,6 +1,6 @@
 ﻿using FDK;
 
-namespace TJAPlayer3 {
+namespace OpenTaiko {
 	internal class CActImplMob : CActivity {
 		/// <summary>
 		/// 踊り子
@@ -13,15 +13,17 @@ namespace TJAPlayer3 {
 			var mobDir = CSkin.Path($"{TextureLoader.BASE}{TextureLoader.GAME}{TextureLoader.MOB}");
 			var preset = HScenePreset.GetBGPreset();
 
+			if (preset == null) return;
+
 			if (System.IO.Directory.Exists(mobDir)) {
 				Random random = new Random();
 
 				var upDirs = System.IO.Directory.GetDirectories(mobDir);
-				if (upDirs.Length > 0) {
-					var _presetPath = (preset != null && preset.MobSet != null) ? $@"{mobDir}" + preset.MobSet[random.Next(0, preset.MobSet.Length)] : "";
-					var path = (preset != null && System.IO.Directory.Exists(_presetPath))
+				if (preset.MobSet != null) {
+					var _presetPath = (preset.MobSet.Length > 0) ? $@"{mobDir}" + preset.MobSet[random.Next(0, preset.MobSet.Length)] : "";
+					var path = Directory.Exists(_presetPath)
 						? _presetPath
-						: upDirs[random.Next(0, upDirs.Length)];
+						: (upDirs.Length > 0 ? upDirs[random.Next(0, upDirs.Length)] : "");
 
 					MobScript = new ScriptBG($@"{path}{Path.DirectorySeparatorChar}Script.lua");
 					MobScript.Init();
@@ -46,9 +48,9 @@ namespace TJAPlayer3 {
 		}
 
 		public override int Draw() {
-			if (!TJAPlayer3.stage演奏ドラム画面.bDoublePlay) {
-				if (TJAPlayer3.stageSongSelect.nChoosenSongDifficulty[0] != (int)Difficulty.Tower && TJAPlayer3.stageSongSelect.nChoosenSongDifficulty[0] != (int)Difficulty.Dan) {
-					if (!TJAPlayer3.stage演奏ドラム画面.bPAUSE) MobScript?.Update();
+			if (!OpenTaiko.stage演奏ドラム画面.bDoublePlay) {
+				if (OpenTaiko.stageSongSelect.nChoosenSongDifficulty[0] != (int)Difficulty.Tower && OpenTaiko.stageSongSelect.nChoosenSongDifficulty[0] != (int)Difficulty.Dan) {
+					if (!OpenTaiko.stage演奏ドラム画面.bPAUSE) MobScript?.Update();
 					MobScript?.Draw();
 
 					/*

@@ -1,6 +1,6 @@
 ﻿using FDK;
 
-namespace TJAPlayer3 {
+namespace OpenTaiko {
 	public class CInvisibleChip : IDisposable {
 		/// <summary>ミス後表示する時間(ms)</summary>
 		public int nDisplayTimeMs {
@@ -54,7 +54,7 @@ namespace TJAPlayer3 {
 			int nInst = (int)eInst;
 			if (!b演奏チップが１つでもバーを通過した[nInst]) {
 				b演奏チップが１つでもバーを通過した[nInst] = true;
-				if (this.eInvisibleMode[nInst] == EInvisible.SEMI) {
+				if (this.eInvisibleMode[nInst] == EInvisible.Semi) {
 					ShowChipTemporally(eInst);
 					ccounter[nInst].CurrentValue = nDisplayTimeMs;
 				}
@@ -65,7 +65,7 @@ namespace TJAPlayer3 {
 		/// </summary>
 		/// <param name="eInst">楽器パート</param>
 		public void ShowChipTemporally(EInstrumentPad eInst) {
-			ccounter[(int)eInst].Start(0, nDisplayTimeMs + nFadeoutTimeMs + 1, 1, TJAPlayer3.Timer);
+			ccounter[(int)eInst].Start(0, nDisplayTimeMs + nFadeoutTimeMs + 1, 1, OpenTaiko.Timer);
 		}
 
 		/// <summary>
@@ -78,7 +78,7 @@ namespace TJAPlayer3 {
 		}
 
 		internal EChipInvisibleState SetInvisibleStatus(ref CDTX.CChip cc) {
-			if (cc.e楽器パート == EInstrumentPad.UNKNOWN) {
+			if (cc.e楽器パート == EInstrumentPad.Unknown) {
 				return EChipInvisibleState.SHOW;
 			}
 			int nInst = (int)cc.e楽器パート;
@@ -87,17 +87,17 @@ namespace TJAPlayer3 {
 			ccounter[nInst].Tick();
 
 			switch (eInvisibleMode[nInst]) {
-				case EInvisible.OFF:
+				case EInvisible.Off:
 					cc.b可視 = true;
 					retcode = EChipInvisibleState.SHOW;
 					break;
 
-				case EInvisible.FULL:
+				case EInvisible.Full:
 					cc.b可視 = false;
 					retcode = EChipInvisibleState.INVISIBLE;
 					break;
 
-				case EInvisible.SEMI:
+				case EInvisible.Semi:
 					if (!b演奏チップが１つでもバーを通過した[nInst]) // まだ1つもチップがバーを通過していない時は、チップを表示する
 					{
 						cc.b可視 = true;

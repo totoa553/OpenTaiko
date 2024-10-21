@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Text;
 using FDK;
 
-namespace TJAPlayer3 {
+namespace OpenTaiko {
 	// グローバル定数
 
 	public enum Eシステムサウンド {
@@ -37,7 +37,7 @@ namespace TJAPlayer3 {
 	}
 
 	internal class CSkin : IDisposable {
-		// クラス
+		// Class
 
 		public class CSystemSound : IDisposable {
 			// static フィールド
@@ -156,33 +156,11 @@ namespace TJAPlayer3 {
 					Trace.TraceWarning($"ファイルが存在しません。: {this.strFileName}");
 					return;
 				}
-				////				for( int i = 0; i < 2; i++ )		// #27790 2012.3.10 yyagi 2回読み出しを、1回読みだし＋1回メモリコピーに変更
-				////				{
-				//                    try
-				//                    {
-				//                        this.rSound[ 0 ] = CDTXMania.Sound管理.tサウンドを生成する( CSkin.Path( this.strファイル名 ) );
-				//                    }
-				//                    catch
-				//                    {
-				//                        this.rSound[ 0 ] = null;
-				//                        throw;
-				//                    }
-				//                    if ( this.rSound[ 0 ] == null )	// #28243 2012.5.3 yyagi "this.rSound[ 0 ].bストリーム再生する"時もCloneするようにし、rSound[1]がnullにならないよう修正→rSound[1]の再生正常化
-				//                    {
-				//                        this.rSound[ 1 ] = null;
-				//                    }
-				//                    else
-				//                    {
-				//                        this.rSound[ 1 ] = ( CSound ) this.rSound[ 0 ].Clone();	// #27790 2012.3.10 yyagi add: to accelerate loading chip sounds
-				//                        CDTXMania.Sound管理.tサウンドを登録する( this.rSound[ 1 ] );	// #28243 2012.5.3 yyagi add (登録漏れによりストリーム再生処理が発生していなかった)
-				//                    }
-
-				////				}
 
 				for (int i = 0; i < 2; i++)     // 一旦Cloneを止めてASIO対応に専念
 				{
 					try {
-						this.rSound[i] = TJAPlayer3.SoundManager?.tCreateSound(CSkin.Path(this.strFileName), _soundGroup);
+						this.rSound[i] = OpenTaiko.SoundManager?.tCreateSound(CSkin.Path(this.strFileName), _soundGroup);
 					} catch {
 						this.rSound[i] = null;
 						throw;
@@ -226,10 +204,10 @@ namespace TJAPlayer3 {
 			}
 
 			public void tRemoveMixer() {
-				if (TJAPlayer3.SoundManager.GetCurrentSoundDeviceType() != "DirectShow") {
+				if (OpenTaiko.SoundManager.GetCurrentSoundDeviceType() != "DirectShow") {
 					for (int i = 0; i < 2; i++) {
 						if (this.rSound[i] != null) {
-							TJAPlayer3.SoundManager.RemoveMixer(this.rSound[i]);
+							OpenTaiko.SoundManager.RemoveMixer(this.rSound[i]);
 						}
 					}
 				}
@@ -241,7 +219,7 @@ namespace TJAPlayer3 {
 				if (!this.bDisposed) {
 					for (int i = 0; i < 2; i++) {
 						if (this.rSound[i] != null) {
-							TJAPlayer3.SoundManager.tDisposeSound(this.rSound[i]);
+							OpenTaiko.SoundManager.tDisposeSound(this.rSound[i]);
 							this.rSound[i] = null;
 						}
 					}
@@ -262,7 +240,7 @@ namespace TJAPlayer3 {
 		}
 
 
-		// プロパティ
+		// Properties
 
 		// Hitsounds
 
@@ -626,7 +604,7 @@ namespace TJAPlayer3 {
 		}
 
 
-		// コンストラクタ
+		// Constructor
 		public CSkin(string _strSkinSubfolderFullName, bool _bUseBoxDefSkin) {
 			lockBoxDefSkin = new object();
 			strSystemSkinSubfolderFullName = _strSkinSubfolderFullName;
@@ -643,7 +621,7 @@ namespace TJAPlayer3 {
 			PrepareReloadSkin();
 		}
 		private string InitializeSkinPathRoot() {
-			strSystemSkinRoot = System.IO.Path.Combine(TJAPlayer3.strEXEのあるフォルダ, "System" + System.IO.Path.DirectorySeparatorChar);
+			strSystemSkinRoot = System.IO.Path.Combine(OpenTaiko.strEXEのあるフォルダ, "System" + System.IO.Path.DirectorySeparatorChar);
 			return strSystemSkinRoot;
 		}
 
@@ -759,7 +737,7 @@ namespace TJAPlayer3 {
 				if (!this[i].bExclusive)   // BGM系以外のみ読み込む。(BGM系は必要になったときに読み込む)
 				{
 					CSystemSound cシステムサウンド = this[i];
-					if (!TJAPlayer3.bコンパクトモード || cシステムサウンド.bCompact対象) {
+					if (!OpenTaiko.bコンパクトモード || cシステムサウンド.bCompact対象) {
 						try {
 							cシステムサウンド.tLoading();
 							Trace.TraceInformation("システムサウンドを読み込みました。({0})", cシステムサウンド.strFileName);
@@ -923,13 +901,13 @@ namespace TJAPlayer3 {
 		/// 変数の初期化
 		/// </summary>
 		public void tSkinConfigInit() {
-			this.eDiffDispMode = E難易度表示タイプ.mtaikoに画像で表示;
+			this.eDiffDispMode = EDifficultyDisplayType.ImageOnMTaiko;
 			this.b現在のステージ数を表示しない = false;
 		}
 
 		public void LoadSkinConfigFromFile(string path, ref string work) {
 			if (!File.Exists(Path(path))) return;
-			using (var streamReader = new StreamReader(Path(path), Encoding.GetEncoding(TJAPlayer3.sEncType))) {
+			using (var streamReader = new StreamReader(Path(path), Encoding.GetEncoding(OpenTaiko.sEncType))) {
 				while (streamReader.Peek() > -1) // 一行ずつ読み込む。
 				{
 					var nowLine = streamReader.ReadLine();
@@ -995,24 +973,6 @@ namespace TJAPlayer3 {
 										}
 										break;
 									}
-								//case "FontName":
-								//{
-								//    strParam = strParam.Replace('/', System.IO.Path.DirectorySeparatorChar);
-								//    strParam = strParam.Replace('\\', System.IO.Path.DirectorySeparatorChar);
-								//    if (HPrivateFastFont.FontExists(strParam)) FontName = strParam;
-								//    strParam = Path(strParam);
-								//    if (HPrivateFastFont.FontExists(strParam)) FontName = strParam;
-								//    break;
-								//}
-								//case "BoxFontName":
-								//{
-								//    strParam = strParam.Replace('/', System.IO.Path.DirectorySeparatorChar);
-								//    strParam = strParam.Replace('\\', System.IO.Path.DirectorySeparatorChar);
-								//    if (HPrivateFastFont.FontExists(strParam)) BoxFontName = strParam;
-								//    strParam = Path(strParam);
-								//    if (HPrivateFastFont.FontExists(Path(strParam))) BoxFontName = strParam;
-								//    break;
-								//}
 								#endregion
 
 								#region [Background Scroll]
@@ -1055,7 +1015,7 @@ namespace TJAPlayer3 {
 									}
 
 								case "DiffDispMode": {
-										this.eDiffDispMode = (E難易度表示タイプ)CConversion.n値を文字列から取得して範囲内に丸めて返す(strParam, 0, 2, (int)this.eDiffDispMode);
+										this.eDiffDispMode = (EDifficultyDisplayType)CConversion.ParseIntInRange(strParam, 0, 2, (int)this.eDiffDispMode);
 										break;
 									}
 								case "NowStageDisp": {
@@ -2495,15 +2455,25 @@ namespace TJAPlayer3 {
 									}
 								case "SongSelect_Difficulty_Number_X": {
 										string[] strSplit = strParam.Split(',');
-										for (int i = 0; i < 5; i++) {
+										int max = Math.Min(strSplit.Length, 7);
+										for (int i = 0; i < max; i++) {
 											SongSelect_Difficulty_Number_X[i] = int.Parse(strSplit[i]);
+											if (i == 4) {
+												SongSelect_Difficulty_Number_X[5] = SongSelect_Difficulty_Number_X[i];
+												SongSelect_Difficulty_Number_X[6] = SongSelect_Difficulty_Number_X[i];
+											}
 										}
 										break;
 									}
 								case "SongSelect_Difficulty_Number_Y": {
 										string[] strSplit = strParam.Split(',');
-										for (int i = 0; i < 5; i++) {
+										int max = Math.Min(strSplit.Length, 7);
+										for (int i = 0; i < max; i++) {
 											SongSelect_Difficulty_Number_Y[i] = int.Parse(strSplit[i]);
+											if (i == 4) {
+												SongSelect_Difficulty_Number_Y[5] = SongSelect_Difficulty_Number_Y[i];
+												SongSelect_Difficulty_Number_Y[6] = SongSelect_Difficulty_Number_Y[i];
+											}
 										}
 										break;
 									}
@@ -6233,11 +6203,6 @@ namespace TJAPlayer3 {
 
 								case "Result_UIMove_4P": {
 										string[] strSplit = strParam.Split(',');
-										// for (int i = 0; i < 2; i++)
-										// {
-										//Result_UIMove_4P[i] = int.Parse(strSplit[i]);
-										// }
-
 										for (int i = 0; i < 4; i++) {
 											int moveX = int.Parse(strSplit[0]);
 											Result_UIMove_4P_X[i] = moveX * i;
@@ -6249,11 +6214,6 @@ namespace TJAPlayer3 {
 									}
 								case "Result_UIMove_5P": {
 										string[] strSplit = strParam.Split(',');
-										// for (int i = 0; i < 2; i++)
-										// {
-										//Result_UIMove_5P[i] = int.Parse(strSplit[i]);
-										// }
-
 										for (int i = 0; i < 5; i++) {
 											int moveX = int.Parse(strSplit[0]);
 											Result_UIMove_5P_X[i] = moveX * i;
@@ -7018,7 +6978,7 @@ namespace TJAPlayer3 {
 									}
 								#endregion
 
-								#region OnlineLounge 
+								#region OnlineLounge
 								case "OnlineLounge_Side_Menu": {
 										string[] strSplit = strParam.Split(',');
 										for (int i = 0; i < 2; i++) {
@@ -7175,7 +7135,7 @@ namespace TJAPlayer3 {
 									}
 								#endregion
 
-								#region OpenEncyclopedia 
+								#region OpenEncyclopedia
 								case "OpenEncyclopedia_Context_Item2": {
 										string[] strSplit = strParam.Split(',');
 										for (int i = 0; i < 2; i++) {
@@ -7373,7 +7333,7 @@ namespace TJAPlayer3 {
 									}
 								#endregion
 
-								#region Modal 
+								#region Modal
 								case "Modal_Title_Full": {
 										string[] strSplit = strParam.Split(',');
 										for (int i = 0; i < 2; i++) {
@@ -7604,10 +7564,6 @@ namespace TJAPlayer3 {
 		//分岐背景、ゴーゴー背景が連動する。(全て同じ大きさ、位置で作成すること。)
 		//左上基準描画
 		public bool bFieldBgPointOverride = false;
-		/*
-        public int[] nScrollFieldBGX = new int[] { 333, 333, 333, 333 };
-        public int[] nScrollFieldBGY = new int[] { 192, 368, 0, 0 };
-        */
 		//SEnotes
 		//音符座標に加算
 		public int[] nSENotesX = new int[] { -2, -2 };
@@ -7632,7 +7588,7 @@ namespace TJAPlayer3 {
 		public float fComboNumberSpacing = 0;
 		public float fComboNumberSpacing_l = 0;
 
-		public E難易度表示タイプ eDiffDispMode;
+		public EDifficultyDisplayType eDiffDispMode;
 		public bool b現在のステージ数を表示しない;
 
 		//リザルト画面
@@ -7953,7 +7909,6 @@ namespace TJAPlayer3 {
 		#endregion
 
 		#region SongSelect
-		//public int SongSelect_Overall_Y = 123;
 		public string[] SongSelect_GenreName = { "ポップス", "アニメ", "ゲームバラエティ", "ナムコオリジナル", "クラシック", "バラエティ", "キッズ", "ボーカロイド", "最近遊んだ曲" };
 
 		public int SongSelect_Bar_Count = 9;
@@ -8153,8 +8108,8 @@ namespace TJAPlayer3 {
 		public int[] SongSelect_Difficulty_Star_Y = new int[] { 459, 459, 459, 459, 459 };
 		public int[] SongSelect_Difficulty_Star_Interval = new int[] { 10, 0 };
 
-		public int[] SongSelect_Difficulty_Number_X = new int[] { 498, 641, 784, 927, 927 };
-		public int[] SongSelect_Difficulty_Number_Y = new int[] { 435, 435, 435, 435, 435 };
+		public int[] SongSelect_Difficulty_Number_X = new int[] { 498, 641, 784, 927, 927, 927, 927 };
+		public int[] SongSelect_Difficulty_Number_Y = new int[] { 435, 435, 435, 435, 435, 435, 435 };
 		public int[] SongSelect_Difficulty_Number_Interval = new int[] { 11, 0 };
 
 		public int[][] SongSelect_Difficulty_Crown_X = new int[][] {
@@ -8256,8 +8211,6 @@ namespace TJAPlayer3 {
 
 		#endregion
 		#region DaniSelect
-		//public int[] DaniSelect_Dan_Text_X = new int[] { 300, 980, 300, 980 };
-		//public int[] DaniSelect_Dan_Text_Y = new int[] { 198, 198, 522, 522 };
 
 		public int[] DaniSelect_DanSides_X = new int[] { 243, 1199 };
 		public int[] DaniSelect_DanSides_Y = new int[] { 143, 143 };
@@ -8458,8 +8411,6 @@ namespace TJAPlayer3 {
 		public int[] Game_Dancer_X = new int[] { 640, 430, 856, 215, 1070 };
 		public int[] Game_Dancer_Y = new int[] { 500, 500, 500, 500, 500 };
 		public string Game_Dancer_Motion = "0";
-		//public int Game_Dancer_Ptn = 0;
-		//public int Game_Dancer_Beat = 8;
 		public int[] Game_Dancer_Gauge = new int[] { 0, 0, 0, 40, 80 };
 
 		#endregion
@@ -8899,10 +8850,6 @@ namespace TJAPlayer3 {
 
 		#endregion
 		#region Result
-		/*
-        public int[] Result_UIMove_4P = new int[] { 320, 0 };
-        public int[] Result_UIMove_5P = new int[] { 256, 0 };
-        */
 
 		public bool Result_Use1PUI = false;
 		public int[] Result_UIMove_4P_X = new int[] { 0, 320, 640, 960 };
@@ -9053,11 +9000,8 @@ namespace TJAPlayer3 {
 
 		public Color Result_MusicName_ForeColor = ColorTranslator.FromHtml("#FFFFFF");
 		public Color Result_StageText_ForeColor = ColorTranslator.FromHtml("#FFFFFF");
-		//public Color Result_StageText_ForeColor_Red = ColorTranslator.FromHtml("#FFFFFF");
 		public Color Result_MusicName_BackColor = ColorTranslator.FromHtml("#000000");
 		public Color Result_StageText_BackColor = ColorTranslator.FromHtml("#000000");
-		//public Color Result_StageText_BackColor_Red = ColorTranslator.FromHtml("#FF0000");
-
 
 		public int[] Result_Dan = new int[] { 500, 500 };
 		public int[] Result_Dan_XY = new int[] { 0, 420 };
@@ -9234,7 +9178,7 @@ namespace TJAPlayer3 {
 
 		#endregion
 
-		#region OnlineLounge 
+		#region OnlineLounge
 
 		public int[] OnlineLounge_Side_Menu = new int[] { 640, 360 };
 		public int[] OnlineLounge_Side_Menu_Text_Offset = new int[] { 0, 18 };
@@ -9258,7 +9202,7 @@ namespace TJAPlayer3 {
 
 		#endregion
 
-		#region TowerSelect 
+		#region TowerSelect
 
 		public int TowerSelect_Title_Size = 30;
 		public int TowerSelect_Title_MaxWidth = 230;
@@ -9272,7 +9216,7 @@ namespace TJAPlayer3 {
 
 		#endregion
 
-		#region OpenEncyclopedia 
+		#region OpenEncyclopedia
 
 		public int[] OpenEncyclopedia_Context_Item2 = new int[] { 960, 180 };
 		public int[] OpenEncyclopedia_Context_Item3 = new int[] { 640, 360 };

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace TJAPlayer3 {
+namespace OpenTaiko {
 	class DBPuchichara {
 		public class PuchicharaEffect {
 			public PuchicharaEffect() {
@@ -12,11 +12,8 @@ namespace TJAPlayer3 {
 
 			public float GetCoinMultiplier() {
 				float mult = 1f;
-
 				if (Autoroll > 0) mult *= 0f;
 				if (ShowAdlib == true) mult *= 0.9f;
-				//if (AllPurple == true) mult *= 1.1f;
-
 				return mult;
 			}
 
