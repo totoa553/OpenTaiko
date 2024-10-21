@@ -1,7 +1,7 @@
 {
-	"condition": "ch",
+	"condition": "ap",
 	"type": "me",
 	"values": [
-		4444,
+		100,
 	],
 }

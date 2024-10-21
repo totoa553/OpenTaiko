@@ -84,7 +84,7 @@ BoxFontName=廻想体 ネクスト UP B
 037 - Yukianesa ~Azure Of Ice~ : Sukima Altera - https://youtube.com/c/SukimaAltera | https://www.twitter.com/SukimaAltera (Chart by bol (Except Extreme) and 0AuBSQ)
 038 - Dear Stars : DashyDesu - https://www.youtube.com/c/DashyDesu (Chart by DashyDesu)
 039 - Forever Fading Away : DashyDesu - https://www.youtube.com/c/DashyDesu (Chart by DashyDesu, colin, bol, 0AuBSQ & Ryuto Setsujin)
-040 - Every Night : DJ NEXTON - https://nexton.bandcamp.com (Chart by colin)
+040 - Every Night : RachelTypeX - https://nexton.bandcamp.com (Chart by colin)
 041 - beyond the cityscape : Makotora - https://soundcloud.com/xoxomakotora/beyond-the-cityscape (Chart by bol)
 042 - Shockwave : Yonokid - https://youtube.com/channel/UCQmfYbGGEaz-LMcFf6bNT_Q | https://twitter.com/yonokid (Chart by bol)
 043 - TRIPLE HELIX : Yonokid - https://youtube.com/channel/UCQmfYbGGEaz-LMcFf6bNT_Q | https://twitter.com/yonokid (Chart by colin & 0AuBSQ)
@@ -110,7 +110,7 @@ BoxFontName=廻想体 ネクスト UP B
 063 - away : rainfall - https://on.soundcloud.com/dHt1P (Chart by Megi and 0AuBSQ)
 064 - PLANETES : SiLiS - https://soundcloud.com/silis/planetes?si=2da8518a62bd4022a176a62fd2abe458&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing (Chart by 0AuBSQ)
 065 - Bounded Quietude : SiLiS vs Finite Limit - https://soundcloud.com/silis/silis-vs-finite-limit-bounded?si=f7b16b47ef5e4feb992df028778af30a&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing (Chart by bol and 0AuBSQ)
-066 - Heating Up : FCN - https://fcngroove.carrd.co/ (Chart by Shoxk)
+066 - Heating Up : RachelTypeX - https://fcngroove.carrd.co/ (Chart by Shoxk)
 067 - Liar Prison : SiLiS ft. Karin Natsuki - https://soundcloud.com/silis/liarprison/s-RY4KsJUxuzL?si=e1738364de3a45328b27d1f10c90fea5&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing (Chart by 0AuBSQ)
 068 - Unlucky Rain : DashyDesu - https://www.youtube.com/c/DashyDesu (Chart by DashyDesu, Shoxk and 0AuBSQ)
 069 - Vanaheimr : SiLiS - https://soundcloud.com/silis (Chart by bol and 0AuBSQ)
@@ -165,8 +165,29 @@ BoxFontName=廻想体 ネクスト UP B
 118 - Froggy Forest Raceway : Baby Zionov https://twitter.com/babyzionov (Chart by Shoxk & DragonRatTiger)
 119 - Fractured Eternity : roər & Toneix [roər: SC ➜ https://soundcloud.com/rroer TW ➜ https://twitter.com/roerdtm YT ➜ https://www.youtube.com/@roer-music | Toneix: SC ➜ https://soundcloud.com/toneix TW ➜ https://twitter.com/Toneix1 YT ➜ https://www.youtube.com/@Toneix/featured] (Chart by Komi & bol) 
 120 - the infinite cityscape : Makotora - https://soundcloud.com/kingmakotora (Chart by sadkay & Komi)
-121 - PARANOiA Perpetuity : funkyzukin - https://funkyzukin.bandcamp.com/ (Chart by Komi) 
+121 - PARANOiA Perpetuality : funkyzukin - https://funkyzukin.bandcamp.com/ (Chart by Komi) 
 122 - Incoherent Hysteria : OfficialAz3 - https://www.youtube.com/channel/UCG00E-P8y_hQZZ_f88Oka8w (Chart by sadkay)
+123 - HEAT CONDUCTORS : OfficialAz3 - https://www.youtube.com/channel/UCG00E-P8y_hQZZ_f88Oka8w (Chart by berdstep and Komi)
+124 - five states of weirdness : OfficialAz3 - Youtube - https://youtube.com/@OfficialAz3 Soundcloud - https://soundcloud.com/official-az3 Newgrounds - https://officialaz3.newgrounds.com/ Spotify - https://open.spotify.com/artist/2DomkwykZq7v7XEvMwRBXf Twitter/X - https://x.com/OfficialAz3_m BMSSearch - https://bmssearch.net/artists/-URS8oXk2q_dIL (Chart by Komi)
+125 - MajETCMAT : OfficialAz3 - https://www.youtube.com/channel/UCG00E-P8y_hQZZ_f88Oka8w (Chart by Komi)
+126 - BLACK DIAMOND : Thomas Dingwall a.k.a. td - https://www.youtube.com/channel/UCQhx1BpM1nEu3s8lPZ8HYEA (Chart by berdstep)
+127 - A symphony of a million years : oxoplasmaP ft. 唄音ウタ - https://www.youtube.com/watch?v=dbyiAZRQt8g (Chart by Komi)
+128 - Mayhem : X3ll3n & Benji-G - Follow X3ll3n : • Newgrounds : https://x3ll3n.newgrounds.com/ • Soundcloud : https://soundcloud.com/x3ll3n • Youtube : https://www.youtube.com/channel/UCP7YVa81D4B0oZ2ypDzGGeg • Spotify : https://open.spotify.com/artist/3QR2CfvMJL7sxMwN5UMRGX • Instagram : https://www.instagram.com/x3ll3n_music/ • Other Platforms : https://linktr.ee/x3ll3n  Follow Benji-G : • Newgrounds : https://benji-g.newgrounds.com/ • Soundcloud : https://soundcloud.com/user-763424064 • Youtube : https://www.youtube.com/channel/UC20XOQOSZCS90d4b6Fr0-HA • Spotify : https://open.spotify.com/artist/6YQx6KHLda3S3sd3lxWfa6?si=5gTPy-gBQgOHXm7ZSs8w5A • Twitter: https://twitter.com/Hactastic_ (Chart by DiamondN1nja)
+129 - Cybernetic Pressure : X3ll3n & BARY - Follow X3ll3n : • Newgrounds : https://x3ll3n.newgrounds.com/ • Soundcloud : https://soundcloud.com/x3ll3n • Youtube : https://www.youtube.com/channel/UCP7YVa81D4B0oZ2ypDzGGeg • Spotify : https://open.spotify.com/artist/3QR2CfvMJL7sxMwN5UMRGX • Instagram : https://www.instagram.com/x3ll3n_music/ • Twitter : https://twitter.com/Dem_X3ll3n • Other Platforms : https://linktr.ee/x3ll3n  Follow BARY : • Newgrounds : https://baryiscool.newgrounds.com/ • Soundcloud : https://soundcloud.com/bary_is_cool • Youtube : https://www.youtube.com/@bary_music • Spotify : https://open.spotify.com/artist/6kIojqA7iiEtPcbUivolci? • Twitter : https://twitter.com/cool_bary (Chart by Komi)
+130 - The Minotaur : X3ll3n & Benji-G - Follow X3ll3n : • Newgrounds : https://x3ll3n.newgrounds.com/ • Soundcloud : https://soundcloud.com/x3ll3n • Youtube : https://www.youtube.com/channel/UCP7YVa81D4B0oZ2ypDzGGeg • Spotify : https://open.spotify.com/artist/3QR2CfvMJL7sxMwN5UMRGX • Instagram : https://www.instagram.com/x3ll3n_music/ • Other Platforms : https://linktr.ee/x3ll3n  Follow Benji-G : • Newgrounds : https://benji-g.newgrounds.com/ • Soundcloud : https://soundcloud.com/user-763424064 • Youtube : https://www.youtube.com/channel/UC20XOQOSZCS90d4b6Fr0-HA • Spotify : https://open.spotify.com/artist/6YQx6KHLda3S3sd3lxWfa6?si=5gTPy-gBQgOHXm7ZSs8w5A • Twitter: https://twitter.com/Hactastic_ (Chart by Komi)
+131 - CIRCUNFERENCIA : ULKO - https://soundcloud.com/ulkokos (Chart by Colin, Dashy, Komi, DragonRatTiger)
+132 - NEP0: FR02ENロウカ : OPTK-HQ=CHANNEL0125 (Chart by OPTK-HQ)
+133 - 菌菇夜祭 ~ 戰奏 : Taichenko - https://space.bilibili.com/356518101 (Chart by Taichenko, Komi)
+134 - Deceiver's Revenge : H5 - https://linktr.ee/H5Music (Chart by bol)
+135 - NEP0：MATSUR1ジケン : OPTK-HQ=CHANNEL0125 (Chart by OPTK-HQ)
+136 - Trapped Passion : DashyDesu - https://www.youtube.com/c/DashyDesu (Chart by DashyDesu)
+137 - ??? ~ T'soL Niamer-I ~ : YLN0 feat. The Second Truth (Chart by ???)
+138 - Startup Parade! (Ryuto Setsujin + Makotora Remix) : Ryuto Setsujin + Makotora - https://kingmakotora.bandcamp.com/track/startup-parade-ryuto-setsujin-makotora-remix (Chart by DiamondN1nja)
+139 - euphoric eruption : Makotora - https://kingmakotora.bandcamp.com (Chart by Komi)
+140 - NOVAの夜 (NOVA's Night!!) : alden - https://twitter.com/aldentweeting (Chart by Komi)
+141 - AQUAMARINE : McBoiled - https://soundcloud.com/mcboiled (Chart by Komi)
+142 - floatfobia : ArLgon - https://www.youtube.com/@ArLgon.sb3 (Chart by Komi)
+143 - you ruined me with your lies : Teocore - https://open.spotify.com/artist/3sYKIK8OWKNyAqWx9xmprd?si=lxpWLpvsT4OVwqwiNAEpPA // https://www.youtube.com/@t3oc0re // https://soundcloud.com/teocore (Chart by sadkay)
 ```
 
 ### Visuals
@@ -205,6 +226,7 @@ If you liked a specific song and want to support the composer's work, please che
 - CC BY
 ```
 085 - i don't want to see the people i love see me in pain so i sometimes just wanna be left alone to cry in the dark : Sukima Altera
+127 - A symphony of a million years : oxoplasmaP ft. 唄音ウタ
 ```
 
 - CC BY-SA

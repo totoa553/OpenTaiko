@@ -1,71 +1,113 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
-using static TJAPlayer3.DBSongUnlockables;
+using static OpenTaiko.DBSongUnlockables;
 
-namespace TJAPlayer3
-{
-    internal class DBSongUnlockables : CSavableT<Dictionary<string, SongUnlockable>>
-    {
-        /* DISPLAYED : Song displayed in song select, only a lock appearing on the side, audio preview plays
+namespace OpenTaiko {
+	internal class DBSongUnlockables : CSavableT<Dictionary<string, SongUnlockable>> {
+		/* DISPLAYED : Song displayed in song select, only a lock appearing on the side, audio preview plays
          * GRAYED : Box grayed, song preview does not play
+         * BLURED : Like grayed, but with a glitch effect on the song title and preimage making it unreadable
          * HIDDEN : Song not appears on the song select list until being unlocked
          */
-        public enum EHiddenIndex
-        {
-            DISPLAYED = 0,
-            GRAYED = 1,
-            HIDDEN = 2
-        }
+		public enum EHiddenIndex {
+			DISPLAYED = 0,
+			GRAYED = 1,
+			BLURED = 2,
+			HIDDEN = 3
+		}
 
-        public DBSongUnlockables()
-        {
-            _fn = @$"{TJAPlayer3.strEXEのあるフォルダ}Databases{Path.DirectorySeparatorChar}SongUnlockables.json";
-            base.tDBInitSavable();
-        }
-        public class SongUnlockable
-        {
-            [JsonProperty("HiddenIndex")]
-            public EHiddenIndex hiddenIndex;
+		public DBSongUnlockables() {
+			_fn = @$"{OpenTaiko.strEXEのあるフォルダ}Databases{Path.DirectorySeparatorChar}SongUnlockables.db3";
+			using (var connection = new SqliteConnection(@$"Data Source={_fn}")) {
+				connection.Open();
 
-            [JsonProperty("Rarity")]
-            public string rarity;
+				// Get songs info
+				var command = connection.CreateCommand();
+				command.CommandText =
+				@$"
+                    SELECT *
+                    FROM songs;
+                ";
 
-            [JsonProperty("UnlockCondition")]
-            public DBUnlockables.CUnlockConditions unlockConditions;
-        }
+				var reader = command.ExecuteReader();
+				while (reader.Read()) {
+					SongUnlockable su = new SongUnlockable();
+					su.hiddenIndex = (EHiddenIndex)(Int64)reader["HiddenIndex"];
+					su.rarity = (string)reader["Rarity"];
+					su.unlockConditions = new DBUnlockables.CUnlockConditions();
+					su.unlockConditions.Condition = (string)reader["UnlockCondition"];
+					su.unlockConditions.Values = JsonConvert.DeserializeObject<int[]>((string)reader["UnlockValues"]) ?? new int[] { 0 };
+					su.unlockConditions.Type = (string)reader["UnlockType"];
+					su.unlockConditions.Reference = JsonConvert.DeserializeObject<string[]>((string)reader["UnlockReferences"]) ?? new string[] { "" };
 
-        public void tGetUnlockedItems(int _player, ModalQueue mq)
-        {
-            int player = TJAPlayer3.GetActualPlayer(_player);
-            var _sf = TJAPlayer3.SaveFileInstances[player].data.NamePlateTitles;
-            bool _edited = false;
+					data[((string)reader["SongUniqueId"])] = su;
+				}
+				reader.Close();
+			}
 
-            foreach (KeyValuePair<string, SongUnlockable> item in data)
-            {
-                var _npvKey = item.Key;
-                if (!_sf.ContainsKey(_npvKey))
-                {
-                    var _fulfilled = item.Value.unlockConditions.tConditionMetWrapper(player, DBUnlockables.CUnlockConditions.EScreen.Internal).Item1;
+		}
+		public class SongUnlockable {
+			[JsonProperty("HiddenIndex")]
+			public EHiddenIndex hiddenIndex;
 
-                    if (_fulfilled)
-                    {
-                        /*
-                        _sf.Add(_npvKey, item.Value.nameplateInfo);
-                        _edited = true;
-                        mq.tAddModal(
-                            new Modal(
-                                Modal.EModalType.Title, 
-                                HRarity.tRarityToModalInt(item.Value.rarity), 
-                                item.Value.nameplateInfo.cld.GetString(item.Key)
-                                ), 
-                            _player);
-                        */
-                    } 
-                }
-            }
+			[JsonProperty("Rarity")]
+			public string rarity;
 
-            if (_edited)
-                TJAPlayer3.SaveFileInstances[player].tApplyHeyaChanges();
-        }
-    }
+			[JsonProperty("UnlockCondition")]
+			public DBUnlockables.CUnlockConditions unlockConditions;
+		}
+
+		public void tGetUnlockedItems(int _player, ModalQueue mq) {
+			int player = OpenTaiko.GetActualPlayer(_player);
+			var _sf = OpenTaiko.SaveFileInstances[player].data.UnlockedSongs;
+			bool _edited = false;
+
+			foreach (KeyValuePair<string, SongUnlockable> item in data) {
+				string _npvKey = item.Key;
+				CSongListNode? _node = CSongDict.tGetNodeFromID(_npvKey);
+
+				if (!_sf.Contains(_npvKey)) {
+					var _fulfilled = item.Value.unlockConditions.tConditionMetWrapper(player, DBUnlockables.CUnlockConditions.EScreen.Internal).Item1;
+
+					if (_fulfilled) {
+						_sf.Add(_npvKey);
+						_edited = true;
+
+
+						mq.tAddModal(
+							new Modal(
+								Modal.EModalType.Song,
+								HRarity.tRarityToModalInt(item.Value.rarity),
+								_node,
+								OpenTaiko.stageSongSelect.actPreimageパネル.tGenerateAndGetPreimage(_node?.arスコア[0] ?? null)
+								),
+							_player);
+
+						DBSaves.RegisterStringUnlockedAsset(OpenTaiko.SaveFileInstances[player].data.SaveId, "unlocked_songs", _npvKey);
+
+					}
+				}
+			}
+
+			if (_edited)
+				OpenTaiko.SaveFileInstances[player].tApplyHeyaChanges();
+		}
+
+		public bool tIsSongLocked(CSongListNode? song) {
+			if (song == null || OpenTaiko.ConfigIni.bIgnoreSongUnlockables) return false;
+			return !OpenTaiko.SaveFileInstances[OpenTaiko.SaveFile].data.UnlockedSongs.Contains(song.tGetUniqueId())
+				&& data.ContainsKey(song.tGetUniqueId());
+		}
+
+		public EHiddenIndex tGetSongHiddenIndex(CSongListNode? song) {
+			if (song == null || !tIsSongLocked(song)) return EHiddenIndex.DISPLAYED;
+			return data[song.tGetUniqueId()].hiddenIndex;
+		}
+
+		public SongUnlockable? tGetUnlockableByUniqueId(CSongListNode? song) {
+			if (song == null) return null;
+			if (!data.ContainsKey(song.tGetUniqueId())) return null;
+			return data[song.tGetUniqueId()];
+		}
+	}
 }

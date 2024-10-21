@@ -1,69 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using FDK;
 using Silk.NET.Maths;
-using FDK;
 
 
-namespace TJAPlayer3
-{
-    class CPuchichara
-    {
-        public CTexture tx;
-        public CTexture render;
-        public CSkin.CSystemSound welcome;
-        public DBPuchichara.PuchicharaData metadata;
-        public DBPuchichara.PuchicharaEffect effect;
-        public DBUnlockables.CUnlockConditions unlock;
-        public string _path;
+namespace OpenTaiko {
+	class CPuchichara {
+		public CTexture tx;
+		public CTexture render;
+		public CSkin.CSystemSound welcome;
+		public DBPuchichara.PuchicharaData metadata;
+		public DBPuchichara.PuchicharaEffect effect;
+		public DBUnlockables.CUnlockConditions unlock;
+		public string _path;
 
-        public float GetEffectCoinMultiplier()
-        {
-            float mult = 1f;
+		public float GetEffectCoinMultiplier() {
+			float mult = 1f;
 
-            mult *= HRarity.tRarityToRarityToCoinMultiplier(metadata.Rarity);
-            mult *= effect.GetCoinMultiplier();
+			mult *= HRarity.tRarityToRarityToCoinMultiplier(metadata.Rarity);
+			mult *= effect.GetCoinMultiplier();
 
-            return mult;
-        }
+			return mult;
+		}
 
-        public CPuchichara(string path)
-        {
-            _path = path;
+		public void tGetUnlockedItems(int _player, ModalQueue mq) {
+			int player = OpenTaiko.GetActualPlayer(_player);
+			var _sf = OpenTaiko.SaveFileInstances[player].data.UnlockedPuchicharas;
+			bool _edited = false;
 
-            // Puchichara textures
-            tx = TJAPlayer3.Tx.TxCAbsolute($@"{path}{Path.DirectorySeparatorChar}Chara.png");
-            if (tx != null)
-            {
-                tx.vcScaleRatio = new Vector3D<float>(TJAPlayer3.Skin.Game_PuchiChara_Scale[0]);
-            }
+			var _npvKey = Path.GetFileName(_path);
 
-            // Heya render
-            render = TJAPlayer3.Tx.TxCAbsolute($@"{path}{Path.DirectorySeparatorChar}Render.png");
+			if (!_sf.Contains(_npvKey)) {
+				var _fulfilled = unlock?.tConditionMetWrapper(player, DBUnlockables.CUnlockConditions.EScreen.Internal).Item1 ?? false;
 
-            // Puchichara welcome sfx
-            welcome = new CSkin.CSystemSound($@"{path}{Path.DirectorySeparatorChar}Welcome.ogg", false, false, true, ESoundGroup.Voice);
+				if (_fulfilled) {
+					_sf.Add(_npvKey);
+					_edited = true;
+					mq.tAddModal(
+						new Modal(
+							Modal.EModalType.Puchichara,
+							HRarity.tRarityToModalInt(metadata.Rarity),
+							this
+							),
+						_player);
 
-            // Puchichara metadata
-            if (File.Exists($@"{path}{Path.DirectorySeparatorChar}Metadata.json"))
-                metadata = ConfigManager.GetConfig<DBPuchichara.PuchicharaData>($@"{path}{Path.DirectorySeparatorChar}Metadata.json");
-            else
-                metadata = new DBPuchichara.PuchicharaData();
+					DBSaves.RegisterStringUnlockedAsset(OpenTaiko.SaveFileInstances[player].data.SaveId, "unlocked_puchicharas", _npvKey);
+				}
+			}
 
-            // Puchichara metadata
-            if (File.Exists($@"{path}{Path.DirectorySeparatorChar}Effects.json"))
-                effect = ConfigManager.GetConfig<DBPuchichara.PuchicharaEffect>($@"{path}{Path.DirectorySeparatorChar}Effects.json");
-            else
-                effect = new DBPuchichara.PuchicharaEffect();
+			if (_edited)
+				OpenTaiko.SaveFileInstances[player].tApplyHeyaChanges();
+		}
 
-            // Puchichara unlockables
-            if (File.Exists($@"{path}{Path.DirectorySeparatorChar}Unlock.json"))
-                unlock = ConfigManager.GetConfig<DBUnlockables.CUnlockConditions>($@"{path}{Path.DirectorySeparatorChar}Unlock.json");
-            else
-                unlock = null;
-        }
-    }
+		public CPuchichara(string path) {
+			_path = path;
+
+			// Puchichara textures
+			tx = OpenTaiko.Tx.TxCAbsolute($@"{path}{Path.DirectorySeparatorChar}Chara.png");
+			if (tx != null) {
+				tx.vcScaleRatio = new Vector3D<float>(OpenTaiko.Skin.Game_PuchiChara_Scale[0]);
+			}
+
+			// Heya render
+			render = OpenTaiko.Tx.TxCAbsolute($@"{path}{Path.DirectorySeparatorChar}Render.png");
+
+			// Puchichara welcome sfx
+			welcome = new CSkin.CSystemSound($@"{path}{Path.DirectorySeparatorChar}Welcome.ogg", false, false, true, ESoundGroup.Voice);
+
+			// Puchichara metadata
+			if (File.Exists($@"{path}{Path.DirectorySeparatorChar}Metadata.json"))
+				metadata = ConfigManager.GetConfig<DBPuchichara.PuchicharaData>($@"{path}{Path.DirectorySeparatorChar}Metadata.json");
+			else
+				metadata = new DBPuchichara.PuchicharaData();
+
+			// Puchichara metadata
+			if (File.Exists($@"{path}{Path.DirectorySeparatorChar}Effects.json"))
+				effect = ConfigManager.GetConfig<DBPuchichara.PuchicharaEffect>($@"{path}{Path.DirectorySeparatorChar}Effects.json");
+			else
+				effect = new DBPuchichara.PuchicharaEffect();
+
+			// Puchichara unlockables
+			if (File.Exists($@"{path}{Path.DirectorySeparatorChar}Unlock.json"))
+				unlock = ConfigManager.GetConfig<DBUnlockables.CUnlockConditions>($@"{path}{Path.DirectorySeparatorChar}Unlock.json");
+			else
+				unlock = null;
+		}
+	}
 }

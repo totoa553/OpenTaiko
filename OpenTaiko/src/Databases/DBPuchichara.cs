@@ -1,71 +1,84 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace TJAPlayer3
-{
-    class DBPuchichara
-    {
-        public class PuchicharaEffect
-        {
-            public PuchicharaEffect()
-            {
-                AllPurple = false;
-                Autoroll = 0;
-                ShowAdlib = false;
-                SplitLane = false;
-            }
+namespace OpenTaiko {
+	class DBPuchichara {
+		public class PuchicharaEffect {
+			public PuchicharaEffect() {
+				AllPurple = false;
+				Autoroll = 0;
+				ShowAdlib = false;
+				SplitLane = false;
+			}
 
-            public float GetCoinMultiplier()
-            {
-                float mult = 1f;
+			public float GetCoinMultiplier() {
+				float mult = 1f;
+				if (Autoroll > 0) mult *= 0f;
+				if (ShowAdlib == true) mult *= 0.9f;
+				return mult;
+			}
 
-                if (Autoroll > 0) mult *= 0f;
-                if (ShowAdlib == true) mult *= 0.9f;
-                //if (AllPurple == true) mult *= 1.1f;
+			[JsonProperty("allpurple")]
+			public bool AllPurple;
 
-                return mult;
-            }
+			[JsonProperty("AutoRoll")]
+			public int Autoroll;
 
-            [JsonProperty("allpurple")]
-            public bool AllPurple;
+			[JsonProperty("showadlib")]
+			public bool ShowAdlib;
 
-            [JsonProperty("AutoRoll")]
-            public int Autoroll;
+			[JsonProperty("splitlane")]
+			public bool SplitLane;
+		}
 
-            [JsonProperty("showadlib")]
-            public bool ShowAdlib;
+		public class PuchicharaData {
+			public PuchicharaData() {
+				Name = "(None)";
+				Rarity = "Common";
+				Author = "(None)";
+			}
 
-            [JsonProperty("splitlane")]
-            public bool SplitLane;
-        }
+			public PuchicharaData(string pcn, string pcr, string pca) {
+				Name = pcn;
+				Rarity = pcr;
+				Author = pca;
+			}
 
-        public class PuchicharaData
-        {
-            public PuchicharaData()
-            {
-                Name = "(None)";
-                Rarity = "Common";
-                Author = "(None)";
-            }
+			public string tGetName() {
+				if (Name is string) return (string)Name;
+				else if (Name is CLocalizationData) return ((CLocalizationData)Name).GetString("");
+				return "";
+			}
 
-            public PuchicharaData(string pcn, string pcr, string pca)
-            {
-                Name = pcn;
-                Rarity = pcr;
-                Author = pca;
-            }
+			public string tGetAuthor() {
+				if (Author is string) return (string)Author;
+				else if (Author is CLocalizationData) return ((CLocalizationData)Author).GetString("");
+				return "";
+			}
 
+			public string tGetDescription() {
+				if (Description is string) return (string)Description;
+				else if (Description is CLocalizationData) return ((CLocalizationData)Description).GetString("");
+				return "";
+			}
 
-            [JsonProperty("name")]
-            public string Name;
+			// String or CLocalizationData
+			[JsonProperty("name")]
+			[JsonConverter(typeof(LocalizedStringConverter<CLocalizationData>))]
+			public object Name;
 
-            [JsonProperty("rarity")]
-            public string Rarity;
+			[JsonProperty("rarity")]
+			public string Rarity;
 
-            [JsonProperty("author")]
-            public string Author;
-        }
+			// String or CLocalizationData
+			[JsonProperty("author")]
+			[JsonConverter(typeof(LocalizedStringConverter<CLocalizationData>))]
+			public object Author;
 
-    }
+			// String or CLocalizationData
+			[JsonProperty("description")]
+			[JsonConverter(typeof(LocalizedStringConverter<CLocalizationData>))]
+			public object Description;
+		}
+
+	}
 }

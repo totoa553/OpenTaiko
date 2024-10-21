@@ -1,258 +1,344 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-
-namespace TJAPlayer3
-{
-    internal class SaveFile
-    {
-
-        public void tSaveFile(string filename)
-        {
-            path = @$"Saves{Path.DirectorySeparatorChar}" + filename + @".json";
-            name = filename;
-
-            if (!File.Exists(path))
-            {
-                this.data.Name = filename;
-                tSaveFile();
-            }
-                
-            tLoadFile();
-        }
-
-        #region [Medals]
-
-        public void tEarnCoins(int amount)
-        {
-            data.Medals += amount;
-            tSaveFile();
-        }
-
-        // Return false if the current amount of coins is to low
-        public bool tSpendCoins(int amount)
-        {
-            if (data.Medals < amount)
-                return false;
-
-            data.Medals -= amount;
-
-            tSaveFile();
-
-            return true;
-        }
-
-        #endregion
-
-        #region [Dan titles]
+﻿using Newtonsoft.Json;
+
+namespace OpenTaiko {
+	internal class SaveFile {
 
-        public bool tUpdateDanTitle(string title, bool isGold, int clearStatus)
-        {
-            bool changed = false;
+		public void tSaveFile(string filename) {
+			path = @$"Saves{Path.DirectorySeparatorChar}" + filename + @".json";
+			name = filename;
 
-            bool iG = isGold;
-            int cs = clearStatus;
-
-            if (this.data.DanTitles == null)
-                this.data.DanTitles = new Dictionary<string, CDanTitle>();
-
-            if (this.data.DanTitles.ContainsKey(title))
-            {
-                if (this.data.DanTitles[title].clearStatus > cs)
-                    cs = this.data.DanTitles[title].clearStatus;
-                if (this.data.DanTitles[title].isGold)
-                    iG = true;
-            }
+			if (!File.Exists(path)) {
+				this.data.Name = filename;
+				tSaveFile();
+			}
+
+			tLoadFile();
 
-            // Automatically set the dan to nameplate if new
-            // Add a function within the NamePlate.cs file to update the title texture 
+			tInitSaveFile();
+		}
+
+		public void tInitSaveFile() {
+			data.bestPlays = DBSaves.GetBestPlaysAsDict(data.SaveId);
+			data.tFactorizeBestPlays();
+		}
+
+		public void tLoadUnlockables() {
+			data.UnlockedCharacters = DBSaves.FetchStringUnlockedAsset(data.SaveId, "unlocked_characters");
+			data.UnlockedPuchicharas = DBSaves.FetchStringUnlockedAsset(data.SaveId, "unlocked_puchicharas");
+			data.UnlockedSongs = DBSaves.FetchStringUnlockedAsset(data.SaveId, "unlocked_songs");
+			data.UnlockedNameplateIds = DBSaves.FetchUnlockedNameplateIds(data.SaveId);
+			data.DanTitles = DBSaves.FetchUnlockedDanTitles(data.SaveId);
+		}
+
+
+		#region [Medals and PlayCount]
+
+		public void tEarnCoins(int amount) {
+			data.Medals += amount;
+			data.TotalEarnedMedals += amount;
 
-            if (!this.data.DanTitles.ContainsKey(title) || cs != clearStatus || iG != isGold)
-            {
-                changed = true;
-                /*
-                TJAPlayer3.NamePlateConfig.data.Dan[player] = title;
-                TJAPlayer3.NamePlateConfig.data.DanGold[player] = iG;
-                TJAPlayer3.NamePlateConfig.data.DanType[player] = cs;
-                */
-            }
+			// Small trick here, each actual play (excluding Auto, AI, etc) are worth at least 5 coins for the player, whatever which mode it is (Dan, Tower, Taiko mode, etc)
+			// Earn Coins is also called once per play, so we just add 1 here to the total playcount
+			data.TotalPlaycount += 1;
+			DBSaves.AlterCoinsAndTotalPlayCount(data.SaveId, amount, 1);
+		}
 
+		// Return false if the current amount of coins is to low
+		public bool tSpendCoins(int amount) {
+			if (data.Medals < amount)
+				return false;
 
-            CDanTitle danTitle = new CDanTitle(iG, cs);
+			data.Medals -= amount;
+			DBSaves.AlterCoinsAndTotalPlayCount(data.SaveId, -amount, 0);
+			return true;
+		}
 
-            this.data.DanTitles[title] = danTitle;
+		public void tRegisterAIBattleModePlay(bool IsWon) {
+			data.AIBattleModePlaycount++;
+			if (IsWon) data.AIBattleModeWins++;
+			DBSaves.RegisterAIBattleModePlay(data.SaveId, IsWon);
+		}
 
-            tSaveFile();
+		#endregion
 
-            return changed;
-        }
+		#region [Dan titles]
 
-        #endregion
+		public bool tUpdateDanTitle(string title, bool isGold, int clearStatus) {
+			bool changed = false;
 
-        #region [Auxilliary classes]
+			bool iG = isGold;
+			int cs = clearStatus;
 
-        public class CDanTitle
-        {
-            public CDanTitle(bool iG, int cs)
-            {
-                isGold = iG;
-                clearStatus = cs;
-            }
+			if (this.data.DanTitles == null)
+				this.data.DanTitles = new Dictionary<string, CDanTitle>();
 
-            [JsonProperty("isGold")]
-            public bool isGold;
+			if (this.data.DanTitles.ContainsKey(title)) {
+				if (this.data.DanTitles[title].clearStatus > cs)
+					cs = this.data.DanTitles[title].clearStatus;
+				if (this.data.DanTitles[title].isGold)
+					iG = true;
+			}
 
-            [JsonProperty("clearStatus")]
-            public int clearStatus;
-        }
+			// Automatically set the dan to nameplate if new
+			// Add a function within the NamePlate.cs file to update the title texture
 
-        public class CNamePlateTitle
-        {
-            public CNamePlateTitle(int type)
-            {
-                iType = type;
-                cld = new CLocalizationData();
-            }
+			if (!this.data.DanTitles.ContainsKey(title) || cs != clearStatus || iG != isGold) {
+				DBSaves.RegisterDanTitle(data.SaveId, title, clearStatus, isGold);
+				changed = true;
+			}
+			CDanTitle danTitle = new CDanTitle(iG, cs);
+			this.data.DanTitles[title] = danTitle;
+			return changed;
+		}
 
-            [JsonProperty("iType")]
-            public int iType;
+		#endregion
 
-            [JsonProperty("Localization")]
-            public CLocalizationData cld;
-        }
+		#region [Auxilliary classes]
 
-        public class CPassStatus
-        {
-            public CPassStatus()
-            {
-                d = new int[5] { -1, -1, -1, -1, -1 };
-            }
+		public class CDanTitle {
+			public CDanTitle(bool iG, int cs) {
+				isGold = iG;
+				clearStatus = cs;
+			}
 
-            public int[] d;
-        }
+			public CDanTitle() {
+				isGold = false;
+				clearStatus = 0;
+			}
 
-        #endregion
+			[JsonProperty("isGold")]
+			public bool isGold;
 
-        #region [Heya]
+			[JsonProperty("clearStatus")]
+			public int clearStatus;
+		}
 
-        public void tReindexCharacter(string[] characterNamesList)
-        {
-            string character = this.data.CharacterName;
+		public class CNamePlateTitle {
+			public CNamePlateTitle(int type) {
+				iType = type;
+				cld = new CLocalizationData();
+			}
 
-            if (characterNamesList.Contains(character))
-                this.data.Character = characterNamesList.ToList().IndexOf(character);
+			[JsonProperty("iType")]
+			public int iType;
 
-        }
+			[JsonProperty("Localization")]
+			public CLocalizationData cld;
+		}
 
-        public void tUpdateCharacterName(string newChara)
-        {
-            this.data.CharacterName = newChara;
-        }
+		public class CPassStatus {
+			public CPassStatus() {
+				d = new int[5] { -1, -1, -1, -1, -1 };
+			}
 
-        public void tApplyHeyaChanges()
-        {
-            this.tSaveFile();
-        }
+			public int[] d;
+		}
 
-        #endregion
+		#endregion
 
-        #region [Player stats]
+		#region [Heya]
 
-        public void tUpdateSongClearStatus(CSongListNode node, int clearStatus, int difficulty)
-        {
-            if (difficulty > (int)Difficulty.Edit) return;
+		public void tReindexCharacter(string[] characterNamesList) {
+			string character = this.data.CharacterName;
 
-            string _id = node.uniqueId.data.id;
-            var _sdp = data.standardPasses;
+			if (characterNamesList.Contains(character))
+				this.data.Character = characterNamesList.ToList().IndexOf(character);
 
-            if (!_sdp.ContainsKey(_id))
-                _sdp[_id] = new CPassStatus();
+		}
 
-            var cps = _sdp[_id];
+		public void tUpdateCharacterName(string newChara) {
+			this.data.CharacterName = newChara;
+		}
 
-            var _values = cps.d;
-            if (clearStatus > _values[difficulty])
-            {
-                cps.d[difficulty] = clearStatus;
-                tSaveFile();
-            }
-        }
+		public void tApplyHeyaChanges() {
+			DBSaves.ApplyChangesFromMyRoom(this);
+		}
 
-        #endregion
+		#endregion
 
-        public class Data
-        {
-            [JsonProperty("name")]
-            public string Name = "プレイヤー1";
+		public class Data {
+			[JsonProperty("saveId")]
+			public Int64 SaveId = 0;
 
-            [JsonProperty("title")]
-            public string Title = "初心者";
+			[JsonProperty("name")]
+			public string Name = "プレイヤー1";
 
-            [JsonProperty("dan")]
-            public string Dan = "新人";
+			[JsonProperty("title")]
+			public string Title = "初心者";
 
-            [JsonProperty("danGold")]
-            public bool DanGold = false;
+			[JsonProperty("dan")]
+			public string Dan = "新人";
 
-            [JsonProperty("danType")]
-            public int DanType = 0;
+			[JsonProperty("danGold")]
+			public bool DanGold = false;
 
-            [JsonProperty("titleType")]
-            public int TitleType = 0;
+			[JsonProperty("danType")]
+			public int DanType = 0;
 
-            [JsonProperty("puchiChara")]
-            public string PuchiChara = "0";
+			[JsonProperty("titleType")]
+			public int TitleType = 0;
 
-            [JsonProperty("medals")]
-            public int Medals = 0;
+			[JsonIgnore]
+			public int TitleRarityInt = 1;
 
-            [JsonProperty("character")]
-            public int Character = 0;
+			[JsonIgnore]
+			public int TitleId = -1;
 
-            [JsonProperty("characterName")]
-            public string CharacterName = "0";
+			[JsonProperty("puchiChara")]
+			public string PuchiChara = "0";
 
-            [JsonProperty("danTitles")]
-            public Dictionary<string, CDanTitle> DanTitles = new Dictionary<string, CDanTitle>();
 
-            [JsonProperty("namePlateTitles")]
-            public Dictionary<string, CNamePlateTitle> NamePlateTitles = new Dictionary<string, CNamePlateTitle>();
+			[JsonProperty("medals")]
+			public Int64 Medals = 0;
 
-            [JsonProperty("unlockedCharacters")]
-            public List<string> UnlockedCharacters = new List<string>();
+			[JsonIgnore]
+			public Int64 TotalEarnedMedals = 0;
 
-            [JsonProperty("unlockedPuchicharas")]
-            public List<string> UnlockedPuchicharas = new List<string>();
+			[JsonIgnore]
+			public int TotalPlaycount = 0;
 
-            [JsonProperty("activeTriggers")]
-            public HashSet<string> ActiveTriggers = new HashSet<string>();
+			[JsonIgnore]
+			public int AIBattleModePlaycount = 0;
 
-            [JsonProperty("standardPasses")]
-            public Dictionary<string, CPassStatus> standardPasses = new Dictionary<string, CPassStatus>();
+			[JsonIgnore]
+			public int AIBattleModeWins = 0;
 
-        }
+			[JsonProperty("character")]
+			public int Character = 0;
 
-        public Data data = new Data();
-        public string path = "Save.json";
-        public string name = "Save";
+			[JsonProperty("characterName")]
+			public string CharacterName = "0";
 
-        #region [private]
+			[JsonProperty("danTitles")]
+			public Dictionary<string, CDanTitle> DanTitles = new Dictionary<string, CDanTitle>();
 
-        private void tSaveFile()
-        {
-            ConfigManager.SaveConfig(data, path);
-        }
+			// Deprecated
+			[JsonProperty("namePlateTitles")]
+			public Dictionary<string, CNamePlateTitle> NamePlateTitles = new Dictionary<string, CNamePlateTitle>();
+
+			[JsonProperty("unlockedCharacters")]
+			public List<string> UnlockedCharacters = new List<string>();
+
+			[JsonProperty("unlockedPuchicharas")]
+			public List<string> UnlockedPuchicharas = new List<string>();
+
+			[JsonIgnore]
+			public List<string> UnlockedSongs = new List<string>();
+
+			[JsonIgnore]
+			public List<int> UnlockedNameplateIds = new List<int>();
+
+			[JsonProperty("activeTriggers")]
+			public HashSet<string> ActiveTriggers = new HashSet<string>();
 
-        private void tLoadFile()
-        {
-            data = ConfigManager.GetConfig<Data>(path);
-        }
+			[JsonIgnore]
+			public Dictionary<string, BestPlayRecords.CBestPlayRecord> bestPlays = new Dictionary<string, BestPlayRecords.CBestPlayRecord>();
 
-        #endregion
-    }
+			[JsonIgnore]
+			public Dictionary<string, BestPlayRecords.CBestPlayRecord> bestPlaysDistinctCharts = new Dictionary<string, BestPlayRecords.CBestPlayRecord>();
+
+			[JsonIgnore]
+			public Dictionary<string, BestPlayRecords.CBestPlayRecord> bestPlaysDistinctSongs = new Dictionary<string, BestPlayRecords.CBestPlayRecord>();
+
+			[JsonIgnore]
+			public Dictionary<string, BestPlayRecords.CBestPlayRecord> bestPlaysSongSelectTables = new Dictionary<string, BestPlayRecords.CBestPlayRecord>();
+
+			[JsonIgnore]
+			public Dictionary<string, BestPlayRecords.CSongSelectTableEntry> songSelectTableEntries = new Dictionary<string, BestPlayRecords.CSongSelectTableEntry>();
+
+			[JsonIgnore]
+			public BestPlayRecords.CBestPlayStats bestPlaysStats = new BestPlayRecords.CBestPlayStats();
+
+			public BestPlayRecords.CSongSelectTableEntry tGetSongSelectTableEntry(string uniqueId) {
+				if (songSelectTableEntries.ContainsKey(uniqueId)) return songSelectTableEntries[uniqueId];
+				return new BestPlayRecords.CSongSelectTableEntry();
+			}
+
+			#region [Factorize best plays]
+
+			public void tFactorizeBestPlays() {
+				bestPlaysDistinctCharts = new Dictionary<string, BestPlayRecords.CBestPlayRecord>();
+
+				foreach (BestPlayRecords.CBestPlayRecord bestPlay in bestPlays.Values) {
+					string key = bestPlay.ChartUniqueId + bestPlay.ChartDifficulty.ToString();
+					if (!bestPlaysDistinctCharts.ContainsKey(key)) {
+						bestPlaysDistinctCharts[key] = bestPlay.Copy();
+					} else {
+						if (bestPlay.HighScore > bestPlaysDistinctCharts[key].HighScore) {
+							bestPlaysDistinctCharts[key].HighScore = bestPlay.HighScore;
+							bestPlaysDistinctCharts[key].HighScoreGoodCount = bestPlay.HighScoreGoodCount;
+							bestPlaysDistinctCharts[key].HighScoreOkCount = bestPlay.HighScoreOkCount;
+							bestPlaysDistinctCharts[key].HighScoreBadCount = bestPlay.HighScoreBadCount;
+							bestPlaysDistinctCharts[key].HighScoreRollCount = bestPlay.HighScoreRollCount;
+							bestPlaysDistinctCharts[key].HighScoreBoomCount = bestPlay.HighScoreBoomCount;
+							bestPlaysDistinctCharts[key].HighScoreMaxCombo = bestPlay.HighScoreMaxCombo;
+							bestPlaysDistinctCharts[key].HighScoreADLibCount = bestPlay.HighScoreADLibCount;
+						}
+						bestPlaysDistinctCharts[key].ScoreRank = Math.Max(bestPlaysDistinctCharts[key].ScoreRank, bestPlay.ScoreRank);
+						bestPlaysDistinctCharts[key].ClearStatus = Math.Max(bestPlaysDistinctCharts[key].ClearStatus, bestPlay.ClearStatus);
+					}
+				}
+
+				bestPlaysDistinctSongs = new Dictionary<string, BestPlayRecords.CBestPlayRecord>();
+				songSelectTableEntries = new Dictionary<string, BestPlayRecords.CSongSelectTableEntry>();
+
+				foreach (BestPlayRecords.CBestPlayRecord bestPlay in bestPlaysDistinctCharts.Values) {
+					string key = bestPlay.ChartUniqueId;
+					if (!bestPlaysDistinctSongs.ContainsKey(key)) {
+						bestPlaysDistinctSongs[key] = bestPlay.Copy();
+					} else {
+						if (bestPlay.HighScore > bestPlaysDistinctSongs[key].HighScore) {
+							bestPlaysDistinctSongs[key].HighScore = bestPlay.HighScore;
+							bestPlaysDistinctSongs[key].HighScoreGoodCount = bestPlay.HighScoreGoodCount;
+							bestPlaysDistinctSongs[key].HighScoreOkCount = bestPlay.HighScoreOkCount;
+							bestPlaysDistinctSongs[key].HighScoreBadCount = bestPlay.HighScoreBadCount;
+							bestPlaysDistinctSongs[key].HighScoreRollCount = bestPlay.HighScoreRollCount;
+							bestPlaysDistinctSongs[key].HighScoreBoomCount = bestPlay.HighScoreBoomCount;
+							bestPlaysDistinctSongs[key].HighScoreMaxCombo = bestPlay.HighScoreMaxCombo;
+							bestPlaysDistinctSongs[key].HighScoreADLibCount = bestPlay.HighScoreADLibCount;
+						}
+						bestPlaysDistinctSongs[key].ScoreRank = Math.Max(bestPlaysDistinctSongs[key].ScoreRank, bestPlay.ScoreRank);
+						bestPlaysDistinctSongs[key].ClearStatus = Math.Max(bestPlaysDistinctSongs[key].ClearStatus, bestPlay.ClearStatus);
+					}
+
+					// Entries to replace score.GPInfo on the song select menus
+					if (!songSelectTableEntries.ContainsKey(key)) {
+						songSelectTableEntries[key] = new BestPlayRecords.CSongSelectTableEntry();
+					}
+					if (bestPlay.ChartDifficulty > songSelectTableEntries[key].ScoreRankDifficulty && bestPlay.ScoreRank >= 0) {
+						songSelectTableEntries[key].ScoreRankDifficulty = (int)bestPlay.ChartDifficulty;
+						songSelectTableEntries[key].ScoreRank = (int)bestPlay.ScoreRank;
+					}
+					if (bestPlay.ChartDifficulty > songSelectTableEntries[key].ClearStatusDifficulty && bestPlay.ClearStatus >= 0) {
+						songSelectTableEntries[key].ClearStatusDifficulty = (int)bestPlay.ChartDifficulty;
+						songSelectTableEntries[key].ClearStatus = (int)bestPlay.ClearStatus;
+					}
+					if ((int)bestPlay.ChartDifficulty == (int)Difficulty.Tower) songSelectTableEntries[key].TowerReachedFloor = (int)bestPlay.TowerBestFloor;
+					songSelectTableEntries[key].HighScore[(int)bestPlay.ChartDifficulty] = (int)bestPlay.HighScore;
+					songSelectTableEntries[key].ScoreRanks[(int)bestPlay.ChartDifficulty] = (int)bestPlay.ScoreRank + 1; // 0 start
+					songSelectTableEntries[key].ClearStatuses[(int)bestPlay.ChartDifficulty] = (int)bestPlay.ClearStatus + 1; // 0 start
+				}
+
+				bestPlaysStats = BestPlayRecords.tGenerateBestPlayStats(bestPlaysDistinctCharts.Values, bestPlaysDistinctSongs.Values);
+			}
+
+			#endregion
+		}
+
+		public Data data = new Data();
+		public string path = "Save.json";
+		public string name = "Save";
+
+		#region [private]
+
+		private void tSaveFile() {
+			ConfigManager.SaveConfig(data, path);
+		}
+
+		private void tLoadFile() {
+			data = ConfigManager.GetConfig<Data>(path);
+		}
+
+		#endregion
+	}
 }
